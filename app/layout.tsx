@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Noto_Sans_Khmer } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import Layout from './components/Layout'
 
 const notoSansKhmer = Noto_Sans_Khmer({ 
   subsets: ['khmer'],
@@ -12,7 +11,6 @@ const notoSansKhmer = Noto_Sans_Khmer({
 })
 
 export const metadata: Metadata = {
-  title: 'ជំនួយពលរដ្ឋកម្ពុជា - Khmer Aid',
   description: 'Community aid platform for Cambodia',
 }
 
@@ -24,9 +22,11 @@ export default function RootLayout({
   return (
     <html lang="km">
       <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script
           type="module"
           src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js"
+          suppressHydrationWarning
         />
       </head>
       <body className={`${notoSansKhmer.className} ${notoSansKhmer.variable}`}>
