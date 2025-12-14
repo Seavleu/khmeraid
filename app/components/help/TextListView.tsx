@@ -26,17 +26,17 @@ interface TextListViewProps {
 }
 
 const typeLabels: Record<string, string> = {
-  accommodation: '🏠 ACCOMMODATION',
-  fuel_service: '⛽ FUEL SERVICE',
-  car_transportation: '🚗 CAR TRANSPORTATION',
-  volunteer_request: '🤝 VOLUNTEER NEEDED'
+  accommodation: '🏠 ស្នាក់នៅ',
+  fuel_service: '⛽ សេវាសាំង',
+  car_transportation: '🚗 ដឹកជញ្ជូន',
+  volunteer_request: '🤝 ត្រូវការស្ម័គ្រចិត្ត'
 };
 
 const statusLabels: Record<string, string> = {
-  open: '✅ OPEN',
-  limited: '⚠️ LIMITED',
-  full: '❌ FULL',
-  paused: '⏸️ PAUSED'
+  open: '✅ បើក',
+  limited: '⚠️ មានកំណត់',
+  full: '❌ ពេញ',
+  paused: '⏸️ ផ្អាក'
 };
 
 export default function TextListView({ listings, onCall }: TextListViewProps) {
@@ -47,14 +47,14 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
   if (listings.length === 0) {
     return (
       <div className="text-center py-8 px-4">
-        <p className="text-gray-600 text-lg">No listings found.</p>
-        <p className="text-gray-500 mt-2">Call the hotline for assistance.</p>
+        <p className="text-gray-600 text-lg">មិនមានការផ្តល់ជំនួយត្រូវបានរកឃើញ។</p>
+        <p className="text-gray-500 mt-2">សូមទូរស័ព្ទទៅខ្សែបន្ទាន់សម្រាប់ជំនួយ។</p>
         <Button 
           onClick={() => handleCall()}
           className="mt-4 bg-emerald-600 hover:bg-emerald-700"
         >
           <Phone className="w-4 h-4 mr-2" />
-          Call Hotline
+          ទូរស័ព្ទខ្សែបន្ទាន់
         </Button>
       </div>
     );
@@ -64,7 +64,7 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
     <div className="space-y-4">
       <div className="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg">
         <p className="text-sm text-amber-800">
-          <strong>📱 Low Bandwidth Mode</strong> — Text-only view for slow connections
+          <strong>📱 របៀបបណ្តាញយឺត</strong> — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត
         </p>
       </div>
 
@@ -86,7 +86,7 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
           {/* Details */}
           <div className="space-y-1 font-mono text-sm">
             <p>
-              <span className="text-gray-500">STATUS:</span>{' '}
+              <span className="text-gray-500">ស្ថានភាព:</span>{' '}
               <span className={
                 listing.status === 'open' ? 'text-emerald-700 font-bold' :
                 listing.status === 'limited' ? 'text-amber-700 font-bold' :
@@ -97,27 +97,27 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
             </p>
             
             <p>
-              <span className="text-gray-500">AREA:</span>{' '}
+              <span className="text-gray-500">តំបន់:</span>{' '}
               {listing.area}
             </p>
 
             {(listing.capacity_min || listing.capacity_max) && (
               <p>
-                <span className="text-gray-500">CAPACITY:</span>{' '}
-                {listing.capacity_min || 1} - {listing.capacity_max || '?'} people
+                <span className="text-gray-500">សមត្ថភាព:</span>{' '}
+                {listing.capacity_min || 1} - {listing.capacity_max || '?'} នាក់
               </p>
             )}
 
             {listing.duration_days && (
               <p>
-                <span className="text-gray-500">DURATION:</span>{' '}
-                {listing.duration_days} days
+                <span className="text-gray-500">រយៈពេល:</span>{' '}
+                {listing.duration_days} ថ្ងៃ
               </p>
             )}
 
             {listing.family_friendly && (
               <p className="text-pink-600 font-bold">
-                👨‍👩‍👧‍👦 FAMILY FRIENDLY
+                👨‍👩‍👧‍👦 សមស្របសម្រាប់គ្រួសារ
               </p>
             )}
 
@@ -136,11 +136,11 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
               size="lg"
             >
               <Phone className="w-5 h-5 mr-2" />
-              CALL TO CONFIRM
+              ទូរស័ព្ទដើម្បីបញ្ជាក់
             </Button>
             {listing.verified && (
               <p className="text-center text-xs text-emerald-600 mt-1">
-                ✓ VERIFIED LISTING
+                ✓ ការផ្តល់ជំនួយបានផ្ទៀងផ្ទាត់
               </p>
             )}
           </div>
@@ -150,10 +150,10 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
       {/* Footer */}
       <div className="text-center py-4 border-t-2 border-dashed border-gray-300">
         <p className="text-sm text-gray-500">
-          Always confirm availability by phone before traveling.
+          សូមបញ្ជាក់ភាពអាចរកបានតាមទូរស័ព្ទមុនពេលធ្វើដំណើរ។
         </p>
         <p className="text-xs text-gray-400 mt-1">
-          Listings shown with consent only.
+          ការផ្តល់ជំនួយត្រូវបានបង្ហាញតែជាមួយការយល់ព្រមប៉ុណ្ណោះ។
         </p>
       </div>
     </div>
