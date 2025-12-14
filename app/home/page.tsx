@@ -15,7 +15,7 @@ import { Input } from '@/app/components/ui/input';
 
 import ListingCard from '@/app/components/help/ListingCard';
 import FilterPanel from '@/app/components/help/FilterPanel';
-import AISummary from '@/app/components/help/AISummary';
+// import AISummary from '@/app/components/help/AISummary';
 import GoogleHelpMap from '@/app/components/help/GoogleHelpMap';
 import TextListView from '@/app/components/help/TextListView';
 import SafetyNotice from '@/app/components/help/SafetyNotice';
@@ -249,46 +249,47 @@ export default function Home() {
     <Layout>
     <div className="h-screen overflow-hidden flex flex-col">
       {/* Compact Header */}
-      <header className="bg-white border-b z-50 shadow-sm shrink-0">
-        <div className="px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="bg-white border-b z-50 shadow-sm shrink-0 transition-all">
+        <div className="px-2 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden"
+              className="lg:hidden h-8 w-8 p-0 flex-shrink-0"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-[#105090]">
-              ជំនួយពលរដ្ឋកម្ពុជា
+            <h1 className="text-base sm:text-xl lg:text-2xl font-bold text-[#105090] truncate">
+              ចង់ជួយ
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLowBandwidth(!lowBandwidth)}
+              className="h-8 w-8 p-0 hidden sm:flex"
             >
-              {lowBandwidth ? <WifiOff className="w-6 h-6" /> : <Wifi className="w-6 h-6" />}
+              {lowBandwidth ? <WifiOff className="w-4 h-4" /> : <Wifi className="w-4 h-4" />}
             </Button>
 
             <Button
-              size="lg"
+              size="sm"
               onClick={() => setShowSeekHelp(true)}
-              className="bg-red-600 hover:bg-red-700 text-white rounded-full font-bold"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-full font-semibold text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2 h-auto transition-all"
             >
-              🆘 ត្រូវការជំនួយ
+              🆘 <span className="hidden xs:inline">ត្រូវការជំនួយ</span>
             </Button>
 
             <Sheet open={showSubmitForm} onOpenChange={setShowSubmitForm}>
               <SheetTrigger asChild>
                 <Button 
-                  size="lg"
-                  className="rounded-full font-bold text-base bg-[#105090] hover:bg-[#0d3d6f]"
+                  size="sm"
+                  className="rounded-full font-semibold text-xs sm:text-sm bg-[#105090] hover:bg-[#0d3d6f] px-2 sm:px-4 py-1.5 sm:py-2 h-auto transition-all"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
+                  <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1.5" />
                   <span className="hidden sm:inline">ផ្តល់ជំនួយ</span>
                 </Button>
               </SheetTrigger>
@@ -333,19 +334,19 @@ export default function Home() {
             />
           </div>
         ) : (
-          <div className="absolute inset-0 overflow-auto bg-gray-50 p-4">
+          <div className="absolute inset-0 overflow-auto bg-gray-50 p-2 sm:p-4 scroll-smooth">
             {/* Filters for Low Bandwidth Mode */}
-            <div className="sticky top-0 bg-white z-10 p-4 border-b shadow-sm mb-4 space-y-3">
+            <div className="sticky top-0 bg-white z-10 p-2 sm:p-3 lg:p-4 border-b shadow-sm mb-2 sm:mb-4 space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg">តម្រង ({filteredListings.length} ទំនេរ)</h3>
+                <h3 className="font-bold text-sm sm:text-base lg:text-lg">តម្រង ({filteredListings.length} ទំនេរ)</h3>
                 <Sheet open={showFilters} onOpenChange={setShowFilters}>
                   <SheetTrigger asChild>
-                    <Button size="sm" variant="outline">
-                      <Filter className="w-4 h-4 mr-2" />
+                    <Button size="sm" variant="outline" className="h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm">
+                      <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
                       ច្រើនទៀត
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="bottom" className="h-auto max-h-[80vh] rounded-t-2xl overflow-y-auto">
+                  <SheetContent side="bottom" className="h-auto max-h-[85vh] rounded-t-2xl overflow-y-auto">
                     <FilterPanel 
                       filters={filters} 
                       onFilterChange={setFilters}
@@ -364,24 +365,24 @@ export default function Home() {
 
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
                 <Input
                   placeholder="ស្វែងរក..."
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
-                  className="pl-10"
+                  className="pl-8 sm:pl-10 h-9 sm:h-10 text-sm sm:text-base"
                 />
               </div>
 
               {/* Quick Filters */}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => (
                   <Button
                     key={type}
                     size="sm"
                     variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
                     onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                    className={`text-xs ${filters.type === type || (type === 'all' && !filters.type) 
+                    className={`text-xs px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
                       ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
                       : ''}`}
                   >
@@ -403,74 +404,87 @@ export default function Home() {
         {!lowBandwidth && (
           <>
             {/* Top Controls Bar */}
-            <div className="absolute top-4 left-4 right-4 z-10 flex items-center gap-2 flex-wrap">
-              {/* Filter Pills */}
-              <div className="bg-white rounded-full shadow-lg p-1.5 flex items-center gap-2 flex-wrap">
+            <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              {/* Filter Pills - Scrollable on mobile */}
+              <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-2 flex-wrap max-w-[calc(100%-5rem)] sm:max-w-none overflow-x-auto scrollbar-hide">
                   {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event', 'site_sponsor', 'school'].map((type) => (
                     <Button
                       key={type}
-                      size="lg"
+                      size="sm"
                       variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'ghost'}
                       onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                      className={`rounded-full text-base font-semibold px-4 ${filters.type === type || (type === 'all' && !filters.type) 
+                      className={`rounded-full text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 sm:py-1.5 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
                         ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
                         : ''}`}
                     >
-                    {type === 'all' ? '🔍 ទាំងអស់' : 
-                     type === 'accommodation' ? '🏠 ស្នាក់នៅ' :
-                     type === 'fuel_service' ? '⛽ សាំង' :
-                     type === 'car_transportation' ? '🚗 ដឹកជញ្ជូន' : 
-                     type === 'volunteer_request' ? '🤝 ស្ម័គ្រចិត្ត' :
-                     type === 'event' ? '📅 ព្រឹត្តិការណ៍' :
-                     type === 'site_sponsor' ? '📍 ទីតាំង' : '🏫 សាលា'}
+                    {type === 'all' ? (
+                      <>🔍 <span className="hidden sm:inline">ទាំងអស់</span></>
+                    ) : type === 'accommodation' ? (
+                      <>🏠 <span className="hidden sm:inline">ស្នាក់នៅ</span></>
+                    ) : type === 'fuel_service' ? (
+                      <>⛽ <span className="hidden sm:inline">សាំង</span></>
+                    ) : type === 'car_transportation' ? (
+                      <>🚗 <span className="hidden sm:inline">ដឹកជញ្ជូន</span></>
+                    ) : type === 'volunteer_request' ? (
+                      <>🤝 <span className="hidden sm:inline">ស្ម័គ្រចិត្ត</span></>
+                    ) : type === 'event' ? (
+                      <>📅 <span className="hidden sm:inline">ព្រឹត្តិការណ៍</span></>
+                    ) : type === 'site_sponsor' ? (
+                      <>📍 <span className="hidden sm:inline">ទីតាំង</span></>
+                    ) : (
+                      <>🏫 <span className="hidden sm:inline">សាលា</span></>
+                    )}
                   </Button>
                 ))}
               </div>
 
-              {/* Locate Button */}
-              <Button
-                size="sm"
-                onClick={handleLocate}
-                className="bg-white rounded-full shadow-lg"
-                variant="ghost"
-              >
-                <Locate className="w-4 h-4" />
-              </Button>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                {/* Locate Button */}
+                <Button
+                  size="sm"
+                  onClick={handleLocate}
+                  className="bg-white rounded-full shadow-lg h-8 w-8 p-0 transition-all hover:scale-105"
+                  variant="ghost"
+                >
+                  <Locate className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </Button>
 
-              {/* More Filters */}
-              <Sheet open={showFilters} onOpenChange={setShowFilters}>
-                <SheetTrigger asChild>
-                  <Button 
-                    size="sm"
-                    variant="ghost"
-                    className="bg-white rounded-full shadow-lg"
-                  >
-                    <Filter className="w-4 h-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="bottom" className="h-auto max-h-[80vh] rounded-t-2xl overflow-y-auto">
-                  <FilterPanel 
-                    filters={filters} 
-                    onFilterChange={setFilters}
-                    areas={areas}
-                    searchKeyword={searchKeyword}
-                    onSearchChange={setSearchKeyword}
-                    sortBy={sortBy}
-                    onSortChange={setSortBy}
-                    radiusKm={radiusKm}
-                    onRadiusChange={setRadiusKm}
-                    hasUserLocation={!!userLocation}
-                  />
-                </SheetContent>
-              </Sheet>
+                {/* More Filters */}
+                <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                  <SheetTrigger asChild>
+                    <Button 
+                      size="sm"
+                      variant="ghost"
+                      className="bg-white rounded-full shadow-lg h-8 w-8 p-0 transition-all hover:scale-105"
+                    >
+                      <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-auto max-h-[85vh] rounded-t-2xl overflow-y-auto">
+                    <FilterPanel 
+                      filters={filters} 
+                      onFilterChange={setFilters}
+                      areas={areas}
+                      searchKeyword={searchKeyword}
+                      onSearchChange={setSearchKeyword}
+                      sortBy={sortBy}
+                      onSortChange={setSortBy}
+                      radiusKm={radiusKm}
+                      onRadiusChange={setRadiusKm}
+                      hasUserLocation={!!userLocation}
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
 
             {/* Results Count Badge */}
-            <div className="absolute top-20 left-4 z-10 bg-white rounded-full shadow-lg px-5 py-3 flex items-center gap-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-lg font-bold">{filteredListings.length} ទំនេរ</span>
+            <div className="absolute top-14 sm:top-20 left-2 sm:left-4 z-10 bg-white rounded-full shadow-lg px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 transition-all">
+              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-xs sm:text-base font-bold">{filteredListings.length} ទំនេរ</span>
               {drawnArea && (
-                <span className="text-sm text-gray-500">🔍 តំបន់ផ្ទាល់ខ្លួន</span>
+                <span className="text-xs text-gray-500 hidden sm:inline">🔍 តំបន់ផ្ទាល់ខ្លួន</span>
               )}
             </div>
 
@@ -500,47 +514,48 @@ export default function Home() {
 
         {/* Collapsible Sidebar */}
         <div 
-          className={`absolute top-0 bottom-0 left-0 z-20 bg-white shadow-2xl transition-transform duration-300 ${
+          className={`absolute top-0 bottom-0 left-0 z-20 bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } w-full sm:w-96 overflow-hidden flex flex-col`}
         >
           {/* Sidebar Header */}
-          <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-teal-50 shrink-0">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xl font-bold text-gray-900">ជំនួយដែលមាន</h2>
+          <div className="p-2 sm:p-3 border-b bg-gradient-to-r from-blue-50 to-teal-50 shrink-0">
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
+              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">ជំនួយដែលមាន</h2>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarOpen(false)}
+                className="h-7 w-7 p-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </Button>
             </div>
-            <AISummary listings={filteredListings} userLocation={userArea} />
+            {/* <AISummary listings={filteredListings} userLocation={userArea} /> */}
           </div>
 
           {/* Sidebar Filters */}
-          <div className="p-4 border-b bg-white shrink-0 space-y-3">
+          <div className="p-2 sm:p-3 border-b bg-white shrink-0 space-y-2 sm:space-y-3">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-4 sm:h-4 text-gray-400" />
               <Input
                 placeholder="ស្វែងរក..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
-                className="pl-10 text-base"
+                className="pl-8 sm:pl-10 text-sm sm:text-base h-9 sm:h-10"
               />
             </div>
 
             {/* Quick Type Filters */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => (
                 <Button
                   key={type}
                   size="sm"
                   variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
                   onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                  className={`text-xs font-semibold ${filters.type === type || (type === 'all' && !filters.type) 
+                  className={`text-xs font-medium px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
                     ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
                     : ''}`}
                 >
@@ -558,23 +573,23 @@ export default function Home() {
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(true)}
-              className="w-full text-sm font-semibold"
+              className="w-full text-xs sm:text-sm font-medium h-8 sm:h-9"
             >
-              <Filter className="w-4 h-4 mr-2" />
+              <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
               ច្រើនទៀត
             </Button>
           </div>
 
           {/* Listings */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-2 sm:space-y-3 scroll-smooth">
             {isLoading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full mx-auto" />
-                <p className="text-gray-500 mt-3 text-sm">Loading...</p>
+              <div className="text-center py-8 sm:py-12">
+                <div className="animate-spin w-6 h-6 sm:w-8 sm:h-8 border-3 sm:border-4 border-teal-500 border-t-transparent rounded-full mx-auto" />
+                <p className="text-gray-500 mt-2 sm:mt-3 text-xs sm:text-sm">កំពុងផ្ទុក...</p>
               </div>
             ) : filteredListings.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500">No listings found</p>
+              <div className="text-center py-8 sm:py-12">
+                <p className="text-gray-500 text-sm sm:text-base">មិនមានជំនួយ</p>
                 <Button 
                   variant="link" 
                   onClick={() => {
@@ -583,10 +598,10 @@ export default function Home() {
                     setRadiusKm(null);
                     setDrawnArea(null);
                   }}
-                  className="text-[#105090]"
+                  className="text-[#105090] text-xs sm:text-sm mt-2"
                   size="sm"
                 >
-                  Clear all filters
+                  លុបតម្រងទាំងអស់
                 </Button>
               </div>
             ) : (
@@ -597,9 +612,9 @@ export default function Home() {
                     setSelectedListing(listing);
                     setDetailedListing(listing);
                   }}
-                  className={`cursor-pointer transition-all ${
+                  className={`cursor-pointer transition-all transform hover:scale-[1.02] ${
                     selectedListing?.id === listing.id 
-                      ? 'ring-2 ring-blue-500' 
+                      ? 'ring-2 ring-blue-500 rounded-lg' 
                       : ''
                   }`}
                 >
@@ -610,7 +625,7 @@ export default function Home() {
           </div>
 
           {/* Sidebar Footer */}
-          <div className="p-3 border-t bg-gray-50 shrink-0">
+          <div className="p-2 sm:p-3 border-t bg-gray-50 shrink-0">
             <SafetyNotice compact />
           </div>
         </div>
@@ -619,10 +634,10 @@ export default function Home() {
         {!sidebarOpen && !lowBandwidth && (
           <Button
             onClick={() => setSidebarOpen(true)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white shadow-xl rounded-full w-12 h-12 p-0"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-white shadow-xl rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0 transition-all hover:scale-110"
             variant="ghost"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
           </Button>
         )}
       </div>

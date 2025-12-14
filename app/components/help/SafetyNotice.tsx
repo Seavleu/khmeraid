@@ -13,7 +13,7 @@ export default function SafetyNotice({ compact = false }: SafetyNoticeProps) {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 flex items-start gap-2">
         <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
         <p className="text-xs text-blue-900 leading-tight">
-          ទីតាំងដែលបានយល់ព្រមប៉ុណ្ណោះ។ តែងតែបញ្ជាក់តាមទូរស័ព្ទ។
+          បញ្ជាក់ព័ត៑មានទីតាំងតាមទូរស័ព្ទជាមុន។
         </p>
       </div>
     );
