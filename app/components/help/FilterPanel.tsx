@@ -120,7 +120,7 @@ export default function FilterPanel({
           }`}
         >
           <Baby className="w-4 h-4 mr-2" />
-          Family
+          គ្រួសារ
         </Button>
       </div>
     );
