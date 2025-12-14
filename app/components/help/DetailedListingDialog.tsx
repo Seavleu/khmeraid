@@ -10,7 +10,9 @@ import {
   Baby, Car, Facebook, User, ShieldCheck, ExternalLink, Star, MessageCircle
 } from 'lucide-react';
 
-const typeConfig = {
+import type { LucideIcon } from 'lucide-react';
+
+const typeConfig: Record<string, { icon: LucideIcon; label: string; color: string }> = {
   accommodation: { icon: Home, label: 'ស្នាក់នៅ', color: 'bg-blue-100 text-blue-700' },
   fuel_service: { icon: Fuel, label: 'សេវាសាំង', color: 'bg-amber-100 text-amber-700' },
   volunteer_request: { icon: HeartHandshake, label: 'ត្រូវការស្ម័គ្រចិត្ត', color: 'bg-purple-100 text-purple-700' },
@@ -20,7 +22,7 @@ const typeConfig = {
   event: { icon: Clock, label: 'ព្រឹត្តិការណ៍', color: 'bg-pink-100 text-pink-700' }
 };
 
-const statusConfig = {
+const statusConfig: Record<string, { icon: LucideIcon; label: string; color: string }> = {
   open: { icon: CheckCircle, label: 'បើក', color: 'bg-emerald-100 text-emerald-700' },
   limited: { icon: AlertCircle, label: 'មានកំណត់', color: 'bg-amber-100 text-amber-700' },
   full: { icon: XCircle, label: 'ពេញ', color: 'bg-red-100 text-red-700' },
@@ -305,7 +307,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
             <div className="space-y-3">
               <h3 className="text-xl font-bold text-gray-900">✓ សេវាកម្មផ្តល់ជូន</h3>
               <div className="flex flex-wrap gap-2">
-                {listing.services_offered.map((service, idx) => (
+                {listing.services_offered?.map((service: string, idx: number) => (
                   <Badge key={idx} className="bg-green-50 text-green-700 border-2 border-green-200 text-base px-4 py-2 font-semibold">
                     {service}
                   </Badge>

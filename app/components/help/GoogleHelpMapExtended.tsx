@@ -51,11 +51,12 @@ interface GoogleHelpMapProps {
 }
 
 // Declare global types for Google Maps Extended Component Library
+// Note: These types are also declared in GoogleHelpMap.tsx, but we need them here too
+// The key property is removed to avoid type conflicts
 declare global {
   namespace JSX {
     interface IntrinsicElements {
       'gmpx-api-loader': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
-        key?: string;
         'solution-channel'?: string;
       }, HTMLElement>;
       'gmp-map': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {

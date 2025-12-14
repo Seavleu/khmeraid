@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function GET() {
+  // During build time, database may not be available - return early
+  if (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.DATABASE_URL) {
+    return NextResponse.json({
+      status: 'ok',
+      database: 'not_available_during_build',
+      message: 'Database not available during build time',
+    });
+  }
+
+  // Dynamic import to avoid loading Prisma during build
+  const { prisma } = await import('@/lib/prisma');
+  
   try {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
@@ -31,6 +42,15 @@ export async function GET() {
         : 'unknown',
     });
   } catch (error: any) {
+    // During build, gracefully handle database errors
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+      return NextResponse.json({
+        status: 'ok',
+        database: 'not_available_during_build',
+        message: 'Database not available during build time',
+      });
+    }
+    
     return NextResponse.json({
       status: 'error',
       database: 'disconnected',

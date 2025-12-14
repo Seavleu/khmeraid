@@ -32,14 +32,14 @@ interface Listing {
 
 // Custom icons for different types
 const createCustomIcon = (type: string, status: string, verified: boolean) => {
-  const colors = {
+  const colors: Record<string, { bg: string; border: string }> = {
     accommodation: { bg: '#3B82F6', border: '#1D4ED8' },
     fuel_service: { bg: '#F59E0B', border: '#D97706' },
     car_transportation: { bg: '#10B981', border: '#059669' },
     volunteer_request: { bg: '#8B5CF6', border: '#7C3AED' }
   };
 
-  const statusOpacity = {
+  const statusOpacity: Record<string, number> = {
     open: 1,
     limited: 0.8,
     full: 0.4,
@@ -97,7 +97,7 @@ const createCustomIcon = (type: string, status: string, verified: boolean) => {
   });
 };
 
-function LocationMarker({ position }) {
+function LocationMarker({ position }: { position?: [number, number] }) {
   const map = useMap();
   
   useEffect(() => {
@@ -132,7 +132,7 @@ function LocationMarker({ position }) {
   );
 }
 
-function MapUpdater({ listings, center }) {
+function MapUpdater({ listings, center }: { listings: Listing[]; center?: [number, number] }) {
   const map = useMap();
   const [prevListingsCount, setPrevListingsCount] = useState(0);
 
@@ -140,7 +140,7 @@ function MapUpdater({ listings, center }) {
     // If new listings appear, show visual feedback
     if (listings.length > prevListingsCount) {
       // Flash effect or notification
-      const notification = L.control({ position: 'topright' });
+      const notification = new L.Control({ position: 'topright' });
       notification.onAdd = function() {
         const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
         div.innerHTML = `
@@ -195,16 +195,16 @@ export default function HelpMap({
     return () => clearTimeout(timer);
   }, [listings]);
 
-  const handleMarkerClick = (listing) => {
+  const handleMarkerClick = (listing: Listing) => {
     setSelectedId(listing.id);
     onSelectListing?.(listing);
   };
 
-  const handleCall = (phone) => {
+  const handleCall = (phone: string) => {
     window.location.href = `tel:${(phone || '+1-800-HELP-NOW').replace(/[^0-9+]/g, '')}`;
   };
 
-  const openInGoogleMaps = (lat, lng) => {
+  const openInGoogleMaps = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
   };
 
@@ -213,14 +213,14 @@ export default function HelpMap({
     l.latitude && l.longitude && l.location_consent !== false
   );
 
-  const statusLabels = {
+  const statusLabels: Record<string, string> = {
     open: 'Open',
     limited: 'Limited',
     full: 'Full',
     paused: 'Paused'
   };
 
-  const typeLabels = {
+  const typeLabels: Record<string, string> = {
     accommodation: 'Accommodation',
     fuel_service: 'Fuel Service',
     car_transportation: 'Car Transportation',
@@ -258,18 +258,20 @@ export default function HelpMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        <LocationMarker position={userLocation} />
+        {userLocation && <LocationMarker position={userLocation} />}
         <MapUpdater listings={mappableListings} center={center} />
 
-        {mappableListings.map((listing) => (
-          <Marker
-            key={listing.id}
-            position={[listing.latitude, listing.longitude]}
-            icon={createCustomIcon(listing.type, listing.status, listing.verified)}
-            eventHandlers={{
-              click: () => handleMarkerClick(listing)
-            }}
-          >
+        {mappableListings.map((listing) => {
+          if (!listing.latitude || !listing.longitude) return null;
+          return (
+            <Marker
+              key={listing.id}
+              position={[listing.latitude, listing.longitude]}
+              icon={createCustomIcon(listing.type, listing.status, listing.verified || false)}
+              eventHandlers={{
+                click: () => handleMarkerClick(listing)
+              }}
+            >
             <Popup>
               <div className="p-2 min-w-[240px]">
                 {listing.image_url && (
@@ -319,7 +321,7 @@ export default function HelpMap({
                     <Button 
                       size="sm" 
                       className="w-full bg-emerald-600 hover:bg-emerald-700"
-                      onClick={() => handleCall(listing.contact_phone)}
+                      onClick={() => handleCall(listing.contact_phone || '')}
                     >
                       <Phone className="w-3 h-3 mr-1" />
                       Call Now
@@ -329,7 +331,11 @@ export default function HelpMap({
                     size="sm" 
                     variant="outline"
                     className="w-full"
-                    onClick={() => openInGoogleMaps(listing.latitude, listing.longitude)}
+                    onClick={() => {
+                      if (listing.latitude && listing.longitude) {
+                        openInGoogleMaps(listing.latitude, listing.longitude);
+                      }
+                    }}
                   >
                     <ExternalLink className="w-3 h-3 mr-1" />
                     View in Google Maps
@@ -338,7 +344,8 @@ export default function HelpMap({
               </div>
             </Popup>
           </Marker>
-        ))}
+          );
+        })}
       </MapContainer>
 
       {/* Map Legend */}

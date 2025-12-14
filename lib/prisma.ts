@@ -15,15 +15,18 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 // Handle Prisma connection errors gracefully
-prisma.$connect().catch((error) => {
-  console.error('Failed to connect to database:', error);
-  if (process.env.NODE_ENV === 'development') {
-    console.warn('Make sure DATABASE_URL is set in your .env file');
-    if (process.env.DATABASE_URL?.includes('pooler')) {
-      console.error('❌ ERROR: DATABASE_URL is using a pooler connection!');
-      console.error('Prisma requires a DIRECT connection URL.');
-      console.error('Fix: Use port 5432 and host ending in .connect.supabase.co, not .pooler.supabase.com:6543');
+// Skip connection during build time
+if (process.env.NEXT_PHASE !== 'phase-production-build') {
+  prisma.$connect().catch((error) => {
+    console.error('Failed to connect to database:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Make sure DATABASE_URL is set in your .env file');
+      if (process.env.DATABASE_URL?.includes('pooler')) {
+        console.error('❌ ERROR: DATABASE_URL is using a pooler connection!');
+        console.error('Prisma requires a DIRECT connection URL.');
+        console.error('Fix: Use port 5432 and host ending in .connect.supabase.co, not .pooler.supabase.com:6543');
+      }
     }
-  }
-});
+  });
+}
 

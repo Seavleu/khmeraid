@@ -5,6 +5,14 @@ declare namespace google {
       constructor(element: HTMLElement, options?: MapOptions);
       setOptions(options: MapOptions): void;
       fitBounds(bounds: LatLngBounds): void;
+      panTo(location: LatLng | LatLngLiteral): void;
+      setZoom(zoom: number): void;
+      addListener(event: string, handler: (e: any) => void): void;
+      innerMap?: Map;
+    }
+
+    interface MapMouseEvent {
+      latLng?: LatLng;
     }
 
     interface MapOptions {
@@ -48,13 +56,14 @@ declare namespace google {
         constructor(options: AdvancedMarkerElementOptions);
         map: Map | null;
         position: LatLng | LatLngLiteral | null;
-        addListener(event: string, handler: () => void): void;
+        addListener(event: string, handler: (e: any) => void): void;
       }
 
       interface AdvancedMarkerElementOptions {
         map?: Map;
         position?: LatLng | LatLngLiteral;
         title?: string;
+        gmpDraggable?: boolean;
       }
     }
 

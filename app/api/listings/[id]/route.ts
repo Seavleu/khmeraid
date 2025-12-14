@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ message: 'Not available during build' }, { status: 503 });
+  }
+
+  // Dynamic import to avoid loading Prisma during build
+  const { prisma } = await import('@/lib/prisma');
+
   try {
     const data = await request.json();
     const { id } = await params;
@@ -68,6 +74,13 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ message: 'Not available during build' }, { status: 503 });
+  }
+
+  // Dynamic import to avoid loading Prisma during build
+  const { prisma } = await import('@/lib/prisma');
+
   try {
     const { id } = await params;
 

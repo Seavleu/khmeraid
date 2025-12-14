@@ -294,7 +294,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               <Checkbox 
                 id="family"
                 checked={formData.family_friendly}
-                onCheckedChange={(checked) => handleChange('family_friendly', checked)}
+                onChange={(e) => handleChange('family_friendly', e.target.checked)}
               />
               <Label htmlFor="family" className="text-pink-700 cursor-pointer">
                 សមស្របសម្រាប់គ្រួសារដែលមានកូន
@@ -347,7 +347,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               <Checkbox 
                 id="consent"
                 checked={formData.location_consent}
-                onCheckedChange={(checked) => handleChange('location_consent', checked)}
+                onChange={(e) => handleChange('location_consent', e.target.checked)}
               />
               <Label htmlFor="consent" className="text-gray-700 cursor-pointer">
                 ខ្ញុំយល់ព្រមឱ្យបង្ហាញទីតាំងពិតប្រាកដរបស់ខ្ញុំនៅលើផែនទី

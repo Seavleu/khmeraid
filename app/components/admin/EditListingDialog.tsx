@@ -216,12 +216,12 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
     const marker = new google.maps.marker.AdvancedMarkerElement({
       map: map,
       position: { lat, lng },
-      draggable: true,
+      gmpDraggable: true,
     });
 
     // Add drag end listener
     marker.addListener('dragend', (e: any) => {
-      const position = e.latLng || e.target.position;
+      const position = e.latLng || (e.target?.position || marker.position);
       if (position) {
         let newLat: number, newLng: number;
         if (typeof position.lat === 'function') {
@@ -288,7 +288,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
             <div>
               <Label>ប្រភេទ</Label>
               <Select 
-                value={formData.type} 
+                value={formData.type || ''} 
                 onValueChange={(value) => handleInputChange('type', value)}
               >
                 <SelectTrigger>
@@ -319,7 +319,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
             <div>
               <Label>ស្ថានភាព</Label>
               <Select 
-                value={formData.status} 
+                value={formData.status || 'open'} 
                 onValueChange={(value) => handleInputChange('status', value)}
               >
                 <SelectTrigger>

@@ -72,7 +72,7 @@ export default function FilterSummaryPanel({
     const firstWithCoords = items.find(l => l.latitude && l.longitude);
     let distance = null;
     
-    if (userLocation && firstWithCoords) {
+    if (userLocation && firstWithCoords && firstWithCoords.latitude && firstWithCoords.longitude) {
       distance = calculateDistance(
         userLocation[0],
         userLocation[1],
@@ -85,7 +85,7 @@ export default function FilterSummaryPanel({
       area,
       count: items.length,
       distance,
-      location: firstWithCoords ? {
+      location: firstWithCoords && firstWithCoords.latitude && firstWithCoords.longitude ? {
         lat: firstWithCoords.latitude,
         lng: firstWithCoords.longitude
       } : null
@@ -118,7 +118,11 @@ export default function FilterSummaryPanel({
             key={area}
             variant="ghost"
             className="w-full justify-start text-left p-3 h-auto hover:bg-blue-50"
-            onClick={() => location && onLocationClick(location)}
+            onClick={() => {
+              if (location && location.lat !== undefined && location.lng !== undefined) {
+                onLocationClick({ lat: location.lat, lng: location.lng });
+              }
+            }}
           >
             <div className="flex-1">
               <div className="flex items-center gap-2">

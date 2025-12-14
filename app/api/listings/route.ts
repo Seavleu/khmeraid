@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { writeFile, appendFile } from 'fs/promises';
 import { join } from 'path';
 
 async function logDebug(data: any) {
+  // Only log in development mode
+  if (process.env.NODE_ENV !== 'development') return;
+  
   try {
     const logPath = join(process.cwd(), '.cursor', 'debug.log');
     const logEntry = JSON.stringify({...data, timestamp: Date.now()}) + '\n';
@@ -12,14 +14,20 @@ async function logDebug(data: any) {
       writeFile(logPath, logEntry, 'utf8').catch(() => {});
     });
   } catch (e) {
-    // Also log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[DEBUG]', data);
-    }
+    // Fallback to console in development
+    console.log('[DEBUG]', data);
   }
 }
 
 export async function GET(request: NextRequest) {
+  // During build time, return early
+  if (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ listings: [], message: 'Not available during build' });
+  }
+
+  // Dynamic import to avoid loading Prisma during build
+  const { prisma } = await import('@/lib/prisma');
+
   // #region agent log
   await logDebug({location:'app/api/listings/route.ts:11',message:'GET listings API called',data:{hasPrisma:!!prisma,hasDatabaseUrl:!!process.env.DATABASE_URL},sessionId:'debug-session',runId:'run1',hypothesisId:'A'});
   // #endregion
@@ -120,6 +128,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // During build time, return early
+  if (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ message: 'Not available during build' }, { status: 503 });
+  }
+
+  // Dynamic import to avoid loading Prisma during build
+  const { prisma } = await import('@/lib/prisma');
+
   try {
     const data = await request.json();
 
