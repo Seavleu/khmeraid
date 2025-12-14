@@ -21,10 +21,10 @@ interface SubmitListingFormProps {
 }
 
 const typeOptions = [
-  { value: 'accommodation', label: 'Accommodation / Shelter', icon: Home, description: 'Offer a place to stay' },
-  { value: 'fuel_service', label: 'Fuel Service', icon: Fuel, description: 'Fuel station or delivery' },
-  { value: 'car_transportation', label: 'Car Transportation', icon: Car, description: 'Offer transportation service' },
-  { value: 'volunteer_request', label: 'Volunteer Request', icon: HeartHandshake, description: 'Need volunteer help' }
+  { value: 'accommodation', label: 'ស្នាក់នៅ / ទីជម្រក', icon: Home, description: 'ផ្តល់កន្លែងស្នាក់នៅ' },
+  { value: 'fuel_service', label: 'សេវាសាំង', icon: Fuel, description: 'ស្ថានីយសាំង ឬការដឹកជញ្ជូន' },
+  { value: 'car_transportation', label: 'ដឹកជញ្ជូន', icon: Car, description: 'ផ្តល់សេវាដឹកជញ្ជូន' },
+  { value: 'volunteer_request', label: 'ត្រូវការស្ម័គ្រចិត្ត', icon: HeartHandshake, description: 'ត្រូវការជំនួយស្ម័គ្រចិត្ត' }
 ];
 
 export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListingFormProps) {
@@ -108,9 +108,9 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
           <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-emerald-600" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Thank You!</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">សូមអរគុណ!</h3>
           <p className="text-gray-600">
-            Your listing has been submitted for review. Our team will verify it shortly.
+            ការផ្តល់ជំនួយរបស់អ្នកត្រូវបានដាក់ស្នើសម្រាប់ការពិនិត្យ។ ក្រុមរបស់យើងនឹងផ្ទៀងផ្ទាត់វាឆាប់ៗនេះ។
           </p>
         </CardContent>
       </Card>
@@ -122,10 +122,10 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
       <CardHeader className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white">
         <CardTitle className="flex items-center gap-2">
           <HeartHandshake className="w-6 h-6" />
-          Offer Help
+          ផ្តល់ជំនួយ
         </CardTitle>
         <p className="text-teal-100 text-sm">
-          Share your resources with those in need
+          ចែករំលែកធនធានរបស់អ្នកជាមួយអ្នកដែលត្រូវការ
         </p>
       </CardHeader>
 
@@ -142,7 +142,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
         {/* Step 1: Type Selection */}
         {step === 1 && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">What type of help are you offering?</h3>
+            <h3 className="font-semibold text-gray-900">តើអ្នកផ្តល់ជំនួយប្រភេទអ្វី?</h3>
             <div className="grid gap-3">
               {typeOptions.map(({ value, label, icon: Icon, description }) => (
                 <div
@@ -171,7 +171,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               disabled={!formData.type}
               className="w-full bg-teal-600 hover:bg-teal-700"
             >
-              Continue
+              បន្ត
             </Button>
           </div>
         )}
@@ -179,21 +179,21 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
         {/* Step 2: Details */}
         {step === 2 && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Tell us more</h3>
+            <h3 className="font-semibold text-gray-900">ប្រាប់យើងបន្ថែម</h3>
             
             <div className="space-y-2">
-              <Label>Title / Name *</Label>
+              <Label>ចំណងជើង / ឈ្មោះ *</Label>
               <Input 
-                placeholder="e.g., Room available in city center"
+                placeholder="ឧ. បន្ទប់ដែលមាននៅកណ្តាលទីក្រុង"
                 value={formData.title}
                 onChange={(e) => handleChange('title', e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Area / Neighborhood *</Label>
+              <Label>តំបន់ / សង្កាត់ *</Label>
               <Input 
-                placeholder="e.g., Downtown, North District"
+                placeholder="ឧ. កណ្តាលទីក្រុង, ខណ្ឌខាងជើង"
                 value={formData.area}
                 onChange={(e) => handleChange('area', e.target.value)}
               />
@@ -201,7 +201,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Min Capacity</Label>
+                <Label>សមត្ថភាពអប្បបរមា</Label>
                 <Input 
                   type="number"
                   placeholder="1"
@@ -210,7 +210,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
                 />
               </div>
               <div className="space-y-2">
-                <Label>Max Capacity</Label>
+                <Label>សមត្ថភាពអតិបរមា</Label>
                 <Input 
                   type="number"
                   placeholder="4"
@@ -221,7 +221,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
             </div>
 
             <div className="space-y-2">
-              <Label>How long is this available? (days)</Label>
+              <Label>តើវាមានរយៈពេលប៉ុន្មាន? (ថ្ងៃ)</Label>
               <Input 
                 type="number"
                 placeholder="7"
@@ -231,9 +231,9 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
             </div>
 
             <div className="space-y-2">
-              <Label>Additional Notes</Label>
+              <Label>កំណត់ចំណាំបន្ថែម</Label>
               <Textarea 
-                placeholder="Any requirements, amenities, or special instructions..."
+                placeholder="តម្រូវការ, សេវាកម្ម, ឬការណែនាំពិសេស..."
                 value={formData.notes}
                 onChange={(e) => handleChange('notes', e.target.value)}
                 className="h-24"
@@ -242,7 +242,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
 
             {/* Image Upload */}
             <div className="space-y-2">
-              <Label>Upload Photo (optional)</Label>
+              <Label>ផ្ទុករូបភាព (ស្រេចចិត្ត)</Label>
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
                 {imagePreview ? (
                   <div className="space-y-2">
@@ -260,7 +260,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
                         handleChange('image_url', '');
                       }}
                     >
-                      Remove Photo
+                      លុបរូបភាព
                     </Button>
                   </div>
                 ) : (
@@ -279,10 +279,10 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
                         <ImageIcon className="w-8 h-8 text-gray-400" />
                       )}
                       <p className="text-sm text-gray-600">
-                        {uploadingImage ? 'Uploading...' : 'Click to upload photo'}
+                        {uploadingImage ? 'កំពុងផ្ទុក...' : 'ចុចដើម្បីផ្ទុករូបភាព'}
                       </p>
                       <p className="text-xs text-gray-400">
-                        Photo of place, vehicle, or relevant image
+                        រូបភាពនៃកន្លែង, យានជំនិះ, ឬរូបភាពពាក់ព័ន្ធ
                       </p>
                     </div>
                   </label>
@@ -297,20 +297,20 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
                 onCheckedChange={(checked) => handleChange('family_friendly', checked)}
               />
               <Label htmlFor="family" className="text-pink-700 cursor-pointer">
-                Suitable for families with children
+                សមស្របសម្រាប់គ្រួសារដែលមានកូន
               </Label>
             </div>
 
             <div className="flex gap-3">
               <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
-                Back
+                ត្រលប់
               </Button>
               <Button 
                 onClick={() => setStep(3)} 
                 disabled={!formData.title || !formData.area}
                 className="flex-1 bg-teal-600 hover:bg-teal-700"
               >
-                Continue
+                បន្ត
               </Button>
             </div>
           </div>
@@ -319,25 +319,25 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
         {/* Step 3: Location & Contact */}
         {step === 3 && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Location & Contact</h3>
+            <h3 className="font-semibold text-gray-900">ទីតាំង & ទំនាក់ទំនង</h3>
             
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-800">Privacy Notice</p>
+                  <p className="font-medium text-blue-800">ការជូនដំណឹងអំពីភាពឯកជន</p>
                   <p className="text-blue-600">
-                    Your exact address will only be shown if you consent below. 
-                    Otherwise, only the area name will be displayed.
+                    អាសយដ្ឋានពិតប្រាកដរបស់អ្នកនឹងត្រូវបានបង្ហាញតែប្រសិនបើអ្នកយល់ព្រមខាងក្រោមប៉ុណ្ណោះ។ 
+                    បើមិនដូច្នោះទេ, មានតែឈ្មោះតំបន់ប៉ុណ្ណោះដែលនឹងត្រូវបានបង្ហាញ។
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Exact Address (optional)</Label>
+              <Label>អាសយដ្ឋានពិតប្រាកដ (ស្រេចចិត្ត)</Label>
               <Input 
-                placeholder="123 Main Street"
+                placeholder="123 ផ្លូវធំ"
                 value={formData.exact_location}
                 onChange={(e) => handleChange('exact_location', e.target.value)}
               />
@@ -350,61 +350,61 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
                 onCheckedChange={(checked) => handleChange('location_consent', checked)}
               />
               <Label htmlFor="consent" className="text-gray-700 cursor-pointer">
-                I consent to showing my exact location on the map
+                ខ្ញុំយល់ព្រមឱ្យបង្ហាញទីតាំងពិតប្រាកដរបស់ខ្ញុំនៅលើផែនទី
               </Label>
             </div>
 
             <div className="space-y-2">
-              <Label>Contact Name (optional)</Label>
+              <Label>ឈ្មោះទំនាក់ទំនង (ស្រេចចិត្ត)</Label>
               <Input 
-                placeholder="Your name"
+                placeholder="ឈ្មោះរបស់អ្នក"
                 value={formData.contact_name}
                 onChange={(e) => handleChange('contact_name', e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Contact Phone (optional)</Label>
+              <Label>លេខទូរស័ព្ទទំនាក់ទំនង (ស្រេចចិត្ត)</Label>
               <Input 
                 placeholder="+855 12 345 678"
                 value={formData.contact_phone}
                 onChange={(e) => handleChange('contact_phone', e.target.value)}
               />
               <p className="text-xs text-gray-500">
-                If provided, seekers can call you directly
+                ប្រសិនបើផ្តល់, អ្នកស្វែងរកអាចទូរស័ព្ទទៅអ្នកដោយផ្ទាល់
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Facebook Contact (optional)</Label>
+              <Label>ទំនាក់ទំនង Facebook (ស្រេចចិត្ត)</Label>
               <div className="flex items-center gap-2">
                 <Facebook className="w-5 h-5 text-blue-600" />
                 <Input 
-                  placeholder="facebook.com/username or profile link"
+                  placeholder="facebook.com/username ឬតំណភ្ជាប់ប្រូហ្វាល"
                   value={formData.facebook_contact}
                   onChange={(e) => handleChange('facebook_contact', e.target.value)}
                 />
               </div>
               <p className="text-xs text-gray-500">
-                Facebook profile or page for alternative contact
+                ប្រូហ្វាល់ Facebook ឬទំព័រសម្រាប់ទំនាក់ទំនងជំនួស
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Reference Link (optional)</Label>
+              <Label>តំណភ្ជាប់យោង (ស្រេចចិត្ត)</Label>
               <Input 
                 placeholder="https://source-website.com/data"
                 value={formData.reference_link}
                 onChange={(e) => handleChange('reference_link', e.target.value)}
               />
               <p className="text-xs text-gray-500">
-                Link to where this data came from
+                តំណភ្ជាប់ទៅកន្លែងដែលទិន្នន័យនេះមកពី
               </p>
             </div>
 
             <div className="flex gap-3 pt-4">
               <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
-                Back
+                ត្រលប់
               </Button>
               <Button 
                 onClick={handleSubmit} 
@@ -414,12 +414,12 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
-                  </>
+                    កំពុងដាក់ស្នើ...
+                  </> 
                 ) : (
                   <>
                     <Send className="w-4 h-4 mr-2" />
-                    Submit Listing
+                    ដាក់ស្នើការផ្តល់ជំនួយ
                   </>
                 )}
               </Button>
@@ -434,7 +434,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
             onClick={onCancel} 
             className="w-full mt-4 text-gray-500"
           >
-            Cancel
+            បោះបង់
           </Button>
         )}
       </CardContent>
