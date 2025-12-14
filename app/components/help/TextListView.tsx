@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Phone, MapPin, Users, Clock, CheckCircle, AlertCircle, Baby } from 'lucide-react';
+import { Phone, MapPin, Users, Clock, CheckCircle, AlertCircle, Baby, Home, Fuel, Car, HeartHandshake, XCircle, PauseCircle } from 'lucide-react';
 
 interface Listing {
   id: string;

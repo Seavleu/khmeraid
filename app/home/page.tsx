@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Sheet, SheetContent, SheetTrigger } from '@/app/components/ui/sheet';
 import { 
   Map, List, Filter, Plus, Locate, Wifi, WifiOff,
-  Menu, X, Search
+  Menu, X, Search, Home, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle
 } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 
@@ -407,35 +407,49 @@ export default function Home() {
             <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 flex-wrap">
               {/* Filter Pills - Scrollable on mobile */}
               <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-2 flex-wrap max-w-[calc(100%-5rem)] sm:max-w-none overflow-x-auto scrollbar-hide">
-                  {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event', 'site_sponsor', 'school'].map((type) => (
-                    <Button
-                      key={type}
-                      size="sm"
-                      variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'ghost'}
-                      onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                      className={`rounded-full text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 sm:py-1.5 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
-                        ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
-                        : ''}`}
-                    >
-                    {type === 'all' ? (
-                      <>🔍 <span className="hidden sm:inline">ទាំងអស់</span></>
-                    ) : type === 'accommodation' ? (
-                      <>🏠 <span className="hidden sm:inline">ស្នាក់នៅ</span></>
-                    ) : type === 'fuel_service' ? (
-                      <>⛽ <span className="hidden sm:inline">សាំង</span></>
-                    ) : type === 'car_transportation' ? (
-                      <>🚗 <span className="hidden sm:inline">ដឹកជញ្ជូន</span></>
-                    ) : type === 'volunteer_request' ? (
-                      <>🤝 <span className="hidden sm:inline">ស្ម័គ្រចិត្ត</span></>
-                    ) : type === 'event' ? (
-                      <>📅 <span className="hidden sm:inline">ព្រឹត្តិការណ៍</span></>
-                    ) : type === 'site_sponsor' ? (
-                      <>📍 <span className="hidden sm:inline">ទីតាំងហ្រ្វី</span></>
-                    ) : (
-                      <>🏫 <span className="hidden sm:inline">សាលា</span></>
-                    )}
-                  </Button>
-                ))}
+                  {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event', 'site_sponsor', 'school'].map((type) => {
+                    const getIcon = () => {
+                      switch(type) {
+                        case 'all': return Filter;
+                        case 'accommodation': return Home;
+                        case 'fuel_service': return Fuel;
+                        case 'car_transportation': return Car;
+                        case 'volunteer_request': return HeartHandshake;
+                        case 'event': return Clock;
+                        case 'site_sponsor': return MapPin;
+                        case 'school': return School;
+                        default: return Filter;
+                      }
+                    };
+                    const Icon = getIcon();
+                    const getLabel = () => {
+                      switch(type) {
+                        case 'all': return 'ទាំងអស់';
+                        case 'accommodation': return 'ស្នាក់នៅ';
+                        case 'fuel_service': return 'សាំង';
+                        case 'car_transportation': return 'ដឹកជញ្ជូន';
+                        case 'volunteer_request': return 'ស្ម័គ្រចិត្ត';
+                        case 'event': return 'ព្រឹត្តិការណ៍';
+                        case 'site_sponsor': return 'ទីតាំងហ្រ្វី';
+                        case 'school': return 'សាលា';
+                        default: return '';
+                      }
+                    };
+                    return (
+                      <Button
+                        key={type}
+                        size="sm"
+                        variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'ghost'}
+                        onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
+                        className={`rounded-full text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 sm:py-1.5 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
+                          ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
+                          : ''}`}
+                      >
+                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5" />
+                        <span className="hidden sm:inline">{getLabel()}</span>
+                      </Button>
+                    );
+                  })}
               </div>
 
               {/* Action Buttons */}
@@ -484,7 +498,10 @@ export default function Home() {
               <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse" />
               <span className="text-xs sm:text-base font-bold">{filteredListings.length} ទំនេរ</span>
               {drawnArea && (
-                <span className="text-xs text-gray-500 hidden sm:inline">🔍 តំបន់ផ្ទាល់ខ្លួន</span>
+                <span className="text-xs text-gray-500 hidden sm:inline flex items-center gap-1">
+                  <Search className="w-3 h-3" />
+                  តំបន់ផ្ទាល់ខ្លួន
+                </span>
               )}
             </div>
 
