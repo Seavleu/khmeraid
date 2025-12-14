@@ -20,15 +20,32 @@ const Sheet = ({ open, onOpenChange, children }: { open: boolean; onOpenChange: 
 const SheetTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
->(({ children, ...props }, ref) => {
+>(({ asChild, children, ...props }, ref) => {
   const context = React.useContext(SheetContext)
   if (!context) throw new Error("SheetTrigger must be used within Sheet")
+  
+  const handleClick = () => {
+    context.onOpenChange(true)
+  }
+  
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      ref,
+      onClick: (e: React.MouseEvent) => {
+        handleClick()
+        if (children.props.onClick) {
+          children.props.onClick(e)
+        }
+      },
+      ...props
+    })
+  }
   
   return (
     <button
       ref={ref}
       type="button"
-      onClick={() => context.onOpenChange(true)}
+      onClick={handleClick}
       {...props}
     >
       {children}
@@ -62,7 +79,8 @@ const SheetContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "fixed z-50 bg-background p-6 shadow-lg transition-transform",
+          "fixed z-50 bg-white shadow-lg transition-transform flex flex-col",
+          side === "left" || side === "right" ? "w-full sm:w-auto sm:max-w-md h-full" : "w-full h-auto max-h-[90vh]",
           sideClasses[side],
           className
         )}
@@ -70,11 +88,13 @@ const SheetContent = React.forwardRef<
       >
         <button
           onClick={() => context.onOpenChange(false)}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="sticky top-0 right-0 self-end z-10 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-white/90 backdrop-blur-sm p-2 m-2 sm:absolute sm:m-0 sm:right-4 sm:top-4"
         >
           <X className="h-4 w-4" />
         </button>
-        {children}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {children}
+        </div>
       </div>
     </>
   )

@@ -14,6 +14,9 @@ const config: Config = {
           dark: '#0d3d6f',
         },
         accent: '#1976d2',
+        background: '#ffffff',
+        card: '#ffffff',
+        'card-foreground': '#1f2937',
       },
       fontFamily: {
         sans: ['var(--font-khmer)', 'Noto Sans Khmer', 'Khmer OS', 'Hanuman', 'sans-serif'],

@@ -43,6 +43,11 @@ interface Listing {
 
 interface HelpSeeker {
   id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  help_type?: string;
+  urgency?: string;
   [key: string]: any;
 }
 
@@ -255,7 +260,7 @@ export default function Home() {
             >
               <Menu className="w-6 h-6" />
             </Button>
-            <h1 className="text-2xl font-bold" style={{ color: '#105090' }}>
+            <h1 className="text-2xl font-bold text-[#105090]">
               ជំនួយពលរដ្ឋកម្ពុជា
             </h1>
           </div>
@@ -281,14 +286,13 @@ export default function Home() {
               <SheetTrigger asChild>
                 <Button 
                   size="lg"
-                  className="rounded-full font-bold text-base"
-                  style={{ backgroundColor: '#105090' }}
+                  className="rounded-full font-bold text-base bg-[#105090] hover:bg-[#0d3d6f]"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   <span className="hidden sm:inline">ផ្តល់ជំនួយ</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-y-auto">
+              <SheetContent side="right" className="w-full sm:max-w-md">
                 <SubmitListingForm 
                   onSuccess={() => {
                     setShowSubmitForm(false);
@@ -377,10 +381,9 @@ export default function Home() {
                     size="sm"
                     variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
                     onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                    style={filters.type === type || (type === 'all' && !filters.type) 
-                      ? { backgroundColor: '#105090' } 
-                      : {}}
-                    className="text-xs"
+                    className={`text-xs ${filters.type === type || (type === 'all' && !filters.type) 
+                      ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
+                      : ''}`}
                   >
                     {type === 'all' ? 'ទាំងអស់' : 
                      type === 'accommodation' ? '🏠' :
@@ -409,10 +412,9 @@ export default function Home() {
                       size="lg"
                       variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'ghost'}
                       onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                      style={filters.type === type || (type === 'all' && !filters.type) 
-                        ? { backgroundColor: '#105090' } 
-                        : {}}
-                      className="rounded-full text-base font-semibold px-4"
+                      className={`rounded-full text-base font-semibold px-4 ${filters.type === type || (type === 'all' && !filters.type) 
+                        ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
+                        : ''}`}
                     >
                     {type === 'all' ? '🔍 ទាំងអស់' : 
                      type === 'accommodation' ? '🏠 ស្នាក់នៅ' :
@@ -538,10 +540,9 @@ export default function Home() {
                   size="sm"
                   variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
                   onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                  style={filters.type === type || (type === 'all' && !filters.type) 
-                    ? { backgroundColor: '#105090' } 
-                    : {}}
-                  className="text-xs font-semibold"
+                  className={`text-xs font-semibold ${filters.type === type || (type === 'all' && !filters.type) 
+                    ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
+                    : ''}`}
                 >
                   {type === 'all' ? 'ទាំងអស់' : 
                    type === 'accommodation' ? '🏠' :
@@ -582,7 +583,7 @@ export default function Home() {
                     setRadiusKm(null);
                     setDrawnArea(null);
                   }}
-                  style={{ color: '#105090' }}
+                  className="text-[#105090]"
                   size="sm"
                 >
                   Clear all filters

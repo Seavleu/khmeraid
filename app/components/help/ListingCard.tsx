@@ -104,8 +104,8 @@ const statusConfig = {
 };
 
 export default function ListingCard({ listing, onSelect, compact = false }: ListingCardProps) {
-  const type = typeConfig[listing.type] || typeConfig.accommodation;
-  const status = statusConfig[listing.status] || statusConfig.open;
+  const type = (listing.type in typeConfig ? typeConfig[listing.type as keyof typeof typeConfig] : typeConfig.accommodation);
+  const status = (listing.status in statusConfig ? statusConfig[listing.status as keyof typeof statusConfig] : statusConfig.open);
   const TypeIcon = type.icon;
   const StatusIcon = status.icon;
 
@@ -136,8 +136,7 @@ export default function ListingCard({ listing, onSelect, compact = false }: List
   return (
     <Card 
       onClick={() => onSelect?.(listing)}
-      className="overflow-hidden hover:shadow-xl transition-all cursor-pointer border-2 relative"
-      style={{ '&:hover': { borderColor: '#105090' } }}
+      className="overflow-hidden hover:shadow-xl transition-all cursor-pointer border-2 relative hover:border-[#105090]"
     >
       {/* Verified Badge Ribbon */}
       {listing.verified && (
