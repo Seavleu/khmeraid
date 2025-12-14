@@ -269,8 +269,8 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5" style={{ color: '#105090' }} />
-            Edit Listing: {listing?.title}
+            <MapPin className="w-5 h-5 text-[#105090]" />
+            កែសម្រួលការផ្តល់ជំនួយ: {listing?.title}
           </DialogTitle>
         </DialogHeader>
 
@@ -278,14 +278,14 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           {/* Basic Info */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Title</Label>
+              <Label>ចំណងជើង</Label>
               <Input
                 value={formData.title || ''}
                 onChange={(e) => handleInputChange('title', e.target.value)}
               />
             </div>
             <div>
-              <Label>Type</Label>
+              <Label>ប្រភេទ</Label>
               <Select 
                 value={formData.type} 
                 onValueChange={(value) => handleInputChange('type', value)}
@@ -294,13 +294,13 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="accommodation">Accommodation</SelectItem>
-                  <SelectItem value="fuel_service">Fuel Service</SelectItem>
-                  <SelectItem value="car_transportation">Transportation</SelectItem>
-                  <SelectItem value="volunteer_request">Volunteer Request</SelectItem>
-                  <SelectItem value="event">Event</SelectItem>
-                  <SelectItem value="site_sponsor">Site Sponsor</SelectItem>
-                  <SelectItem value="school">School</SelectItem>
+                  <SelectItem value="accommodation">ស្នាក់នៅ</SelectItem>
+                  <SelectItem value="fuel_service">សេវាសាំង</SelectItem>
+                  <SelectItem value="car_transportation">ដឹកជញ្ជូន</SelectItem>
+                  <SelectItem value="volunteer_request">ត្រូវការស្ម័គ្រចិត្ត</SelectItem>
+                  <SelectItem value="event">ព្រឹត្តិការណ៍</SelectItem>
+                  <SelectItem value="site_sponsor">ទីតាំង</SelectItem>
+                  <SelectItem value="school">សាលា</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -308,15 +308,15 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Area/City</Label>
+              <Label>តំបន់/ទីក្រុង</Label>
               <Input
                 value={formData.area || ''}
                 onChange={(e) => handleInputChange('area', e.target.value)}
-                placeholder="City or general area"
+                placeholder="ទីក្រុង ឬតំបន់ទូទៅ"
               />
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>ស្ថានភាព</Label>
               <Select 
                 value={formData.status} 
                 onValueChange={(value) => handleInputChange('status', value)}
@@ -325,28 +325,28 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="open">Open</SelectItem>
-                  <SelectItem value="limited">Limited</SelectItem>
-                  <SelectItem value="full">Full</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
+                  <SelectItem value="open">បើក</SelectItem>
+                  <SelectItem value="limited">មានកំណត់</SelectItem>
+                  <SelectItem value="full">ពេញ</SelectItem>
+                  <SelectItem value="paused">ផ្អាក</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div>
-            <Label>Exact Location (Optional)</Label>
+            <Label>ទីតាំងពិតប្រាកដ (ស្រេចចិត្ត)</Label>
             <Input
               value={formData.exact_location || ''}
               onChange={(e) => handleInputChange('exact_location', e.target.value)}
-              placeholder="Full address if available"
+              placeholder="អាសយដ្ឋានពេញលេញ ប្រសិនបើមាន"
             />
           </div>
 
           {/* Map for pinning location */}
           <div>
             <Label className="flex items-center justify-between mb-2">
-              <span>Pin Location on Map</span>
+              <span>គូសទីតាំងនៅលើផែនទី</span>
               {markerPosition && (
                 <span className="text-xs text-gray-500">
                   {markerPosition.lat.toFixed(6)}, {markerPosition.lng.toFixed(6)}
@@ -364,15 +364,15 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                   <gmpx-place-picker 
                     id="edit-listing-place-picker"
-                    placeholder="Search for a location..."
-                    style={{ width: '100%' }}
+                    placeholder="ស្វែងរកទីតាំង..."
+                    className="w-full"
                   />
                 </div>
               </div>
             )}
 
             {GOOGLE_MAPS_API_KEY ? (
-              <div className="border rounded-lg overflow-hidden" style={{ height: '300px', position: 'relative' }}>
+              <div className="border rounded-lg overflow-hidden h-[300px] relative">
                 <gmpx-api-loader 
                   solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
                 />
@@ -381,30 +381,30 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
                   center={`${mapCenter.lat},${mapCenter.lng}`}
                   zoom={markerPosition ? '14' : '11'}
                   map-id="DEMO_MAP_ID"
-                  style={{ width: '100%', height: '100%' }}
+                  className="w-full h-full"
                 />
               </div>
             ) : (
-              <div className="border rounded-lg p-8 text-center text-gray-500" style={{ height: '300px' }}>
+              <div className="border rounded-lg p-8 text-center text-gray-500 h-[300px]">
                 Google Maps API key not configured
               </div>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              🔍 Search for a location above, click on the map, or drag the marker to pin exact location
+              🔍 ស្វែងរកទីតាំងខាងលើ, ចុចលើផែនទី, ឬទាញសញ្ញាសម្គាល់ដើម្បីគូសទីតាំងពិតប្រាកដ
             </p>
           </div>
 
           {/* Contact & Details */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Contact Name</Label>
+              <Label>ឈ្មោះទំនាក់ទំនង</Label>
               <Input
                 value={formData.contact_name || ''}
                 onChange={(e) => handleInputChange('contact_name', e.target.value)}
               />
             </div>
             <div>
-              <Label>Contact Phone</Label>
+              <Label>លេខទូរស័ព្ទទំនាក់ទំនង</Label>
               <Input
                 value={formData.contact_phone || ''}
                 onChange={(e) => handleInputChange('contact_phone', e.target.value)}
@@ -414,34 +414,34 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Opening Hours</Label>
+              <Label>ម៉ោងបើក</Label>
               <Input
                 value={formData.opening_hours || ''}
                 onChange={(e) => handleInputChange('opening_hours', e.target.value)}
-                placeholder="e.g., 24/7, 8AM-6PM"
+                placeholder="ឧ. 24/7, 8AM-6PM"
               />
             </div>
             <div>
-              <Label>Capacity (Min-Max)</Label>
+              <Label>សមត្ថភាព (អប្បបរមា-អតិបរមា)</Label>
               <div className="flex gap-2">
                 <Input
                   type="number"
                   value={formData.capacity_min || ''}
                   onChange={(e) => handleInputChange('capacity_min', parseInt(e.target.value))}
-                  placeholder="Min"
+                  placeholder="អប្បបរមា"
                 />
                 <Input
                   type="number"
                   value={formData.capacity_max || ''}
                   onChange={(e) => handleInputChange('capacity_max', parseInt(e.target.value))}
-                  placeholder="Max"
+                  placeholder="អតិបរមា"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <Label>Notes</Label>
+            <Label>កំណត់ចំណាំ</Label>
             <Textarea
               value={formData.notes || ''}
               onChange={(e) => handleInputChange('notes', e.target.value)}
@@ -450,17 +450,17 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           </div>
 
           <div>
-            <Label>Services Offered (comma-separated)</Label>
+            <Label>សេវាដែលផ្តល់ (ដាក់ក្បៀសដោយក្បៀស)</Label>
             <Input
               value={formData.services_offered?.join(', ') || ''}
               onChange={(e) => handleInputChange('services_offered', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-              placeholder="WiFi, Parking, Food, etc."
+              placeholder="WiFi, Parking, Food, ជាដើម"
             />
           </div>
 
           {/* Toggles */}
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Label>Family Friendly</Label>
+            <Label>សមស្របសម្រាប់គ្រួសារ</Label>
             <Switch
               checked={formData.family_friendly || false}
               onCheckedChange={(checked) => handleInputChange('family_friendly', checked)}
@@ -468,7 +468,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           </div>
 
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Label>Verified</Label>
+            <Label>បានផ្ទៀងផ្ទាត់</Label>
             <Switch
               checked={formData.verified || false}
               onCheckedChange={(checked) => handleInputChange('verified', checked)}
@@ -476,7 +476,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           </div>
 
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Label>Location Consent (Show exact location publicly)</Label>
+            <Label>ការយល់ព្រមទីតាំង (បង្ហាញទីតាំងពិតប្រាកដជាសាធារណៈ)</Label>
             <Switch
               checked={formData.location_consent || false}
               onCheckedChange={(checked) => handleInputChange('location_consent', checked)}
@@ -487,11 +487,11 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             <X className="w-4 h-4 mr-2" />
-            Cancel
+            បោះបង់
           </Button>
-          <Button onClick={handleSave} style={{ backgroundColor: '#105090' }}>
+          <Button onClick={handleSave} className="bg-[#105090] hover:bg-[#0d3d6f]">
             <Save className="w-4 h-4 mr-2" />
-            Save Changes
+            រក្សាទុកការផ្លាស់ប្តូរ
           </Button>
         </DialogFooter>
       </DialogContent>
