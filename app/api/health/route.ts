@@ -14,8 +14,8 @@ export async function GET() {
       AND tablename IN ('listings', 'help_seekers')
     `;
     
-    const hasListings = tables.some(t => t.tablename === 'listings');
-    const hasHelpSeekers = tables.some(t => t.tablename === 'help_seekers');
+    const hasListings = tables.some((t: { tablename: string }) => t.tablename === 'listings');
+    const hasHelpSeekers = tables.some((t: { tablename: string }) => t.tablename === 'help_seekers');
     
     return NextResponse.json({
       status: 'ok',
