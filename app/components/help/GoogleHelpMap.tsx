@@ -90,19 +90,32 @@ export default function GoogleHelpMap({
 
   const defaultCenter = { lat: 11.5564, lng: 104.9282 }; // Phnom Penh, Cambodia
 
-  const apiLoaderRef = useRef<HTMLElement>(null);
-
   // Set API key on the loader element immediately when it mounts
   useEffect(() => {
     if (!GOOGLE_MAPS_API_KEY) {
-      setMapError('Google Maps API key not configured. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file.');
+      setMapError('មិនបានកំណត់រចនាសម្ព័ន្ធ Google Maps API key។ សូមកំណត់ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY នៅក្នុងឯកសារ .env របស់អ្នក។');
       return;
     }
 
-    // Set API key immediately when ref is available
-    if (apiLoaderRef.current) {
-      apiLoaderRef.current.setAttribute('key', GOOGLE_MAPS_API_KEY);
-    }
+    // Set API key with multiple attempts to ensure it's set
+    const setApiKey = () => {
+      const loader = document.querySelector('gmpx-api-loader') as HTMLElement;
+      if (loader) {
+        loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
+      }
+    };
+
+    // Set immediately and retry
+    setApiKey();
+    const timer1 = setTimeout(setApiKey, 100);
+    const timer2 = setTimeout(setApiKey, 500);
+    const timer3 = setTimeout(setApiKey, 1000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, []);
 
   // Initialize map when component mounts
@@ -114,16 +127,27 @@ export default function GoogleHelpMap({
         // Wait for the API loader to initialize
         await customElements.whenDefined('gmpx-api-loader');
         
-        // Ensure API key is set
+        // Ensure API key is set - try multiple times
         const loader = document.querySelector('gmpx-api-loader') as HTMLElement;
-        if (loader && !loader.getAttribute('key')) {
-          loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
+        if (loader) {
+          if (!loader.getAttribute('key')) {
+            loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
+          }
+          // Also try setting it as a property
+          try {
+            (loader as any).key = GOOGLE_MAPS_API_KEY;
+          } catch (e) {
+            // Ignore if property setting fails
+          }
         }
+        
+        // Wait a bit for the API loader to process the key
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Wait for custom elements to be defined
         await customElements.whenDefined('gmp-map');
         await customElements.whenDefined('gmp-advanced-marker');
-        await customElements.whenDefined('gmpx-place-picker');
+        // Don't wait for place-picker here - we'll render it conditionally
 
         // Wait for Google Maps API to load
         let retries = 0;
@@ -168,27 +192,11 @@ export default function GoogleHelpMap({
           streetViewControl: false,
         });
 
-        // Handle place picker changes
-        if (placePickerElement) {
-          placePickerElement.addEventListener('gmpx-placechange', () => {
-            const place = placePickerElement.value;
-            
-            if (!place?.location) {
-              infoWindowRef.current?.close();
-              return;
-            }
-
-            if (place.viewport && mapElement.innerMap) {
-              mapElement.innerMap.fitBounds(place.viewport);
-            } else {
-              mapElement.setAttribute('center', `${place.location.lat()},${place.location.lng()}`);
-              mapElement.setAttribute('zoom', '17');
-            }
-          });
-        }
-
         setIsInitialized(true);
         setMapError(null);
+        
+        // Set up place picker listener after initialization (it will be rendered conditionally)
+        // We'll set this up in a separate effect that runs when isInitialized becomes true
       } catch (error) {
         console.error('Error initializing map:', error);
         setMapError(`Map initialization error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -198,7 +206,40 @@ export default function GoogleHelpMap({
     // Wait for script to load and then initialize
     const timer = setTimeout(initMap, 1000);
     return () => clearTimeout(timer);
-  }, [GOOGLE_MAPS_API_KEY]);
+  }, []);
+
+  // Set up place picker event listener after map is initialized
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    // Wait a bit for the place picker to be rendered
+    const timer = setTimeout(() => {
+      const placePickerElement = document.querySelector('gmpx-place-picker') as any;
+      const mapElement = document.querySelector('gmp-map') as any;
+
+      if (placePickerElement && mapElement) {
+        const handlePlaceChange = () => {
+          const place = placePickerElement.value;
+          
+          if (!place?.location) {
+            infoWindowRef.current?.close();
+            return;
+          }
+
+          if (place.viewport && mapElement.innerMap) {
+            mapElement.innerMap.fitBounds(place.viewport);
+          } else {
+            mapElement.setAttribute('center', `${place.location.lat()},${place.location.lng()}`);
+            mapElement.setAttribute('zoom', '17');
+          }
+        };
+
+        placePickerElement.addEventListener('gmpx-placechange', handlePlaceChange);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [isInitialized]);
 
   // Update map center when user location changes
   useEffect(() => {
@@ -252,7 +293,7 @@ export default function GoogleHelpMap({
               ${listing.notes ? `<p style="margin: 4px 0;">${listing.notes}</p>` : ''}
               <button onclick="window.open('https://www.google.com/maps/search/?api=1&query=${listing.latitude},${listing.longitude}', '_blank')" 
                       style="margin-top: 8px; padding: 4px 8px; background: #105090; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Open in Maps
+                បើកក្នុងផែនទី
               </button>
             </div>
           `;
@@ -314,15 +355,22 @@ export default function GoogleHelpMap({
   }, [userLocation, onRecenterRequest]);
 
   return (
-    <div ref={mapContainerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div ref={mapContainerRef} className="w-full h-full relative">
       {/* Google Maps Extended Component Library */}
       {GOOGLE_MAPS_API_KEY ? (
         <>
+          {/* API Loader - must be rendered first and have key set immediately */}
           <gmpx-api-loader 
             ref={(el) => {
-              apiLoaderRef.current = el as HTMLElement;
               if (el && GOOGLE_MAPS_API_KEY) {
+                // Set key immediately when element is available
                 el.setAttribute('key', GOOGLE_MAPS_API_KEY);
+                // Also set as property for web component
+                try {
+                  (el as any).key = GOOGLE_MAPS_API_KEY;
+                } catch (e) {
+                  // Ignore if property setting fails
+                }
               }
             }}
             solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
@@ -331,65 +379,35 @@ export default function GoogleHelpMap({
             center={`${defaultCenter.lat},${defaultCenter.lng}`}
             zoom="13"
             map-id="DEMO_MAP_ID"
-            style={{ width: '100%', height: '100%' }}
+            className="w-full h-full"
           >
-            <div slot="control-block-start-inline-start" style={{ padding: '20px' }}>
-              <gmpx-place-picker placeholder="Enter an address"></gmpx-place-picker>
-            </div>
+            {/* Only render place picker after API is initialized */}
+            {isInitialized && (
+              <div slot="control-block-start-inline-start" className="p-5">
+                <gmpx-place-picker placeholder="បញ្ចូលអាសយដ្ឋាន"></gmpx-place-picker>
+              </div>
+            )}
             <gmp-advanced-marker></gmp-advanced-marker>
           </gmp-map>
 
           {/* Error Message */}
           {mapError && (
-            <div style={{
-              position: 'absolute',
-              top: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 10000,
-              background: 'white',
-              padding: '12px 20px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              color: '#dc2626',
-              fontSize: '14px',
-              maxWidth: '400px',
-              textAlign: 'center'
-            }}>
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] bg-white py-3 px-5 rounded-lg shadow-md text-red-600 text-sm max-w-md text-center">
               ⚠️ {mapError}
             </div>
           )}
 
           {/* Loading Indicator */}
           {!isInitialized && !mapError && (
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 1000,
-              background: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              textAlign: 'center'
-            }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                border: '4px solid #f3f4f6',
-                borderTop: '4px solid #105090',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto 12px'
-              }} />
-              <p style={{ color: '#6b7280', fontSize: '14px' }}>Loading map...</p>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] bg-white p-5 rounded-lg shadow-md text-center">
+              <div className="w-10 h-10 border-4 border-gray-100 border-t-[#105090] rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">កំពុងផ្ទុកផែនទី...</p>
             </div>
           )}
 
           {/* Control Buttons */}
           {isInitialized && userLocation && (
-            <div style={{ position: 'absolute', top: '80px', right: '20px', zIndex: 1000 }}>
+            <div className="absolute top-20 right-5 z-[1000]">
               <Button
                 onClick={handleRecenter}
                 className="bg-white shadow-lg rounded-full"
@@ -403,30 +421,19 @@ export default function GoogleHelpMap({
 
           {/* Selected Marker Info */}
           {isInitialized && selectedMarker && (
-            <div style={{ 
-              position: 'absolute', 
-              bottom: '20px', 
-              left: '20px', 
-              right: '20px',
-              zIndex: 1000,
-              background: 'white',
-              padding: '16px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              maxWidth: '400px'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div>
-                  <h3 style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>
+            <div className="absolute bottom-5 left-5 right-5 z-[1000] bg-white p-4 rounded-lg shadow-md max-w-md">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="m-0 mb-2 font-bold">
                     {'title' in selectedMarker ? selectedMarker.title : `🆘 ${(selectedMarker as HelpSeeker).name}`}
                   </h3>
                   {'type' in selectedMarker && (
-                    <p style={{ margin: '4px 0', color: '#666' }}>{selectedMarker.type}</p>
+                    <p className="my-1 text-gray-600">{selectedMarker.type}</p>
                   )}
                   {'contact_phone' in selectedMarker && selectedMarker.contact_phone && (
                     <a 
                       href={`tel:${selectedMarker.contact_phone}`}
-                      style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px', color: '#105090' }}
+                      className="flex items-center gap-1 mt-2 text-[#105090] hover:underline"
                     >
                       <Phone className="w-4 h-4" />
                       {selectedMarker.contact_phone}
@@ -449,20 +456,12 @@ export default function GoogleHelpMap({
           )}
         </>
       ) : (
-        <div style={{ 
-          width: '100%', 
-          height: '100%', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          background: '#f3f4f6',
-          color: '#6b7280'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: '18px', marginBottom: '8px' }}>🗺️</p>
-            <p>Google Maps API key not configured</p>
-            <p style={{ fontSize: '12px', marginTop: '4px' }}>
-              Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file
+        <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
+          <div className="text-center">
+            <p className="text-lg mb-2">🗺️</p>
+            <p>មិនបានកំណត់រចនាសម្ព័ន្ធ Google Maps API key</p>
+            <p className="text-xs mt-1">
+              សូមកំណត់ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY នៅក្នុងឯកសារ .env របស់អ្នក
             </p>
           </div>
         </div>
