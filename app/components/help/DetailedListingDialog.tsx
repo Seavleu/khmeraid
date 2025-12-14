@@ -82,7 +82,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
         <div className="space-y-6 py-4">
           {/* Image */}
           {listing.image_url && (
-            <div className="w-full h-64 overflow-hidden rounded-xl bg-gray-100">
+            <div className="w-full h-64 overflow-hidden rounded-2xl bg-gray-100 border-2 border-gray-200">
               <img 
                 src={listing.image_url} 
                 alt={listing.title}
@@ -92,24 +92,24 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
           )}
 
           {/* Badges */}
-          <div className="flex flex-wrap gap-3">
-            <Badge className={`${type.color} text-base font-bold px-4 py-2`}>
-              <TypeIcon className="w-5 h-5 mr-2" />
+          <div className="flex flex-wrap gap-2">
+            <Badge className={`${type.color} text-sm font-bold px-3 py-1.5 rounded-2xl`}>
+              <TypeIcon className="w-4 h-4 mr-1.5" />
               {type.label}
             </Badge>
-            <Badge className={`${status.color} text-base font-bold px-4 py-2`}>
-              <StatusIcon className="w-5 h-5 mr-2" />
+            <Badge className={`${status.color} text-sm font-bold px-3 py-1.5 rounded-2xl`}>
+              <StatusIcon className="w-4 h-4 mr-1.5" />
               {status.label}
             </Badge>
             {listing.verified && (
-              <Badge className="bg-emerald-600 text-white text-base font-bold px-4 py-2">
-                <ShieldCheck className="w-5 h-5 mr-2" />
+              <Badge className="bg-emerald-600 text-white text-sm font-bold px-3 py-1.5 rounded-2xl">
+                <ShieldCheck className="w-4 h-4 mr-1.5" />
                 បានផ្ទៀងផ្ទាត់
               </Badge>
             )}
             {listing.family_friendly && (
-              <Badge className="bg-pink-100 text-pink-700 text-base font-bold px-4 py-2">
-                <Baby className="w-5 h-5 mr-2" />
+              <Badge className="bg-pink-100 text-pink-700 text-sm font-bold px-3 py-1.5 rounded-2xl">
+                <Baby className="w-4 h-4 mr-1.5" />
                 គ្រួសារ
               </Badge>
             )}
@@ -117,15 +117,16 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Event Details */}
           {listing.type === 'event' && (
-            <div className="space-y-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border-3 border-pink-200">
-              <h3 className="text-2xl font-bold text-pink-900 flex items-center gap-3">
-                📅 ព័ត៌មានព្រឹត្តិការណ៍
+            <div className="space-y-2 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-4 border-2 border-pink-200">
+              <h3 className="text-lg font-bold text-pink-900 flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                ព័ត៌មានព្រឹត្តិការណ៍
               </h3>
               
               {listing.event_date && (
-                <div className="bg-white rounded-xl p-5 border-2 border-pink-300">
-                  <p className="text-sm text-pink-700 font-semibold mb-2">កាលបរិច្ឆេទ</p>
-                  <p className="text-3xl font-bold text-pink-900">
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 border-2 border-pink-200">
+                  <p className="text-xs text-pink-700 font-medium mb-1">កាលបរិច្ឆេទ</p>
+                  <p className="text-base font-bold text-pink-900">
                     {new Date(listing.event_date).toLocaleDateString('km-KH', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -134,12 +135,12 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
                     })}
                   </p>
                   {listing.event_time && (
-                    <p className="text-2xl font-bold text-pink-800 mt-3">
+                    <p className="text-sm font-bold text-pink-800 mt-1">
                       ម៉ោង: {listing.event_time}
                     </p>
                   )}
                   {listing.event_end_date && (
-                    <p className="text-lg font-semibold text-pink-700 mt-2">
+                    <p className="text-xs font-semibold text-pink-700 mt-1">
                       រហូតដល់: {new Date(listing.event_end_date).toLocaleDateString('km-KH')}
                     </p>
                   )}
@@ -147,28 +148,28 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
               )}
 
               {listing.organizer_name && (
-                <div className="bg-white rounded-xl p-5 border-2 border-pink-300">
-                  <div className="flex items-center gap-3 mb-2">
-                    <User className="w-7 h-7 text-pink-700" />
-                    <p className="text-sm text-pink-700 font-semibold">អ្នករៀបចំព្រឹត្តិការណ៍</p>
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 border-2 border-pink-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <User className="w-4 h-4 text-pink-700" />
+                    <p className="text-xs text-pink-700 font-medium">អ្នករៀបចំព្រឹត្តិការណ៍</p>
                   </div>
-                  <p className="text-2xl font-bold text-pink-900">{listing.organizer_name}</p>
+                  <p className="text-base font-bold text-pink-900">{listing.organizer_name}</p>
                 </div>
               )}
 
               {listing.organizer_contact && (
-                <div className="bg-white rounded-xl p-5 border-2 border-pink-300">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Phone className="w-7 h-7 text-pink-700" />
-                    <p className="text-sm text-pink-700 font-semibold">ទំនាក់ទំនងអ្នករៀបចំ</p>
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 border-2 border-pink-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Phone className="w-4 h-4 text-pink-700" />
+                    <p className="text-xs text-pink-700 font-medium">ទំនាក់ទំនងអ្នករៀបចំ</p>
                   </div>
-                  <p className="text-3xl font-bold text-pink-900 mb-4">{listing.organizer_contact}</p>
+                  <p className="text-lg font-bold text-pink-900 mb-2">{listing.organizer_contact}</p>
                   <Button 
                     onClick={() => window.location.href = `tel:${listing.organizer_contact.replace(/[^0-9+]/g, '')}`}
                     size="lg"
-                    className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold text-xl py-7"
+                    className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold text-base py-4 rounded-2xl"
                   >
-                    <Phone className="w-7 h-7 mr-3" />
+                    <Phone className="w-5 h-5 mr-2" />
                     ទាក់ទងអ្នករៀបចំ
                   </Button>
                 </div>
@@ -178,18 +179,18 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Contact Phone - Prominent */}
           {listing.contact_phone && (
-            <div className="bg-emerald-50 rounded-xl p-5 border-3 border-emerald-300">
-              <div className="flex items-center gap-3 mb-2">
-                <Phone className="w-7 h-7 text-emerald-700" />
-                <p className="text-lg text-emerald-700 font-bold">លេខទូរស័ព្ទ</p>
+            <div className="bg-emerald-50 rounded-2xl p-4 border-2 border-emerald-200">
+              <div className="flex items-center gap-2 mb-1">
+                <Phone className="w-4 h-4 text-emerald-700" />
+                <p className="text-xs text-emerald-700 font-medium">លេខទូរស័ព្ទ</p>
               </div>
-              <p className="text-3xl font-bold text-emerald-800 mb-4">{listing.contact_phone}</p>
+              <p className="text-lg font-bold text-emerald-800 mb-2">{listing.contact_phone}</p>
               <Button 
                 onClick={handleCall}
                 size="lg"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xl py-7"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-4 rounded-2xl"
               >
-                <Phone className="w-7 h-7 mr-3" />
+                <Phone className="w-5 h-5 mr-2" />
                 ទូរស័ព្ទឥឡូវនេះ
               </Button>
             </div>
@@ -197,24 +198,27 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Location */}
           <div className="space-y-3">
-            <h3 className="text-xl font-bold text-gray-900">📍 ទីតាំង</h3>
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
+              ទីតាំង
+            </h3>
             
             {listing.area && (
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-gray-50 rounded-2xl p-4">
                 <p className="text-sm text-gray-600 font-semibold mb-1">តំបន់/ក្រុង</p>
                 <p className="text-2xl font-bold text-gray-900">{listing.area}</p>
               </div>
             )}
 
             {listing.exact_location && listing.location_consent && (
-              <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
+              <div className="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200">
                 <p className="text-sm text-blue-700 font-semibold mb-1">ទីតាំងពិតប្រាកដ</p>
                 <p className="text-lg text-blue-900 font-medium">{listing.exact_location}</p>
               </div>
             )}
 
             {!listing.latitude || !listing.longitude ? (
-              <div className="bg-amber-50 rounded-xl p-4 border-2 border-amber-200">
+              <div className="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200">
                 <p className="text-base text-amber-800 font-semibold flex items-center gap-2">
                   <AlertCircle className="w-5 h-5" />
                   គ្មានពិกូអរទិន្នន័យលើផែនទី - សូមទាក់ទងតាមទូរស័ព្ទ
@@ -229,7 +233,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Contact Details */}
           {listing.contact_name && (
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 rounded-2xl p-4">
               <div className="flex items-center gap-3">
                 <User className="w-6 h-6 text-gray-600" />
                 <div>
@@ -246,7 +250,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
               href={listing.facebook_contact.startsWith('http') ? listing.facebook_contact : `https://facebook.com/${listing.facebook_contact}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 bg-blue-50 border-2 border-blue-200 p-4 rounded-xl hover:bg-blue-100 transition-all"
+              className="flex items-center gap-4 bg-blue-50 border-2 border-blue-200 p-4 rounded-2xl hover:bg-blue-100 transition-all"
             >
               <Facebook className="w-7 h-7 text-blue-600" />
               <div>
@@ -258,7 +262,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Opening Hours */}
           {listing.opening_hours && (
-            <div className="bg-indigo-50 rounded-xl p-4 border-2 border-indigo-200">
+            <div className="bg-indigo-50 rounded-2xl p-4 border-2 border-indigo-200">
               <div className="flex items-center gap-3">
                 <Clock className="w-6 h-6 text-indigo-600" />
                 <div>
@@ -275,7 +279,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
               <h3 className="text-xl font-bold text-gray-900">ℹ️ ព័ត៌មានលម្អិត</h3>
               
               {(listing.capacity_min || listing.capacity_max) && (
-                <div className="bg-gray-50 rounded-xl p-4">
+                <div className="bg-gray-50 rounded-2xl p-4">
                   <div className="flex items-center gap-3">
                     <Users className="w-6 h-6 text-gray-600" />
                     <div>
@@ -289,7 +293,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
               )}
 
               {listing.duration_days && (
-                <div className="bg-gray-50 rounded-xl p-4">
+                <div className="bg-gray-50 rounded-2xl p-4">
                   <div className="flex items-center gap-3">
                     <Clock className="w-6 h-6 text-gray-600" />
                     <div>
@@ -318,7 +322,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Rating */}
           {listing.average_rating > 0 && (
-            <div className="bg-amber-50 rounded-xl p-4 border-2 border-amber-200">
+            <div className="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   {[...Array(5)].map((_, i) => (
@@ -343,7 +347,7 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
           {listing.notes && (
             <div className="space-y-3">
               <h3 className="text-xl font-bold text-gray-900">📝 កំណត់ចំណាំ</h3>
-              <div className="bg-yellow-50 rounded-xl p-5 border-2 border-yellow-200">
+              <div className="bg-yellow-50 rounded-2xl p-5 border-2 border-yellow-200">
                 <p className="text-lg text-gray-800 leading-relaxed font-medium">
                   {listing.notes}
                 </p>

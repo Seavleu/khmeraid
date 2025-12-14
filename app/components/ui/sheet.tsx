@@ -79,8 +79,9 @@ const SheetContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "fixed z-50 bg-white shadow-lg transition-transform flex flex-col",
+          "fixed z-50 bg-white/95 backdrop-blur-sm border-2 border-gray-200 shadow-2xl transition-transform flex flex-col",
           side === "left" || side === "right" ? "w-full sm:w-auto sm:max-w-md h-full" : "w-full h-auto max-h-[90vh]",
+          side === "bottom" ? "rounded-t-2xl" : side === "top" ? "rounded-b-2xl" : side === "left" ? "rounded-r-2xl" : "rounded-l-2xl",
           sideClasses[side],
           className
         )}

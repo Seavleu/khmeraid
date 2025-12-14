@@ -9,12 +9,12 @@ import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Sheet, SheetContent, SheetTrigger } from '@/app/components/ui/sheet';
 import { 
   Map, List, Filter, Plus, Locate, Wifi, WifiOff,
-  Menu, X, Search, Home, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle
+  Menu, X, Search, Home as HomeIcon, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle
 } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 
 import ListingCard from '@/app/components/help/ListingCard';
-import FilterPanel from '@/app/components/help/FilterPanel';
+// import FilterPanel from '@/app/components/help/FilterPanel';
 // import AISummary from '@/app/components/help/AISummary';
 import GoogleHelpMap from '@/app/components/help/GoogleHelpMap';
 import TextListView from '@/app/components/help/TextListView';
@@ -68,7 +68,7 @@ interface DrawnArea {
 
 export default function Home() {
   const [lowBandwidth, setLowBandwidth] = useState<boolean>(false);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  // const [showFilters, setShowFilters] = useState<boolean>(false);
   const [showSubmitForm, setShowSubmitForm] = useState<boolean>(false);
   const [showSeekHelp, setShowSeekHelp] = useState<boolean>(false);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
@@ -280,7 +280,8 @@ export default function Home() {
               onClick={() => setShowSeekHelp(true)}
               className="bg-red-600 hover:bg-red-700 text-white rounded-full font-semibold text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2 h-auto transition-all"
             >
-              🆘 <span className="hidden xs:inline">ត្រូវការជំនួយ</span>
+              <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5" />
+              <span className="hidden xs:inline">ត្រូវការជំនួយ</span>
             </Button>
 
             <Sheet open={showSubmitForm} onOpenChange={setShowSubmitForm}>
@@ -339,7 +340,7 @@ export default function Home() {
             <div className="sticky top-0 bg-white z-10 p-2 sm:p-3 lg:p-4 border-b shadow-sm mb-2 sm:mb-4 space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-sm sm:text-base lg:text-lg">តម្រង ({filteredListings.length} ទំនេរ)</h3>
-                <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                {/* <Sheet open={showFilters} onOpenChange={setShowFilters}>
                   <SheetTrigger asChild>
                     <Button size="sm" variant="outline" className="h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm">
                       <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
@@ -360,7 +361,7 @@ export default function Home() {
                       hasUserLocation={!!userLocation}
                     />
                   </SheetContent>
-                </Sheet>
+                </Sheet> */}
               </div>
 
               {/* Search */}
@@ -376,23 +377,40 @@ export default function Home() {
 
               {/* Quick Filters */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => (
-                  <Button
-                    key={type}
-                    size="sm"
-                    variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
-                    onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                    className={`text-xs px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
-                      ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
-                      : ''}`}
-                  >
-                    {type === 'all' ? 'ទាំងអស់' : 
-                     type === 'accommodation' ? '🏠' :
-                     type === 'fuel_service' ? '⛽' :
-                     type === 'car_transportation' ? '🚗' : 
-                     type === 'volunteer_request' ? '🤝' : '📅'}
-                  </Button>
-                ))}
+                {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => {
+                  const getIcon = () => {
+                    switch(type) {
+                      case 'all': return Filter;
+                      case 'accommodation': return HomeIcon;
+                      case 'fuel_service': return Fuel;
+                      case 'car_transportation': return Car;
+                      case 'volunteer_request': return HeartHandshake;
+                      case 'event': return Clock;
+                      default: return Filter;
+                    }
+                  };
+                  const Icon = getIcon();
+                  return (
+                    <Button
+                      key={type}
+                      size="sm"
+                      variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
+                      onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
+                      className={`text-xs px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
+                        ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
+                        : ''}`}
+                    >
+                      {type === 'all' ? (
+                        <>
+                          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
+                          ទាំងអស់
+                        </>
+                      ) : (
+                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      )}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
 
@@ -411,7 +429,7 @@ export default function Home() {
                     const getIcon = () => {
                       switch(type) {
                         case 'all': return Filter;
-                        case 'accommodation': return Home;
+                        case 'accommodation': return HomeIcon;
                         case 'fuel_service': return Fuel;
                         case 'car_transportation': return Car;
                         case 'volunteer_request': return HeartHandshake;
@@ -465,7 +483,7 @@ export default function Home() {
                 </Button>
 
                 {/* More Filters */}
-                <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                {/* <Sheet open={showFilters} onOpenChange={setShowFilters}>
                   <SheetTrigger asChild>
                     <Button 
                       size="sm"
@@ -489,7 +507,7 @@ export default function Home() {
                       hasUserLocation={!!userLocation}
                     />
                   </SheetContent>
-                </Sheet>
+                </Sheet> */}
               </div>
             </div>
 
@@ -498,7 +516,7 @@ export default function Home() {
               <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse" />
               <span className="text-xs sm:text-base font-bold">{filteredListings.length} ទំនេរ</span>
               {drawnArea && (
-                <span className="text-xs text-gray-500 hidden sm:inline flex items-center gap-1">
+                <span className="text-xs text-gray-500 hidden sm:flex items-center gap-1">
                   <Search className="w-3 h-3" />
                   តំបន់ផ្ទាល់ខ្លួន
                 </span>
@@ -545,27 +563,44 @@ export default function Home() {
 
             {/* Quick Type Filters */}
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => (
-                <Button
-                  key={type}
-                  size="sm"
-                  variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
-                  onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                  className={`text-xs font-medium px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
-                    ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
-                    : ''}`}
-                >
-                  {type === 'all' ? 'ទាំងអស់' : 
-                   type === 'accommodation' ? '🏠' :
-                   type === 'fuel_service' ? '⛽' :
-                   type === 'car_transportation' ? '🚗' : 
-                   type === 'volunteer_request' ? '🤝' : '📅'}
-                </Button>
-              ))}
+              {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => {
+                const getIcon = () => {
+                  switch(type) {
+                    case 'all': return Filter;
+                    case 'accommodation': return Home;
+                    case 'fuel_service': return Fuel;
+                    case 'car_transportation': return Car;
+                    case 'volunteer_request': return HeartHandshake;
+                    case 'event': return Clock;
+                    default: return Filter;
+                  }
+                };
+                const Icon = getIcon();
+                return (
+                  <Button
+                    key={type}
+                    size="sm"
+                    variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
+                    onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
+                    className={`text-xs font-medium px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
+                      ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
+                      : ''}`}
+                  >
+                    {type === 'all' ? (
+                      <>
+                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
+                        ទាំងអស់
+                      </>
+                    ) : (
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    )}
+                  </Button>
+                );
+              })}
             </div>
 
             {/* More Filters Button */}
-            <Button
+            {/* <Button
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(true)}
@@ -573,7 +608,7 @@ export default function Home() {
             >
               <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
               ច្រើនទៀត
-            </Button>
+            </Button> */}
           </div>
 
           {/* Listings */}

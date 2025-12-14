@@ -25,18 +25,32 @@ interface TextListViewProps {
   onCall?: (phone?: string) => void;
 }
 
+const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  accommodation: Home,
+  fuel_service: Fuel,
+  car_transportation: Car,
+  volunteer_request: HeartHandshake
+};
+
 const typeLabels: Record<string, string> = {
-  accommodation: '🏠 ស្នាក់នៅ',
-  fuel_service: '⛽ សេវាសាំង',
-  car_transportation: '🚗 ដឹកជញ្ជូន',
-  volunteer_request: '🤝 ត្រូវការស្ម័គ្រចិត្ត'
+  accommodation: 'ស្នាក់នៅ',
+  fuel_service: 'សេវាសាំង',
+  car_transportation: 'ដឹកជញ្ជូន',
+  volunteer_request: 'ត្រូវការស្ម័គ្រចិត្ត'
+};
+
+const statusIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  open: CheckCircle,
+  limited: AlertCircle,
+  full: XCircle,
+  paused: PauseCircle
 };
 
 const statusLabels: Record<string, string> = {
-  open: '✅ បើក',
-  limited: '⚠️ មានកំណត់',
-  full: '❌ ពេញ',
-  paused: '⏸️ ផ្អាក'
+  open: 'បើក',
+  limited: 'មានកំណត់',
+  full: 'ពេញ',
+  paused: 'ផ្អាក'
 };
 
 export default function TextListView({ listings, onCall }: TextListViewProps) {
@@ -63,8 +77,8 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
   return (
     <div className="space-y-4">
       <div className="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg">
-        <p className="text-sm text-amber-800">
-          <strong>📱 របៀបបណ្តាញយឺត</strong> — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត
+        <p className="text-sm text-amber-800 flex items-center gap-1.5">
+          <strong>របៀបបណ្តាញយឺត</strong> — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត
         </p>
       </div>
 
@@ -75,8 +89,12 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
         >
           {/* Header */}
           <div className="border-b pb-2">
-            <p className="font-mono text-sm text-gray-500">
-              #{index + 1} — {typeLabels[listing.type]}
+            <p className="font-mono text-sm text-gray-500 flex items-center gap-1.5">
+              #{index + 1} — {typeIcons[listing.type] && (() => {
+                const Icon = typeIcons[listing.type];
+                return <Icon className="w-3.5 h-3.5" />;
+              })()}
+              {typeLabels[listing.type]}
             </p>
             <h3 className="font-bold text-lg text-gray-900 uppercase">
               {listing.title}
@@ -85,8 +103,16 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
 
           {/* Details */}
           <div className="space-y-1 font-mono text-sm">
-            <p>
-              <span className="text-gray-500">ស្ថានភាព:</span>{' '}
+            <p className="flex items-center gap-1.5">
+              <span className="text-gray-500">ស្ថានភាព:</span>
+              {statusIcons[listing.status] && (() => {
+                const Icon = statusIcons[listing.status];
+                return <Icon className={`w-3.5 h-3.5 ${
+                  listing.status === 'open' ? 'text-emerald-700' :
+                  listing.status === 'limited' ? 'text-amber-700' :
+                  'text-gray-500'
+                }`} />;
+              })()}
               <span className={
                 listing.status === 'open' ? 'text-emerald-700 font-bold' :
                 listing.status === 'limited' ? 'text-amber-700 font-bold' :
@@ -116,8 +142,9 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
             )}
 
             {listing.family_friendly && (
-              <p className="text-pink-600 font-bold">
-                👨‍👩‍👧‍👦 សមស្របសម្រាប់គ្រួសារ
+              <p className="text-pink-600 font-bold flex items-center gap-1.5">
+                <Baby className="w-4 h-4" />
+                សមស្របសម្រាប់គ្រួសារ
               </p>
             )}
 
@@ -139,8 +166,9 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
               ទូរស័ព្ទដើម្បីបញ្ជាក់
             </Button>
             {listing.verified && (
-              <p className="text-center text-xs text-emerald-600 mt-1">
-                ✓ ការផ្តល់ជំនួយបានផ្ទៀងផ្ទាត់
+              <p className="text-center text-xs text-emerald-600 mt-1 flex items-center justify-center gap-1">
+                <CheckCircle className="w-3.5 h-3.5" />
+                ការផ្តល់ជំនួយបានផ្ទៀងផ្ទាត់
               </p>
             )}
           </div>

@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/ta
 import { 
   CheckCircle, XCircle, Pause, Play, Trash2, Search,
   Home, Fuel, HeartHandshake, Eye, Clock, AlertTriangle,
-  Users, TrendingUp, Car, Edit
+  Users, TrendingUp, Car, Edit, MapPin
 } from 'lucide-react';
 import EditListingDialog from '@/app/components/admin/EditListingDialog';
 
@@ -122,79 +122,79 @@ export default function Admin() {
 
   return (
     <Layout currentPageName="Admin">
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">បន្ទះគ្រប់គ្រង</h1>
-            <p className="text-gray-500">គ្រប់គ្រងការផ្តល់ជំនួយ និងផ្ទៀងផ្ទាត់ការដាក់ស្នើ</p>
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">បន្ទះគ្រប់គ្រង</h1>
+            <p className="text-xs sm:text-sm text-gray-500">គ្រប់គ្រងការផ្តល់ជំនួយ និងផ្ទៀងផ្ទាត់ការដាក់ស្នើ</p>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3 lg:gap-4">
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-[#105090]">{stats.total}</p>
-              <p className="text-sm text-gray-500">សរុប</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#105090]">{stats.total}</p>
+              <p className="text-xs sm:text-sm text-gray-500">សរុប</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-emerald-600">{stats.open}</p>
-              <p className="text-sm text-gray-500">បើក</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-600">{stats.open}</p>
+              <p className="text-xs sm:text-sm text-gray-500">បើក</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
-              <p className="text-sm text-gray-500">កំពុងរង់ចាំ</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-amber-600">{stats.pending}</p>
+              <p className="text-xs sm:text-sm text-gray-500">កំពុងរង់ចាំ</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-blue-600">{stats.accommodation}</p>
-              <p className="text-sm text-gray-500">ស្នាក់នៅ</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600">{stats.accommodation}</p>
+              <p className="text-xs sm:text-sm text-gray-500">ស្នាក់នៅ</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-amber-600">{stats.fuel}</p>
-              <p className="text-sm text-gray-500">សាំង</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-amber-600">{stats.fuel}</p>
+              <p className="text-xs sm:text-sm text-gray-500">សាំង</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-green-600">{stats.transport}</p>
-              <p className="text-sm text-gray-500">ដឹកជញ្ជូន</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">{stats.transport}</p>
+              <p className="text-xs sm:text-sm text-gray-500">ដឹកជញ្ជូន</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-purple-600">{stats.volunteer}</p>
-              <p className="text-sm text-gray-500">ស្ម័គ្រចិត្ត</p>
+            <CardContent className="p-2 sm:p-3 lg:p-4 text-center">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">{stats.volunteer}</p>
+              <p className="text-xs sm:text-sm text-gray-500">ស្ម័គ្រចិត្ត</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Filters */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[200px]">
+          <CardContent className="p-2 sm:p-3 lg:p-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4">
+              <div className="flex-1 min-w-0">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
                   <Input
                     placeholder="ស្វែងរកការផ្តល់ជំនួយ..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10"
+                    className="pl-8 sm:pl-10 h-9 sm:h-10 text-sm sm:text-base"
                   />
                 </div>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger className="w-full sm:w-[140px] lg:w-[150px] h-9 sm:h-10 text-sm">
                   <SelectValue placeholder="ស្ថានភាព" />
                 </SelectTrigger>
                 <SelectContent>
@@ -206,7 +206,7 @@ export default function Admin() {
                 </SelectContent>
               </Select>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger className="w-full sm:w-[140px] lg:w-[150px] h-9 sm:h-10 text-sm">
                   <SelectValue placeholder="ប្រភេទ" />
                 </SelectTrigger>
                 <SelectContent>
@@ -224,16 +224,110 @@ export default function Admin() {
         {/* Listings Table */}
         <Card>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto scrollbar-hide">
+              {/* Mobile Card View */}
+              <div className="block sm:hidden space-y-2 p-2">
+                {filteredListings.map((listing: Listing) => {
+                  const type = typeConfig[listing.type];
+                  const status = statusConfig[listing.status];
+                  const TypeIcon = type?.icon || Home;
+
+                  return (
+                    <div key={listing.id} className="bg-white border rounded-lg p-3 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className={`p-1.5 rounded-lg flex-shrink-0 ${type?.color || 'bg-gray-100'}`}>
+                            <TypeIcon className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm text-gray-900 truncate">{listing.title}</p>
+                            {listing.contact_phone && (
+                              <p className="text-xs text-gray-500 truncate">{listing.contact_phone}</p>
+                            )}
+                          </div>
+                        </div>
+                        <Badge className={`${type?.color} text-xs px-2 py-0.5`}>{type?.label}</Badge>
+                      </div>
+                      
+                      <div className="text-xs text-gray-600">
+                        <p>{listing.area || 'N/A'}</p>
+                        {listing.latitude && listing.longitude ? (
+                          <p className="text-gray-400 flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3" />
+                            {listing.latitude.toFixed(4)}, {listing.longitude.toFixed(4)}
+                          </p>
+                        ) : (
+                          <p className="text-amber-600 flex items-center gap-1 mt-0.5">
+                            <AlertTriangle className="w-3 h-3" />
+                            គ្មានទីតាំង
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 border-t">
+                        <Select 
+                          value={listing.status} 
+                          onValueChange={(value) => handleStatusChange(listing.id, value)}
+                        >
+                          <SelectTrigger className="h-8 text-xs flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="open">បើក</SelectItem>
+                            <SelectItem value="limited">មានកំណត់</SelectItem>
+                            <SelectItem value="full">ពេញ</SelectItem>
+                            <SelectItem value="paused">ផ្អាក</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant={listing.verified ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => handleVerify(listing.id, !listing.verified)}
+                          className={`h-8 text-xs ${listing.verified ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
+                        >
+                          {listing.verified ? (
+                            <CheckCircle className="w-3.5 h-3.5" />
+                          ) : (
+                            'ផ្ទៀង'
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(listing)}
+                          className="h-8 w-8 p-0 text-blue-600"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(listing.id)}
+                          className="h-8 w-8 p-0 text-red-600"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+                {filteredListings.length === 0 && (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    មិនមានការផ្តល់ជំនួយត្រូវបានរកឃើញ
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table View */}
+              <table className="w-full hidden sm:table">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 font-medium text-gray-600">ការផ្តល់ជំនួយ</th>
-                    <th className="text-left p-4 font-medium text-gray-600">ប្រភេទ</th>
-                    <th className="text-left p-4 font-medium text-gray-600">តំបន់</th>
-                    <th className="text-left p-4 font-medium text-gray-600">ស្ថានភាព</th>
-                    <th className="text-left p-4 font-medium text-gray-600">បានផ្ទៀងផ្ទាត់</th>
-                    <th className="text-left p-4 font-medium text-gray-600">សកម្មភាព</th>
+                    <th className="text-left p-2 sm:p-3 lg:p-4 font-medium text-xs sm:text-sm text-gray-600">ការផ្តល់ជំនួយ</th>
+                    <th className="text-left p-2 sm:p-3 lg:p-4 font-medium text-xs sm:text-sm text-gray-600">ប្រភេទ</th>
+                    <th className="text-left p-2 sm:p-3 lg:p-4 font-medium text-xs sm:text-sm text-gray-600">តំបន់</th>
+                    <th className="text-left p-2 sm:p-3 lg:p-4 font-medium text-xs sm:text-sm text-gray-600">ស្ថានភាព</th>
+                    <th className="text-left p-2 sm:p-3 lg:p-4 font-medium text-xs sm:text-sm text-gray-600">បានផ្ទៀងផ្ទាត់</th>
+                    <th className="text-left p-2 sm:p-3 lg:p-4 font-medium text-xs sm:text-sm text-gray-600">សកម្មភាព</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -244,38 +338,44 @@ export default function Admin() {
 
                     return (
                       <tr key={listing.id} className="border-b hover:bg-gray-50">
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${type?.color || 'bg-gray-100'}`}>
-                              <TypeIcon className="w-4 h-4" />
+                        <td className="p-2 sm:p-3 lg:p-4">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className={`p-1.5 sm:p-2 rounded-lg flex-shrink-0 ${type?.color || 'bg-gray-100'}`}>
+                              <TypeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{listing.title}</p>
+                            <div className="min-w-0">
+                              <p className="font-medium text-sm sm:text-base text-gray-900 truncate">{listing.title}</p>
                               {listing.contact_phone && (
-                                <p className="text-sm text-gray-500">{listing.contact_phone}</p>
+                                <p className="text-xs sm:text-sm text-gray-500 truncate">{listing.contact_phone}</p>
                               )}
                             </div>
                           </div>
                         </td>
-                        <td className="p-4">
-                          <Badge className={type?.color}>{type?.label}</Badge>
+                        <td className="p-2 sm:p-3 lg:p-4">
+                          <Badge className={`${type?.color} text-xs sm:text-sm px-2 py-0.5`}>{type?.label}</Badge>
                         </td>
-                        <td className="p-4">
+                        <td className="p-2 sm:p-3 lg:p-4">
                           <div>
-                            <p className="text-gray-600">{listing.area || 'N/A'}</p>
+                            <p className="text-xs sm:text-sm text-gray-600">{listing.area || 'N/A'}</p>
                             {listing.latitude && listing.longitude ? (
-                              <p className="text-xs text-gray-400">📍 {listing.latitude.toFixed(4)}, {listing.longitude.toFixed(4)}</p>
+                              <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                                <MapPin className="w-3 h-3" />
+                                {listing.latitude.toFixed(4)}, {listing.longitude.toFixed(4)}
+                              </p>
                             ) : (
-                              <p className="text-xs text-amber-600">⚠️ គ្មានទីតាំង - សូមទាក់ទងតាមទូរស័ព្ទ</p>
+                              <p className="text-xs text-amber-600 flex items-center gap-1 mt-0.5">
+                                <AlertTriangle className="w-3 h-3" />
+                                គ្មានទីតាំង
+                              </p>
                             )}
                           </div>
                         </td>
-                        <td className="p-4">
+                        <td className="p-2 sm:p-3 lg:p-4">
                           <Select 
                             value={listing.status} 
                             onValueChange={(value) => handleStatusChange(listing.id, value)}
                           >
-                            <SelectTrigger className="w-[120px]">
+                            <SelectTrigger className="w-[100px] sm:w-[120px] h-8 sm:h-10 text-xs sm:text-sm">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -286,40 +386,41 @@ export default function Admin() {
                             </SelectContent>
                           </Select>
                         </td>
-                        <td className="p-4">
+                        <td className="p-2 sm:p-3 lg:p-4">
                           <Button
                             variant={listing.verified ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => handleVerify(listing.id, !listing.verified)}
-                            className={listing.verified ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+                            className={`h-8 sm:h-9 text-xs sm:text-sm ${listing.verified ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
                           >
                             {listing.verified ? (
                               <>
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                បានផ្ទៀងផ្ទាត់
+                                <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
+                                <span className="hidden sm:inline">បានផ្ទៀងផ្ទាត់</span>
+                                <span className="sm:hidden">ផ្ទៀង</span>
                               </>
                             ) : (
                               'ផ្ទៀងផ្ទាត់'
                             )}
                           </Button>
                         </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
+                        <td className="p-2 sm:p-3 lg:p-4">
+                          <div className="flex items-center gap-1 sm:gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleEdit(listing)}
-                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                             >
-                              <Edit className="w-4 h-4" />
+                              <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDelete(listing.id)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </Button>
                           </div>
                         </td>
@@ -330,7 +431,7 @@ export default function Admin() {
               </table>
 
               {filteredListings.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-8 sm:py-12 text-gray-500 text-sm sm:text-base hidden sm:block">
                   មិនមានការផ្តល់ជំនួយត្រូវបានរកឃើញ
                 </div>
               )}

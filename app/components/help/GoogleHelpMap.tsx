@@ -412,7 +412,7 @@ export default function GoogleHelpMap({
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map: mapElement.innerMap,
           position: position,
-          title: `🆘 ${seeker.name}`,
+          title: `${seeker.name}`,
         });
 
         marker.addListener('click', () => {
@@ -621,7 +621,10 @@ export default function GoogleHelpMap({
               className="fixed bottom-0 left-0 right-0 z-[10000] bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ease-out h-auto max-h-[40vh]"
             >
               <div className="flex items-center justify-between px-4 py-3 border-b">
-                <h3 className="text-lg font-bold text-red-600">🆘 ត្រូវការជំនួយ</h3>
+                <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" />
+                  ត្រូវការជំនួយ
+                </h3>
                 <Button
                   variant="ghost"
                   size="sm"

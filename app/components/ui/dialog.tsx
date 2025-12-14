@@ -35,7 +35,7 @@ const DialogContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "fixed inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] z-50 flex flex-col w-full sm:w-auto sm:max-w-lg sm:max-h-[90vh] gap-4 border-0 sm:border bg-white shadow-lg duration-200 sm:rounded-lg",
+          "fixed inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] z-50 flex flex-col w-full sm:w-auto sm:max-w-lg sm:max-h-[90vh] gap-4 border-0 sm:border-2 sm:border-gray-200 bg-white/95 backdrop-blur-sm shadow-2xl duration-200 sm:rounded-2xl",
           className
         )}
         {...props}

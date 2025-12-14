@@ -85,12 +85,38 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
     if (listing) {
       setFormData(listing);
       if (listing.latitude && listing.longitude) {
-        setMarkerPosition({ lat: listing.latitude, lng: listing.longitude });
+        const newPosition = { lat: listing.latitude, lng: listing.longitude };
+        setMarkerPosition(newPosition);
       } else {
         setMarkerPosition(null);
       }
     }
   }, [listing]);
+
+  // Update marker when markerPosition changes and map is initialized
+  useEffect(() => {
+    if (!isMapInitialized || !mapRef.current) return;
+
+    if (markerPosition) {
+      if (markerRef.current) {
+        // Update existing marker
+        markerRef.current.position = markerPosition;
+        mapRef.current.panTo(markerPosition);
+        mapRef.current.setZoom(15);
+      } else {
+        // Create new marker
+        createMarker(markerPosition.lat, markerPosition.lng, mapRef.current);
+      }
+    } else {
+      // Remove marker if no position
+      if (markerRef.current) {
+        markerRef.current.map = null;
+        markerRef.current = null;
+      }
+      mapRef.current.setCenter(defaultCenter);
+      mapRef.current.setZoom(11);
+    }
+  }, [markerPosition, isMapInitialized, createMarker]);
 
   // Initialize map when dialog opens
   useEffect(() => {
@@ -104,11 +130,18 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
         await customElements.whenDefined('gmp-advanced-marker');
         await customElements.whenDefined('gmpx-place-picker');
 
-        // Set API key
-        const loader = document.querySelector('gmpx-api-loader') as HTMLElement;
-        if (loader) {
-          loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
-        }
+        // Set API key on all loaders
+        const loaders = document.querySelectorAll('gmpx-api-loader') as NodeListOf<HTMLElement>;
+        loaders.forEach(loader => {
+          if (loader) {
+            loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
+            try {
+              (loader as any).key = GOOGLE_MAPS_API_KEY;
+            } catch (e) {
+              // Ignore if property setting fails
+            }
+          }
+        });
 
         // Wait for Google Maps API to load
         let retries = 0;
@@ -145,7 +178,13 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           fullscreenControl: true,
           zoomControl: true,
           streetViewControl: false,
+          gestureHandling: 'greedy', // Allow one-finger panning on mobile
         });
+
+        // Center map on marker position if it exists, otherwise use default
+        const center = markerPosition || defaultCenter;
+        mapElement.innerMap.setCenter(center);
+        mapElement.innerMap.setZoom(markerPosition ? 15 : 11);
 
         // Add click listener to map
         mapElement.innerMap.addListener('click', (e: google.maps.MapMouseEvent) => {
@@ -156,41 +195,49 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           }
         });
 
-        // Handle place picker changes
-        const placePickerElement = document.querySelector('#edit-listing-place-picker') as any;
-        if (placePickerElement) {
-          placePickerElement.addEventListener('gmpx-placechange', () => {
-            const place = placePickerElement.value;
-            
-            if (!place?.location) return;
+        // Handle place picker changes - wait a bit for it to be rendered
+        setTimeout(() => {
+          const placePickerElement = document.querySelector('#edit-listing-place-picker') as any;
+          if (placePickerElement) {
+            const handlePlaceChange = () => {
+              const place = placePickerElement.value;
+              
+              if (!place?.location) return;
 
-            const lat = place.location.lat();
-            const lng = place.location.lng();
-            updateMarkerPosition(lat, lng);
+              const lat = place.location.lat();
+              const lng = place.location.lng();
+              updateMarkerPosition(lat, lng);
 
-            // Update exact location
-            setFormData({
-              ...formData,
-              exact_location: place.formattedAddress || place.name || formData.exact_location
-            });
+              // Update exact location
+              setFormData((prev) => ({
+                ...prev,
+                exact_location: place.formattedAddress || place.name || prev.exact_location
+              }));
 
-            // Center map on new location
-            if (mapElement.innerMap) {
-              if (place.viewport) {
-                mapElement.innerMap.fitBounds(place.viewport);
-              } else {
-                mapElement.innerMap.panTo({ lat, lng });
-                mapElement.innerMap.setZoom(15);
+              // Center map on new location
+              if (mapElement.innerMap) {
+                if (place.viewport) {
+                  mapElement.innerMap.fitBounds(place.viewport);
+                } else {
+                  mapElement.innerMap.panTo({ lat, lng });
+                  mapElement.innerMap.setZoom(15);
+                }
               }
-            }
 
-            setSearchValue('');
-          });
-        }
+              setSearchValue('');
+            };
+
+            placePickerElement.addEventListener('gmpx-placechange', handlePlaceChange);
+          }
+        }, 500);
 
         // Create initial marker if position exists
         if (markerPosition) {
           createMarker(markerPosition.lat, markerPosition.lng, mapElement.innerMap);
+        } else {
+          // Center on default location
+          mapElement.innerMap.setCenter(defaultCenter);
+          mapElement.innerMap.setZoom(11);
         }
 
         setIsMapInitialized(true);
@@ -204,12 +251,13 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, GOOGLE_MAPS_API_KEY]);
 
-  const createMarker = (lat: number, lng: number, map: google.maps.Map) => {
+  const createMarker = useCallback((lat: number, lng: number, map: google.maps.Map) => {
     if (!window.google?.maps) return;
 
     // Remove existing marker
     if (markerRef.current) {
       markerRef.current.map = null;
+      markerRef.current = null;
     }
 
     // Create new marker
@@ -236,23 +284,32 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
     });
 
     markerRef.current = marker;
-  };
+    // Center map on marker
+    map.panTo({ lat, lng });
+    map.setZoom(15);
+  }, [updateMarkerPosition]);
 
-  const updateMarkerPosition = (lat: number, lng: number) => {
+  const updateMarkerPosition = useCallback((lat: number, lng: number) => {
     setMarkerPosition({ lat, lng });
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       latitude: lat,
       longitude: lng
-    });
+    }));
 
     // Update marker position if map is initialized
-    if (isMapInitialized && mapRef.current && markerRef.current) {
-      markerRef.current.position = { lat, lng };
-    } else if (isMapInitialized && mapRef.current) {
-      createMarker(lat, lng, mapRef.current);
+    if (isMapInitialized && mapRef.current) {
+      if (markerRef.current) {
+        // Update existing marker position
+        markerRef.current.position = { lat, lng };
+        // Center map on marker
+        mapRef.current.panTo({ lat, lng });
+      } else {
+        // Create new marker
+        createMarker(lat, lng, mapRef.current);
+      }
     }
-  };
+  }, [isMapInitialized]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData({ ...formData, [field]: value });
@@ -269,29 +326,30 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#105090]" />
-            កែសម្រួលការផ្តល់ជំនួយ: {listing?.title}
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#105090]" />
+            <span className="truncate">កែសម្រួលការផ្តល់ជំនួយ: {listing?.title}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
           {/* Basic Info */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label>ចំណងជើង</Label>
+              <Label className="text-xs sm:text-sm">ចំណងជើង</Label>
               <Input
                 value={formData.title || ''}
                 onChange={(e) => handleInputChange('title', e.target.value)}
+                className="h-9 sm:h-10 text-sm sm:text-base"
               />
             </div>
             <div>
-              <Label>ប្រភេទ</Label>
+              <Label className="text-xs sm:text-sm">ប្រភេទ</Label>
               <Select 
                 value={formData.type || ''} 
                 onValueChange={(value) => handleInputChange('type', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-9 sm:h-10 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -307,22 +365,23 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label>តំបន់/ទីក្រុង</Label>
+              <Label className="text-xs sm:text-sm">តំបន់/ទីក្រុង</Label>
               <Input
                 value={formData.area || ''}
                 onChange={(e) => handleInputChange('area', e.target.value)}
                 placeholder="ទីក្រុង ឬតំបន់ទូទៅ"
+                className="h-9 sm:h-10 text-sm sm:text-base"
               />
             </div>
             <div>
-              <Label>ស្ថានភាព</Label>
+              <Label className="text-xs sm:text-sm">ស្ថានភាព</Label>
               <Select 
                 value={formData.status || 'open'} 
                 onValueChange={(value) => handleInputChange('status', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-9 sm:h-10 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -336,148 +395,178 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           </div>
 
           <div>
-            <Label>ទីតាំងពិតប្រាកដ (ស្រេចចិត្ត)</Label>
+            <Label className="text-xs sm:text-sm">ទីតាំងពិតប្រាកដ (ស្រេចចិត្ត)</Label>
             <Input
               value={formData.exact_location || ''}
               onChange={(e) => handleInputChange('exact_location', e.target.value)}
               placeholder="អាសយដ្ឋានពេញលេញ ប្រសិនបើមាន"
+              className="h-9 sm:h-10 text-sm sm:text-base"
             />
           </div>
 
           {/* Map for pinning location */}
           <div>
-            <Label className="flex items-center justify-between mb-2">
+            <Label className="flex items-center justify-between mb-2 text-xs sm:text-sm">
               <span>គូសទីតាំងនៅលើផែនទី</span>
               {markerPosition && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 font-mono">
                   {markerPosition.lat.toFixed(6)}, {markerPosition.lng.toFixed(6)}
                 </span>
               )}
             </Label>
 
-            {/* Location Search */}
-            {GOOGLE_MAPS_API_KEY && (
-              <div className="mb-3">
-                <gmpx-api-loader 
-                  solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
-                />
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
-                  <gmpx-place-picker 
-                    id="edit-listing-place-picker"
-                    placeholder="ស្វែងរកទីតាំង..."
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            )}
-
             {GOOGLE_MAPS_API_KEY ? (
-              <div className="border rounded-lg overflow-hidden h-[300px] relative">
+              <>
+                {/* API Loader - must be rendered first */}
                 <gmpx-api-loader 
+                  ref={(el) => {
+                    if (el && GOOGLE_MAPS_API_KEY) {
+                      el.setAttribute('key', GOOGLE_MAPS_API_KEY);
+                      try {
+                        (el as any).key = GOOGLE_MAPS_API_KEY;
+                      } catch (e) {
+                        // Ignore
+                      }
+                    }
+                  }}
                   solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
                 />
-                <gmp-map
-                  id="edit-listing-map"
-                  center={`${mapCenter.lat},${mapCenter.lng}`}
-                  zoom={markerPosition ? '14' : '11'}
-                  map-id="DEMO_MAP_ID"
-                  className="w-full h-full"
-                />
-              </div>
+
+                {/* Location Search */}
+                {isMapInitialized && (
+                  <div className="mb-2 sm:mb-3">
+                    <div className="relative">
+                      <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 z-10" />
+                      <gmpx-place-picker 
+                        id="edit-listing-place-picker"
+                        placeholder="ស្វែងរកទីតាំង..."
+                        className="w-full h-9 sm:h-10"
+                        style={{ paddingLeft: '2.5rem' }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="border rounded-lg overflow-hidden h-[250px] sm:h-[300px] lg:h-[350px] relative touch-pan-x touch-pan-y" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
+                  <gmp-map
+                    id="edit-listing-map"
+                    center={`${mapCenter.lat},${mapCenter.lng}`}
+                    zoom={markerPosition ? '15' : '11'}
+                    map-id="DEMO_MAP_ID"
+                    className="w-full h-full"
+                    style={{ touchAction: 'pan-x pan-y pinch-zoom' }}
+                  />
+                  {!isMapInitialized && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-10">
+                      <div className="text-center">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 sm:border-4 border-gray-200 border-t-[#105090] rounded-full animate-spin mx-auto mb-2" />
+                        <p className="text-xs text-gray-600">កំពុងផ្ទុកផែនទី...</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
             ) : (
-              <div className="border rounded-lg p-8 text-center text-gray-500 h-[300px]">
-                Google Maps API key not configured
+              <div className="border rounded-lg p-4 sm:p-8 text-center text-gray-500 h-[250px] sm:h-[300px] flex items-center justify-center">
+                <p className="text-xs sm:text-sm">Google Maps API key not configured</p>
               </div>
             )}
-            <p className="text-xs text-gray-500 mt-1">
-              🔍 ស្វែងរកទីតាំងខាងលើ, ចុចលើផែនទី, ឬទាញសញ្ញាសម្គាល់ដើម្បីគូសទីតាំងពិតប្រាកដ
+            <p className="text-xs text-gray-500 mt-1.5 sm:mt-2 flex items-center gap-1.5">
+              <Search className="w-3 h-3" />
+              <span>ស្វែងរកទីតាំងខាងលើ, ចុចលើផែនទី, ឬទាញសញ្ញាសម្គាល់ដើម្បីគូសទីតាំងពិតប្រាកដ</span>
             </p>
           </div>
 
           {/* Contact & Details */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label>ឈ្មោះទំនាក់ទំនង</Label>
+              <Label className="text-xs sm:text-sm">ឈ្មោះទំនាក់ទំនង</Label>
               <Input
                 value={formData.contact_name || ''}
                 onChange={(e) => handleInputChange('contact_name', e.target.value)}
+                className="h-9 sm:h-10 text-sm sm:text-base"
               />
             </div>
             <div>
-              <Label>លេខទូរស័ព្ទទំនាក់ទំនង</Label>
+              <Label className="text-xs sm:text-sm">លេខទូរស័ព្ទទំនាក់ទំនង</Label>
               <Input
                 value={formData.contact_phone || ''}
                 onChange={(e) => handleInputChange('contact_phone', e.target.value)}
+                className="h-9 sm:h-10 text-sm sm:text-base"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label>ម៉ោងបើក</Label>
+              <Label className="text-xs sm:text-sm">ម៉ោងបើក</Label>
               <Input
                 value={formData.opening_hours || ''}
                 onChange={(e) => handleInputChange('opening_hours', e.target.value)}
                 placeholder="ឧ. 24/7, 8AM-6PM"
+                className="h-9 sm:h-10 text-sm sm:text-base"
               />
             </div>
             <div>
-              <Label>សមត្ថភាព (អប្បបរមា-អតិបរមា)</Label>
+              <Label className="text-xs sm:text-sm">សមត្ថភាព (អប្បបរមា-អតិបរមា)</Label>
               <div className="flex gap-2">
                 <Input
                   type="number"
                   value={formData.capacity_min || ''}
                   onChange={(e) => handleInputChange('capacity_min', parseInt(e.target.value))}
                   placeholder="អប្បបរមា"
+                  className="h-9 sm:h-10 text-sm sm:text-base"
                 />
                 <Input
                   type="number"
                   value={formData.capacity_max || ''}
                   onChange={(e) => handleInputChange('capacity_max', parseInt(e.target.value))}
                   placeholder="អតិបរមា"
+                  className="h-9 sm:h-10 text-sm sm:text-base"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <Label>កំណត់ចំណាំ</Label>
+            <Label className="text-xs sm:text-sm">កំណត់ចំណាំ</Label>
             <Textarea
               value={formData.notes || ''}
               onChange={(e) => handleInputChange('notes', e.target.value)}
               rows={3}
+              className="text-sm sm:text-base"
             />
           </div>
 
           <div>
-            <Label>សេវាដែលផ្តល់ (ដាក់ក្បៀសដោយក្បៀស)</Label>
+            <Label className="text-xs sm:text-sm">សេវាដែលផ្តល់ (ដាក់ក្បៀសដោយក្បៀស)</Label>
             <Input
               value={formData.services_offered?.join(', ') || ''}
               onChange={(e) => handleInputChange('services_offered', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
               placeholder="WiFi, Parking, Food, ជាដើម"
+              className="h-9 sm:h-10 text-sm sm:text-base"
             />
           </div>
 
           {/* Toggles */}
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Label>សមស្របសម្រាប់គ្រួសារ</Label>
+          <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+            <Label className="text-xs sm:text-sm">សមស្របសម្រាប់គ្រួសារ</Label>
             <Switch
               checked={formData.family_friendly || false}
               onCheckedChange={(checked) => handleInputChange('family_friendly', checked)}
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Label>បានផ្ទៀងផ្ទាត់</Label>
+          <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+            <Label className="text-xs sm:text-sm">បានផ្ទៀងផ្ទាត់</Label>
             <Switch
               checked={formData.verified || false}
               onCheckedChange={(checked) => handleInputChange('verified', checked)}
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Label>ការយល់ព្រមទីតាំង (បង្ហាញទីតាំងពិតប្រាកដជាសាធារណៈ)</Label>
+          <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+            <Label className="text-xs sm:text-sm">ការយល់ព្រមទីតាំង (បង្ហាញទីតាំងពិតប្រាកដជាសាធារណៈ)</Label>
             <Switch
               checked={formData.location_consent || false}
               onCheckedChange={(checked) => handleInputChange('location_consent', checked)}
@@ -485,13 +574,13 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            <X className="w-4 h-4 mr-2" />
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
+            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
             បោះបង់
           </Button>
-          <Button onClick={handleSave} className="bg-[#105090] hover:bg-[#0d3d6f]">
-            <Save className="w-4 h-4 mr-2" />
+          <Button onClick={handleSave} className="w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm bg-[#105090] hover:bg-[#0d3d6f]">
+            <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
             រក្សាទុកការផ្លាស់ប្តូរ
           </Button>
         </DialogFooter>

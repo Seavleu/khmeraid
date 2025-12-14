@@ -228,7 +228,7 @@ export default function GoogleHelpMapExtended({
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map: mapElement.innerMap,
           position: position,
-          title: `🆘 ${seeker.name}`,
+          title: `រកជំនួយ ${seeker.name}`,
         });
 
         marker.addListener('click', () => {
