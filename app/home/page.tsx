@@ -22,7 +22,7 @@ import SafetyNotice from '@/app/components/help/SafetyNotice';
 import SubmitListingForm from '@/app/components/forms/SubmitListingForm';
 import DetailedListingDialog from '@/app/components/help/DetailedListingDialog';
 import SeekHelpDialog from '@/app/components/help/SeekHelpDialog';
-import FilterSummaryPanel from '@/app/components/help/FilterSummaryPanel';
+// import FilterSummaryPanel from '@/app/components/help/FilterSummaryPanel';
 
 interface Listing {
   id: string;
@@ -488,27 +488,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Filter Summary Panel */}
-            {!sidebarOpen && (
-              <FilterSummaryPanel
-                listings={filteredListings}
-                userLocation={userLocation}
-                filters={filters}
-                onLocationClick={(location) => {
-                  // Create a minimal listing object for map selection
-                  const tempListing: Partial<Listing> = {
-                    id: 'temp',
-                    title: 'Selected Location',
-                    type: 'site_sponsor',
-                    status: 'open',
-                    latitude: location.lat,
-                    longitude: location.lng,
-                    created_date: new Date().toISOString()
-                  };
-                  setSelectedListing(tempListing as Listing);
-                }}
-              />
-            )}
           </>
         )}
 
