@@ -65,7 +65,7 @@ const typeConfig = {
   },
   site_sponsor: {
     icon: MapPin,
-    label: 'ទីតាំង',
+    label: 'ទីតាំងហ្រ្វី',
     color: 'bg-indigo-100 text-indigo-700 border-indigo-200'
   },
   school: {

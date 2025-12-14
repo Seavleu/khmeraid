@@ -300,7 +300,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
                   <SelectItem value="car_transportation">ដឹកជញ្ជូន</SelectItem>
                   <SelectItem value="volunteer_request">ត្រូវការស្ម័គ្រចិត្ត</SelectItem>
                   <SelectItem value="event">ព្រឹត្តិការណ៍</SelectItem>
-                  <SelectItem value="site_sponsor">ទីតាំង</SelectItem>
+                  <SelectItem value="site_sponsor">ទីតាំងហ្រ្វី</SelectItem>
                   <SelectItem value="school">សាលា</SelectItem>
                 </SelectContent>
               </Select>

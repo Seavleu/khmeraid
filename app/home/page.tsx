@@ -430,7 +430,7 @@ export default function Home() {
                     ) : type === 'event' ? (
                       <>📅 <span className="hidden sm:inline">ព្រឹត្តិការណ៍</span></>
                     ) : type === 'site_sponsor' ? (
-                      <>📍 <span className="hidden sm:inline">ទីតាំង</span></>
+                      <>📍 <span className="hidden sm:inline">ទីតាំងហ្រ្វី</span></>
                     ) : (
                       <>🏫 <span className="hidden sm:inline">សាលា</span></>
                     )}

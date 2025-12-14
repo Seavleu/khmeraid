@@ -31,7 +31,7 @@ const typeLabels: Record<string, string> = {
   car_transportation: 'ដឹកជញ្ជូន',
   volunteer_request: 'ស្ម័គ្រចិត្ត',
   event: 'ព្រឹត្តិការណ៍',
-  site_sponsor: 'ទីតាំង',
+  site_sponsor: 'ទីតាំងហ្រ្វី',
   school: 'សាលារៀន'
 };
 

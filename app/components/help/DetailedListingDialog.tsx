@@ -17,7 +17,7 @@ const typeConfig: Record<string, { icon: LucideIcon; label: string; color: strin
   fuel_service: { icon: Fuel, label: 'សេវាសាំង', color: 'bg-amber-100 text-amber-700' },
   volunteer_request: { icon: HeartHandshake, label: 'ត្រូវការស្ម័គ្រចិត្ត', color: 'bg-purple-100 text-purple-700' },
   car_transportation: { icon: Car, label: 'ដឹកជញ្ជូន', color: 'bg-green-100 text-green-700' },
-  site_sponsor: { icon: MapPin, label: 'ទីតាំង', color: 'bg-indigo-100 text-indigo-700' },
+  site_sponsor: { icon: MapPin, label: 'ទីតាំងហ្រ្វី', color: 'bg-indigo-100 text-indigo-700' },
   school: { icon: Home, label: 'សាលារៀន', color: 'bg-teal-100 text-teal-700' },
   event: { icon: Clock, label: 'ព្រឹត្តិការណ៍', color: 'bg-pink-100 text-pink-700' }
 };
