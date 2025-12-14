@@ -201,6 +201,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
 
     const timer = setTimeout(initMap, 500);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, GOOGLE_MAPS_API_KEY]);
 
   const createMarker = (lat: number, lng: number, map: google.maps.Map) => {
