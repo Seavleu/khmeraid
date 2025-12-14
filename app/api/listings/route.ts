@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     // #endregion
 
     // Format listings to match expected format
-    const formatted = listings.map(listing => ({
+    const formatted = listings.map((listing: any) => ({
       ...listing,
       created_date: listing.created_at?.toISOString() || new Date().toISOString(),
       updated_date: listing.updated_at?.toISOString() || new Date().toISOString(),

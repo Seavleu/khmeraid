@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     // #endregion
 
     // Format help seekers to match expected format
-    const formatted = helpSeekers.map(helpSeeker => ({
+    const formatted = helpSeekers.map((helpSeeker: any) => ({
       ...helpSeeker,
       created_date: helpSeeker.created_at?.toISOString() || new Date().toISOString(),
       updated_date: helpSeeker.updated_at?.toISOString() || new Date().toISOString(),
