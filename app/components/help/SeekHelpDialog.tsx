@@ -53,6 +53,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     if (open) {
       checkActiveRequest();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Update location periodically if there's an active request
@@ -64,6 +65,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     }, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRequest]);
 
   const checkActiveRequest = async () => {
@@ -212,7 +214,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
   if (activeRequest) {
     return (
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
               <AlertCircle className="w-6 h-6 animate-pulse" />
