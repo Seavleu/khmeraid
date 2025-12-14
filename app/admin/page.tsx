@@ -32,17 +32,17 @@ interface Listing {
 }
 
 const typeConfig: Record<string, { icon: any; label: string; color: string }> = {
-  accommodation: { icon: Home, label: 'Accommodation', color: 'bg-blue-100 text-blue-700' },
-  fuel_service: { icon: Fuel, label: 'Fuel', color: 'bg-amber-100 text-amber-700' },
-  car_transportation: { icon: Car, label: 'Transportation', color: 'bg-green-100 text-green-700' },
-  volunteer_request: { icon: HeartHandshake, label: 'Volunteer', color: 'bg-purple-100 text-purple-700' }
+  accommodation: { icon: Home, label: 'ស្នាក់នៅ', color: 'bg-blue-100 text-blue-700' },
+  fuel_service: { icon: Fuel, label: 'សាំង', color: 'bg-amber-100 text-amber-700' },
+  car_transportation: { icon: Car, label: 'ដឹកជញ្ជូន', color: 'bg-green-100 text-green-700' },
+  volunteer_request: { icon: HeartHandshake, label: 'ស្ម័គ្រចិត្ត', color: 'bg-purple-100 text-purple-700' }
 };
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  open: { label: 'Open', color: 'bg-emerald-100 text-emerald-700' },
-  limited: { label: 'Limited', color: 'bg-amber-100 text-amber-700' },
-  full: { label: 'Full', color: 'bg-red-100 text-red-700' },
-  paused: { label: 'Paused', color: 'bg-gray-100 text-gray-700' }
+  open: { label: 'បើក', color: 'bg-emerald-100 text-emerald-700' },
+  limited: { label: 'មានកំណត់', color: 'bg-amber-100 text-amber-700' },
+  full: { label: 'ពេញ', color: 'bg-red-100 text-red-700' },
+  paused: { label: 'ផ្អាក', color: 'bg-gray-100 text-gray-700' }
 };
 
 export default function Admin() {
@@ -82,7 +82,7 @@ export default function Admin() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this listing?')) {
+    if (confirm('តើអ្នកប្រាកដថាចង់លុបការផ្តល់ជំនួយនេះ?')) {
       deleteMutation.mutate(id);
     }
   };
@@ -127,8 +127,8 @@ export default function Admin() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-500">Manage listings and verify submissions</p>
+            <h1 className="text-2xl font-bold text-gray-900">បន្ទះគ្រប់គ្រង</h1>
+            <p className="text-gray-500">គ្រប់គ្រងការផ្តល់ជំនួយ និងផ្ទៀងផ្ទាត់ការដាក់ស្នើ</p>
           </div>
         </div>
 
@@ -136,44 +136,44 @@ export default function Admin() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold" style={{ color: '#105090' }}>{stats.total}</p>
-              <p className="text-sm text-gray-500">Total</p>
+              <p className="text-3xl font-bold text-[#105090]">{stats.total}</p>
+              <p className="text-sm text-gray-500">សរុប</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-emerald-600">{stats.open}</p>
-              <p className="text-sm text-gray-500">Open</p>
+              <p className="text-sm text-gray-500">បើក</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
-              <p className="text-sm text-gray-500">Pending</p>
+              <p className="text-sm text-gray-500">កំពុងរង់ចាំ</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-blue-600">{stats.accommodation}</p>
-              <p className="text-sm text-gray-500">Stays</p>
+              <p className="text-sm text-gray-500">ស្នាក់នៅ</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-amber-600">{stats.fuel}</p>
-              <p className="text-sm text-gray-500">Fuel</p>
+              <p className="text-sm text-gray-500">សាំង</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-green-600">{stats.transport}</p>
-              <p className="text-sm text-gray-500">Transport</p>
+              <p className="text-sm text-gray-500">ដឹកជញ្ជូន</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-purple-600">{stats.volunteer}</p>
-              <p className="text-sm text-gray-500">Volunteer</p>
+              <p className="text-sm text-gray-500">ស្ម័គ្រចិត្ត</p>
             </CardContent>
           </Card>
         </div>
@@ -186,7 +186,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
-                    placeholder="Search listings..."
+                    placeholder="ស្វែងរកការផ្តល់ជំនួយ..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="pl-10"
@@ -195,26 +195,26 @@ export default function Admin() {
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder="ស្ថានភាព" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="open">Open</SelectItem>
-                  <SelectItem value="limited">Limited</SelectItem>
-                  <SelectItem value="full">Full</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
+                  <SelectItem value="all">ស្ថានភាពទាំងអស់</SelectItem>
+                  <SelectItem value="open">បើក</SelectItem>
+                  <SelectItem value="limited">មានកំណត់</SelectItem>
+                  <SelectItem value="full">ពេញ</SelectItem>
+                  <SelectItem value="paused">ផ្អាក</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Type" />
+                  <SelectValue placeholder="ប្រភេទ" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="accommodation">Accommodation</SelectItem>
-                  <SelectItem value="fuel_service">Fuel</SelectItem>
-                  <SelectItem value="car_transportation">Transportation</SelectItem>
-                  <SelectItem value="volunteer_request">Volunteer</SelectItem>
+                  <SelectItem value="all">ប្រភេទទាំងអស់</SelectItem>
+                  <SelectItem value="accommodation">ស្នាក់នៅ</SelectItem>
+                  <SelectItem value="fuel_service">សាំង</SelectItem>
+                  <SelectItem value="car_transportation">ដឹកជញ្ជូន</SelectItem>
+                  <SelectItem value="volunteer_request">ស្ម័គ្រចិត្ត</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -228,12 +228,12 @@ export default function Admin() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 font-medium text-gray-600">Listing</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Type</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Area</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Status</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Verified</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Actions</th>
+                    <th className="text-left p-4 font-medium text-gray-600">ការផ្តល់ជំនួយ</th>
+                    <th className="text-left p-4 font-medium text-gray-600">ប្រភេទ</th>
+                    <th className="text-left p-4 font-medium text-gray-600">តំបន់</th>
+                    <th className="text-left p-4 font-medium text-gray-600">ស្ថានភាព</th>
+                    <th className="text-left p-4 font-medium text-gray-600">បានផ្ទៀងផ្ទាត់</th>
+                    <th className="text-left p-4 font-medium text-gray-600">សកម្មភាព</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -279,10 +279,10 @@ export default function Admin() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="open">Open</SelectItem>
-                              <SelectItem value="limited">Limited</SelectItem>
-                              <SelectItem value="full">Full</SelectItem>
-                              <SelectItem value="paused">Paused</SelectItem>
+                              <SelectItem value="open">បើក</SelectItem>
+                              <SelectItem value="limited">មានកំណត់</SelectItem>
+                              <SelectItem value="full">ពេញ</SelectItem>
+                              <SelectItem value="paused">ផ្អាក</SelectItem>
                             </SelectContent>
                           </Select>
                         </td>
@@ -296,10 +296,10 @@ export default function Admin() {
                             {listing.verified ? (
                               <>
                                 <CheckCircle className="w-4 h-4 mr-1" />
-                                Verified
+                                បានផ្ទៀងផ្ទាត់
                               </>
                             ) : (
-                              'Verify'
+                              'ផ្ទៀងផ្ទាត់'
                             )}
                           </Button>
                         </td>
@@ -331,7 +331,7 @@ export default function Admin() {
 
               {filteredListings.length === 0 && (
                 <div className="text-center py-12 text-gray-500">
-                  No listings found
+                  មិនមានការផ្តល់ជំនួយត្រូវបានរកឃើញ
                 </div>
               )}
             </div>
