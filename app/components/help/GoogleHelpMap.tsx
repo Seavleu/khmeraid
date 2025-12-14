@@ -190,6 +190,8 @@ export default function GoogleHelpMap({
           fullscreenControl: true,
           zoomControl: true,
           streetViewControl: false,
+          gestureHandling: 'greedy', // Allow one-finger panning on mobile
+          disableDoubleClickZoom: false, // Allow double-click to zoom
         });
 
         setIsInitialized(true);
@@ -355,7 +357,7 @@ export default function GoogleHelpMap({
   }, [userLocation, onRecenterRequest]);
 
   return (
-    <div ref={mapContainerRef} className="w-full h-full relative">
+    <div ref={mapContainerRef} className="w-full h-full relative touch-pan-x touch-pan-y" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
       {/* Google Maps Extended Component Library */}
       {GOOGLE_MAPS_API_KEY ? (
         <>
@@ -380,6 +382,7 @@ export default function GoogleHelpMap({
             zoom="13"
             map-id="DEMO_MAP_ID"
             className="w-full h-full"
+            style={{ touchAction: 'pan-x pan-y pinch-zoom' }}
           >
             {/* Only render place picker after API is initialized */}
             {isInitialized && (
