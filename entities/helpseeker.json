@@ -1,0 +1,81 @@
+{
+    "name": "HelpSeeker",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of person seeking help"
+      },
+      "phone": {
+        "type": "string",
+        "description": "Contact phone number"
+      },
+      "latitude": {
+        "type": "number",
+        "description": "Current latitude"
+      },
+      "longitude": {
+        "type": "number",
+        "description": "Current longitude"
+      },
+      "help_type": {
+        "type": "string",
+        "enum": [
+          "medical",
+          "shelter",
+          "food",
+          "transportation",
+          "other"
+        ],
+        "description": "Type of help needed"
+      },
+      "urgency": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "default": "medium",
+        "description": "Urgency level"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "active",
+          "helped",
+          "cancelled"
+        ],
+        "default": "active",
+        "description": "Current status"
+      },
+      "notes": {
+        "type": "string",
+        "description": "Additional information"
+      },
+      "last_updated": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Last location update timestamp"
+      },
+      "shared_with_contacts": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Phone numbers or emails of trusted contacts"
+      },
+      "share_token": {
+        "type": "string",
+        "description": "Unique token for location sharing link"
+      }
+    },
+    "required": [
+      "name",
+      "phone",
+      "latitude",
+      "longitude",
+      "help_type"
+    ]
+  }

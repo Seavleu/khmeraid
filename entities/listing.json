@@ -1,0 +1,160 @@
+{
+    "name": "Listing",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "Name or title of the help offering"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "accommodation",
+          "fuel_service",
+          "volunteer_request",
+          "car_transportation",
+          "site_sponsor",
+          "school",
+          "event"
+        ],
+        "description": "Type of help being offered"
+      },
+      "area": {
+        "type": "string",
+        "description": "General area/neighborhood name"
+      },
+      "exact_location": {
+        "type": "string",
+        "description": "Exact address if consent given"
+      },
+      "location_consent": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether exact location can be shown on map"
+      },
+      "latitude": {
+        "type": "number",
+        "description": "Latitude coordinate"
+      },
+      "longitude": {
+        "type": "number",
+        "description": "Longitude coordinate"
+      },
+      "capacity_min": {
+        "type": "number",
+        "description": "Minimum capacity (e.g., people or vehicles)"
+      },
+      "capacity_max": {
+        "type": "number",
+        "description": "Maximum capacity"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "open",
+          "limited",
+          "full",
+          "paused"
+        ],
+        "default": "open",
+        "description": "Current availability status"
+      },
+      "family_friendly": {
+        "type": "boolean",
+        "default": false,
+        "description": "Suitable for families with children"
+      },
+      "notes": {
+        "type": "string",
+        "description": "Additional notes or requirements"
+      },
+      "contact_name": {
+        "type": "string",
+        "description": "Contact person name (optional)"
+      },
+      "contact_phone": {
+        "type": "string",
+        "description": "Direct contact phone (optional)"
+      },
+      "facebook_contact": {
+        "type": "string",
+        "description": "Facebook profile or page URL"
+      },
+      "image_url": {
+        "type": "string",
+        "description": "Photo of accommodation/vehicle/location"
+      },
+      "reference_link": {
+        "type": "string",
+        "description": "Link to original data source or reference"
+      },
+      "google_maps_link": {
+        "type": "string",
+        "description": "Google Maps location link"
+      },
+      "duration_days": {
+        "type": "number",
+        "description": "How long help is available (in days)"
+      },
+      "expires_at": {
+        "type": "string",
+        "format": "date-time",
+        "description": "When listing expires"
+      },
+      "verified": {
+        "type": "boolean",
+        "default": false,
+        "description": "Verified by operator"
+      },
+      "opening_hours": {
+        "type": "string",
+        "description": "Operating hours (e.g., '24/7', '8AM-6PM', 'By appointment')"
+      },
+      "services_offered": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Specific services or amenities offered"
+      },
+      "average_rating": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 5,
+        "description": "Average user rating (0-5 stars)"
+      },
+      "review_count": {
+        "type": "number",
+        "default": 0,
+        "description": "Number of reviews received"
+      },
+      "event_date": {
+        "type": "string",
+        "format": "date",
+        "description": "Event date (for event type)"
+      },
+      "event_time": {
+        "type": "string",
+        "description": "Event time (for event type)"
+      },
+      "event_end_date": {
+        "type": "string",
+        "format": "date",
+        "description": "Event end date (for multi-day events)"
+      },
+      "organizer_name": {
+        "type": "string",
+        "description": "Event organizer name (for event type)"
+      },
+      "organizer_contact": {
+        "type": "string",
+        "description": "Event organizer contact (for event type)"
+      }
+    },
+    "required": [
+      "title",
+      "type",
+      "area",
+      "status"
+    ]
+  }
