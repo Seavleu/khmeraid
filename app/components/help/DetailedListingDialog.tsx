@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react';
+import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
@@ -82,11 +83,13 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
         <div className="space-y-6 py-4">
           {/* Image */}
           {listing.image_url && (
-            <div className="w-full h-64 overflow-hidden rounded-2xl bg-gray-100 border-2 border-gray-200">
-              <img 
+            <div className="relative w-full h-64 overflow-hidden rounded-2xl bg-gray-100 border-2 border-gray-200">
+              <Image 
                 src={listing.image_url} 
                 alt={listing.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             </div>
           )}

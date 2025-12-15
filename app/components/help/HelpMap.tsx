@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
@@ -275,11 +276,15 @@ export default function HelpMap({
             <Popup>
               <div className="p-2 min-w-[240px]">
                 {listing.image_url && (
-                  <img 
-                    src={listing.image_url} 
-                    alt={listing.title}
-                    className="w-full h-24 object-cover rounded-lg mb-2"
-                  />
+                  <div className="relative w-full h-24 mb-2 rounded-lg overflow-hidden">
+                    <Image 
+                      src={listing.image_url} 
+                      alt={listing.title}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
                 )}
                 <h4 className="font-bold text-gray-900 mb-2">{listing.title}</h4>
                 <div className="flex gap-2 mb-2 flex-wrap">

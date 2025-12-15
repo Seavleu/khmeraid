@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
@@ -149,11 +150,13 @@ export default function ListingCard({ listing, onSelect, compact = false }: List
       <CardContent className="p-0">
         {/* Image */}
         {listing.image_url && (
-          <div className="w-full h-48 overflow-hidden bg-gray-100">
-            <img 
+          <div className="relative w-full h-48 overflow-hidden bg-gray-100">
+            <Image 
               src={listing.image_url} 
               alt={listing.title}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              unoptimized
             />
           </div>
         )}
