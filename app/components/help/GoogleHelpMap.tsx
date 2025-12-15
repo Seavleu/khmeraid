@@ -494,15 +494,15 @@ export default function GoogleHelpMap({
 
           {/* Loading Indicator */}
           {!isInitialized && !mapError && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] bg-white p-5 rounded-lg shadow-md text-center">
-              <div className="w-10 h-10 border-4 border-gray-100 border-t-[#105090] rounded-full animate-spin mx-auto mb-3" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white/95 backdrop-blur-sm p-5 rounded-2xl border-2 border-gray-200 shadow-2xl text-center">
+              <div className="w-10 h-10 border-4 border-gray-200 border-t-[#105090] rounded-full animate-spin mx-auto mb-3" />
               <p className="text-gray-500 text-sm">កំពុងផ្ទុកផែនទី...</p>
             </div>
           )}
 
           {/* Control Buttons */}
           {isInitialized && userLocation && (
-            <div className="absolute top-20 right-5 z-[1000]">
+            <div className="absolute top-20 right-5 z-20">
               <Button
                 onClick={handleRecenter}
                 className="bg-white shadow-lg rounded-full"

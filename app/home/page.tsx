@@ -80,6 +80,8 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'recent' | 'distance' | 'verified'>('recent');
   const [radiusKm, setRadiusKm] = useState<number | null>(null);
   const [drawnArea, setDrawnArea] = useState<DrawnArea | null>(null);
+  const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [showOfflineAlert, setShowOfflineAlert] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterState>({
     type: null,
     status: null,
@@ -87,6 +89,35 @@ export default function Home() {
     familyFriendly: false,
     verifiedOnly: false
   });
+
+  // Monitor internet connectivity
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setShowOfflineAlert(false);
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setShowOfflineAlert(true);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+      
+      // Check initial status
+      setIsOnline(navigator.onLine);
+      if (!navigator.onLine) {
+        setShowOfflineAlert(true);
+      }
+
+      return () => {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
+    }
+  }, []);
 
   // Fetch listings with real-time updates (refetch every 10 seconds)
   const { data: listings = [], isLoading, refetch } = useQuery({
@@ -98,16 +129,18 @@ export default function Home() {
         created_date: item.created_at || new Date().toISOString()
       }));
     },
-    refetchInterval: 10000, // Auto-refresh every 10 seconds
-    refetchIntervalInBackground: true
+    refetchInterval: isOnline ? 10000 : false, // Auto-refresh every 10 seconds only when online
+    refetchIntervalInBackground: isOnline,
+    enabled: isOnline || lowBandwidth // Allow query when online or in offline mode
   });
 
   // Fetch help seekers with real-time updates
   const { data: helpSeekers = [] } = useQuery<HelpSeeker[]>({
     queryKey: ['helpSeekers'],
     queryFn: () => supabaseApi.entities.HelpSeeker.filter({ status: 'active' }),
-    refetchInterval: 10000,
-    refetchIntervalInBackground: true
+    refetchInterval: isOnline ? 10000 : false,
+    refetchIntervalInBackground: isOnline,
+    enabled: isOnline || lowBandwidth
   });
 
   // Calculate distance between two coordinates (Haversine formula)
@@ -310,6 +343,38 @@ export default function Home() {
 
       {/* Main Content: Map + Sidebar */}
       <div className="flex-1 relative overflow-hidden">
+        {/* Offline Alert */}
+        {showOfflineAlert && !lowBandwidth && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[100] bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-2xl p-4 max-w-md mx-4">
+            <div className="flex items-start gap-3">
+              <WifiOff className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-bold text-sm text-gray-900 mb-1">គ្មានការភ្ជាប់អ៊ីនធឺណិត</h3>
+                <p className="text-xs text-gray-600 mb-3">អ្នកអាចប្តូរទៅរបៀបអនឡាញដើម្បីមើលទិន្នន័យដែលបានផ្ទុករួច។</p>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setLowBandwidth(true);
+                      setShowOfflineAlert(false);
+                    }}
+                    className="bg-amber-600 hover:bg-amber-700 text-white text-xs h-8 px-3 rounded-2xl"
+                  >
+                    ប្តូរទៅរបៀបអនឡាញ
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowOfflineAlert(false)}
+                    className="text-xs h-8 px-3 rounded-2xl border-2"
+                  >
+                    បិទ
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Full Screen Map */}
         {!lowBandwidth ? (
           <div className="absolute inset-0">
@@ -528,7 +593,7 @@ export default function Home() {
 
         {/* Collapsible Sidebar */}
         <div 
-          className={`absolute top-0 bottom-0 left-0 z-20 bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+          className={`absolute top-0 bottom-0 left-0 z-30 bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } w-full sm:w-96 overflow-hidden flex flex-col`}
         >
@@ -665,7 +730,7 @@ export default function Home() {
         {!sidebarOpen && !lowBandwidth && (
           <Button
             onClick={() => setSidebarOpen(true)}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-white shadow-xl rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0 transition-all hover:scale-110"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 bg-white shadow-xl rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0 transition-all hover:scale-110"
             variant="ghost"
           >
             <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
