@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Phone, X, Navigation, ChevronUp } from 'lucide-react';
+import { Phone, X, Navigation, ChevronUp, AlertCircle } from 'lucide-react';
 import ListingCard from '@/app/components/help/ListingCard';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';

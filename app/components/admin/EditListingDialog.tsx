@@ -309,7 +309,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
         createMarker(lat, lng, mapRef.current);
       }
     }
-  }, [isMapInitialized]);
+  }, [isMapInitialized, createMarker]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData({ ...formData, [field]: value });
