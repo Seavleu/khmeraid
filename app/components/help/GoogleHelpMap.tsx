@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Phone, X, Navigation, ChevronUp, AlertCircle } from 'lucide-react';
+import { 
+  Phone, X, Navigation, ChevronUp, AlertCircle, 
+  Home, Fuel, Car, HeartHandshake, Clock, MapPin, School,
+  CheckCircle, ShieldCheck, ExternalLink, User, MapPin as LocationIcon
+} from 'lucide-react';
 import ListingCard from '@/app/components/help/ListingCard';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
@@ -453,22 +457,25 @@ export default function GoogleHelpMap({
       {/* Google Maps Extended Component Library */}
       {GOOGLE_MAPS_API_KEY ? (
         <>
-          {/* API Loader - must be rendered first and have key set immediately */}
-          <gmpx-api-loader 
-            ref={(el) => {
-              if (el && GOOGLE_MAPS_API_KEY) {
-                // Set key immediately when element is available
-                el.setAttribute('key', GOOGLE_MAPS_API_KEY);
-                // Also set as property for web component
-                try {
-                  (el as any).key = GOOGLE_MAPS_API_KEY;
-                } catch (e) {
-                  // Ignore if property setting fails
+          {/* API Loader - only render if one doesn't already exist globally */}
+          {typeof window !== 'undefined' && !document.querySelector('gmpx-api-loader') && (
+            <gmpx-api-loader 
+              ref={(el) => {
+                if (el && GOOGLE_MAPS_API_KEY) {
+                  // Set key immediately when element is available
+                  el.setAttribute('key', GOOGLE_MAPS_API_KEY);
+                  // Also set as property for web component
+                  try {
+                    (el as any).key = GOOGLE_MAPS_API_KEY;
+                  } catch (e) {
+                    // Ignore if property setting fails
+                  }
                 }
-              }
-            }}
-            solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
-          />
+              }}
+              solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
+              style={{ display: 'none' }}
+            />
+          )}
           <gmp-map 
             center={`${defaultCenter.lat},${defaultCenter.lng}`}
             zoom="13"
@@ -515,139 +522,306 @@ export default function GoogleHelpMap({
           )}
 
           {/* Bottom Sheet for Listing Details */}
-          {isInitialized && showBottomSheet && selectedMarker && 'title' in selectedMarker && (
-            <div 
-              className={`fixed bottom-0 left-0 right-0 z-[10000] bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ease-out ${
-                sheetHeight === 'full' ? 'h-[95vh]' : 'h-[60vh] sm:h-[65vh]'
-              }`}
-              style={{ 
-                transform: showBottomSheet ? 'translateY(0)' : 'translateY(100%)',
-                touchAction: 'pan-y'
-              }}
-            >
-              {/* Drag Handle */}
+          {isInitialized && showBottomSheet && selectedMarker && 'title' in selectedMarker && (() => {
+            const listing = selectedMarker as Listing;
+            const typeConfig: Record<string, { icon: any; label: string; color: string }> = {
+              accommodation: { icon: Home, label: 'ស្នាក់នៅ', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+              fuel_service: { icon: Fuel, label: 'សេវាសាំង', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+              car_transportation: { icon: Car, label: 'ដឹកជញ្ជូន', color: 'bg-green-100 text-green-700 border-green-200' },
+              volunteer_request: { icon: HeartHandshake, label: 'ត្រូវការស្ម័គ្រចិត្ត', color: 'bg-purple-100 text-purple-700 border-purple-200' },
+              event: { icon: Clock, label: 'ព្រឹត្តិការណ៍', color: 'bg-pink-100 text-pink-700 border-pink-200' },
+              site_sponsor: { icon: MapPin, label: 'ទីតាំងហ្រ្វី', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+              school: { icon: School, label: 'សាលារៀន', color: 'bg-teal-100 text-teal-700 border-teal-200' }
+            };
+            const statusConfig: Record<string, { label: string; color: string }> = {
+              open: { label: 'បើក', color: 'bg-emerald-100 text-emerald-700' },
+              limited: { label: 'មានកំណត់', color: 'bg-amber-100 text-amber-700' },
+              full: { label: 'ពេញ', color: 'bg-red-100 text-red-700' },
+              paused: { label: 'ផ្អាក', color: 'bg-gray-100 text-gray-700' }
+            };
+            const type = typeConfig[listing.type] || typeConfig.accommodation;
+            const status = statusConfig[listing.status] || statusConfig.open;
+            const TypeIcon = type.icon;
+
+            return (
               <div 
-                className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
-                onTouchStart={(e) => {
-                  e.preventDefault();
-                  const startY = e.touches[0].clientY;
-                  const startHeight = sheetHeight;
-                  let hasMoved = false;
-                  
-                  const handleMove = (moveEvent: TouchEvent) => {
-                    moveEvent.preventDefault();
-                    const currentY = moveEvent.touches[0].clientY;
-                    const deltaY = startY - currentY;
-                    hasMoved = Math.abs(deltaY) > 10;
+                className={`fixed bottom-0 left-0 right-0 z-[10000] bg-white/95 backdrop-blur-sm rounded-t-2xl border-2 border-gray-200 shadow-2xl transition-all duration-300 ease-out ${
+                  sheetHeight === 'full' ? 'h-[95vh]' : 'h-[60vh] sm:h-[65vh]'
+                }`}
+                style={{ 
+                  transform: showBottomSheet ? 'translateY(0)' : 'translateY(100%)',
+                  touchAction: 'pan-y'
+                }}
+              >
+                {/* Drag Handle */}
+                <div 
+                  className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    const startY = e.touches[0].clientY;
+                    const startHeight = sheetHeight;
+                    let hasMoved = false;
                     
-                    // Swipe down to dismiss if dragging down significantly
-                    if (deltaY < -100) {
-                      setShowBottomSheet(false);
-                      setSelectedMarker(null);
-                      onSelectListing(null);
+                    const handleMove = (moveEvent: TouchEvent) => {
+                      moveEvent.preventDefault();
+                      const currentY = moveEvent.touches[0].clientY;
+                      const deltaY = startY - currentY;
+                      hasMoved = Math.abs(deltaY) > 10;
+                      
+                      if (deltaY < -100) {
+                        setShowBottomSheet(false);
+                        setSelectedMarker(null);
+                        onSelectListing(null);
+                        document.removeEventListener('touchmove', handleMove);
+                        document.removeEventListener('touchend', handleEnd);
+                        return;
+                      }
+                      
+                      if (deltaY > 50 && startHeight === 'partial') {
+                        setSheetHeight('full');
+                      } else if (deltaY < -50 && startHeight === 'full') {
+                        setSheetHeight('partial');
+                      }
+                    };
+                    
+                    const handleEnd = () => {
+                      if (!hasMoved) {
+                        setSheetHeight(startHeight === 'partial' ? 'full' : 'partial');
+                      }
                       document.removeEventListener('touchmove', handleMove);
                       document.removeEventListener('touchend', handleEnd);
-                      return;
-                    }
+                    };
                     
-                    // Toggle between partial and full
-                    if (deltaY > 50 && startHeight === 'partial') {
-                      setSheetHeight('full');
-                    } else if (deltaY < -50 && startHeight === 'full') {
-                      setSheetHeight('partial');
-                    }
-                  };
-                  
-                  const handleEnd = () => {
-                    if (!hasMoved) {
-                      // If no significant movement, toggle height
-                      setSheetHeight(startHeight === 'partial' ? 'full' : 'partial');
-                    }
-                    document.removeEventListener('touchmove', handleMove);
-                    document.removeEventListener('touchend', handleEnd);
-                  };
-                  
-                  document.addEventListener('touchmove', handleMove, { passive: false });
-                  document.addEventListener('touchend', handleEnd);
-                }}
-                onClick={() => setSheetHeight(sheetHeight === 'partial' ? 'full' : 'partial')}
-              >
-                <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-              </div>
+                    document.addEventListener('touchmove', handleMove, { passive: false });
+                    document.addEventListener('touchend', handleEnd);
+                  }}
+                  onClick={() => setSheetHeight(sheetHeight === 'partial' ? 'full' : 'partial')}
+                >
+                  <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+                </div>
 
-              {/* Header with Close Button */}
-              <div className="flex items-center justify-between px-4 pb-3 border-b">
-                <h3 className="text-lg font-bold text-gray-900">ព័ត៌មានលម្អិត</h3>
-                <div className="flex items-center gap-2">
+                {/* Header */}
+                <div className="px-4 pb-3 border-b-2 border-gray-200">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{listing.title}</h3>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border-2 ${type.color}`}>
+                          <TypeIcon className="w-4 h-4" />
+                          <span className="text-xs font-semibold">{type.label}</span>
+                        </div>
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${status.color}`}>
+                          <span className="text-xs font-semibold">{status.label}</span>
+                        </div>
+                        {listing.verified && (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 border-2 border-emerald-200">
+                            <ShieldCheck className="w-4 h-4" />
+                            <span className="text-xs font-semibold">បានផ្ទៀងផ្ទាត់</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSheetHeight(sheetHeight === 'partial' ? 'full' : 'partial')}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronUp className={`w-4 h-4 transition-transform ${sheetHeight === 'full' ? 'rotate-180' : ''}`} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setShowBottomSheet(false);
+                          setSelectedMarker(null);
+                          onSelectListing(null);
+                        }}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scrollable Content */}
+                <div className="overflow-y-auto h-[calc(100%-8rem)] px-4 py-4 space-y-3 scroll-smooth">
+                  {/* Location Info */}
+                  {listing.area && (
+                    <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-2xl border-2 border-gray-200">
+                      <LocationIcon className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-gray-600 font-medium mb-0.5">ទីតាំង</p>
+                        <p className="text-sm font-semibold text-gray-900">{listing.area}</p>
+                        {listing.exact_location && listing.location_consent && (
+                          <p className="text-xs text-gray-600 mt-1">{listing.exact_location}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Contact Info */}
+                  {(listing.contact_phone || listing.contact_name) && (
+                    <div className="space-y-2">
+                      {listing.contact_name && (
+                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-2xl border-2 border-gray-200">
+                          <User className="w-4 h-4 text-gray-600" />
+                          <div>
+                            <p className="text-xs text-gray-600 font-medium">អ្នកទំនាក់ទំនង</p>
+                            <p className="text-sm font-semibold text-gray-900">{listing.contact_name}</p>
+                          </div>
+                        </div>
+                      )}
+                      {listing.contact_phone && (
+                        <Button
+                          onClick={() => {
+                            const phone = listing.contact_phone?.replace(/[^0-9+]/g, '') || '';
+                            window.location.href = `tel:${phone}`;
+                          }}
+                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-4 rounded-2xl transition-all active:scale-[0.98]"
+                        >
+                          <Phone className="w-5 h-5 mr-2" />
+                          ទូរស័ព្ទ: {listing.contact_phone}
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Additional Info */}
+                  {listing.notes && (
+                    <div className="p-3 bg-blue-50 rounded-2xl border-2 border-blue-200">
+                      <p className="text-xs text-blue-700 font-medium mb-1">កំណត់ចំណាំ</p>
+                      <p className="text-sm text-blue-900 leading-relaxed">{listing.notes}</p>
+                    </div>
+                  )}
+
+                  {/* Source Info */}
+                  {listing.reference_link && (
+                    <a
+                      href={listing.reference_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2 p-3 bg-indigo-50 rounded-2xl border-2 border-indigo-200 hover:bg-indigo-100 transition-all"
+                    >
+                      <ExternalLink className="w-4 h-4 text-indigo-600" />
+                      <div className="flex-1">
+                        <p className="text-xs text-indigo-700 font-medium">ប្រភពទិន្នន័យ</p>
+                        <p className="text-xs text-indigo-600 truncate">{listing.reference_link}</p>
+                      </div>
+                    </a>
+                  )}
+
+                  {/* View Full Details Button */}
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSheetHeight(sheetHeight === 'partial' ? 'full' : 'partial')}
-                    className="h-8 w-8 p-0"
-                  >
-                    <ChevronUp className={`w-5 h-5 transition-transform ${sheetHeight === 'full' ? 'rotate-180' : ''}`} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="outline"
                     onClick={() => {
+                      onSelectListing(listing);
                       setShowBottomSheet(false);
-                      setSelectedMarker(null);
-                      onSelectListing(null);
                     }}
-                    className="h-8 w-8 p-0"
+                    className="w-full border-2 rounded-2xl py-3"
                   >
-                    <X className="w-5 h-5" />
+                    មើលព័ត៌មានលម្អិតទាំងអស់
                   </Button>
                 </div>
               </div>
+            );
+          })()}
 
-              {/* Scrollable Content */}
-              <div className="overflow-y-auto h-[calc(100%-4rem)] px-2 sm:px-4 py-3 sm:py-4 scroll-smooth">
-                <ListingCard 
-                  listing={selectedMarker as Listing} 
-                  onSelect={(listing) => {
-                    setSelectedMarker(listing);
-                    onSelectListing(listing);
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          {/* Help Seeker Info */}
+          {isInitialized && showBottomSheet && selectedMarker && !('title' in selectedMarker) && (() => {
+            const seeker = selectedMarker as HelpSeeker;
+            return (
+              <div 
+                className="fixed bottom-0 left-0 right-0 z-[10000] bg-white/95 backdrop-blur-sm rounded-t-2xl border-2 border-red-200 shadow-2xl transition-all duration-300 ease-out h-auto max-h-[50vh]"
+              >
+                {/* Drag Handle */}
+                <div className="flex justify-center pt-3 pb-2">
+                  <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+                </div>
 
-          {/* Help Seeker Info (simpler display) */}
-          {isInitialized && showBottomSheet && selectedMarker && !('title' in selectedMarker) && (
-            <div 
-              className="fixed bottom-0 left-0 right-0 z-[10000] bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ease-out h-auto max-h-[40vh]"
-            >
-              <div className="flex items-center justify-between px-4 py-3 border-b">
-                <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5" />
-                  ត្រូវការជំនួយ
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowBottomSheet(false);
-                    setSelectedMarker(null);
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
+                {/* Header */}
+                <div className="px-4 pb-3 border-b-2 border-red-200">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="p-2 bg-red-100 rounded-full">
+                          <AlertCircle className="w-5 h-5 text-red-600" />
+                        </div>
+                        <h3 className="text-lg font-bold text-red-600">ត្រូវការជំនួយ</h3>
+                      </div>
+                      <p className="text-base font-semibold text-gray-900">{seeker.name}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setShowBottomSheet(false);
+                        setSelectedMarker(null);
+                      }}
+                      className="h-8 w-8 p-0 flex-shrink-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="px-4 py-4 space-y-3">
+                  {/* Help Type */}
+                  {seeker.help_type && (
+                    <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-2xl border-2 border-amber-200">
+                      <HeartHandshake className="w-4 h-4 text-amber-600" />
+                      <div>
+                        <p className="text-xs text-amber-700 font-medium">ប្រភេទជំនួយ</p>
+                        <p className="text-sm font-semibold text-amber-900">{seeker.help_type}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Urgency */}
+                  {seeker.urgency && (
+                    <div className="flex items-center gap-2 p-3 bg-red-50 rounded-2xl border-2 border-red-200">
+                      <AlertCircle className="w-4 h-4 text-red-600" />
+                      <div>
+                        <p className="text-xs text-red-700 font-medium">ការបន្ទាន់</p>
+                        <p className="text-sm font-bold text-red-900">{seeker.urgency}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Location Info */}
+                  {seeker.latitude && seeker.longitude && (
+                    <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-2xl border-2 border-gray-200">
+                      <LocationIcon className="w-4 h-4 text-gray-600" />
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-600 font-medium">កូអរឌីណេ</p>
+                        <p className="text-xs text-gray-900 font-mono">{seeker.latitude.toFixed(6)}, {seeker.longitude.toFixed(6)}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${seeker.latitude},${seeker.longitude}`, '_blank')}
+                        className="text-xs h-8 px-2 rounded-2xl border-2"
+                      >
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        Maps
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Call to Action */}
+                  <div className="pt-2">
+                    <p className="text-xs text-gray-600 text-center mb-2">
+                      សូមទាក់ទងជាមួយអ្នកដែលត្រូវការជំនួយតាមរយៈផ្លូវការណ៍
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="px-4 py-4">
-                <p className="font-semibold text-lg mb-2">{(selectedMarker as HelpSeeker).name}</p>
-                {(selectedMarker as HelpSeeker).help_type && (
-                  <p className="text-gray-600 mb-1">ប្រភេទ: {(selectedMarker as HelpSeeker).help_type}</p>
-                )}
-                {(selectedMarker as HelpSeeker).urgency && (
-                  <p className="text-red-600 font-medium">ការបន្ទាន់: {(selectedMarker as HelpSeeker).urgency}</p>
-                )}
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Backdrop */}
           {showBottomSheet && (

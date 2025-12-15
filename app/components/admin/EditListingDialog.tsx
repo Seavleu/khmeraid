@@ -113,7 +113,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
         markerRef.current.map = null;
         markerRef.current = null;
       }
-      mapRef.current.setCenter(defaultCenter);
+      mapRef.current.panTo(defaultCenter);
       mapRef.current.setZoom(11);
     }
   }, [markerPosition, isMapInitialized, createMarker]);
@@ -183,7 +183,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
 
         // Center map on marker position if it exists, otherwise use default
         const center = markerPosition || defaultCenter;
-        mapElement.innerMap.setCenter(center);
+        mapElement.innerMap.panTo(center);
         mapElement.innerMap.setZoom(markerPosition ? 15 : 11);
 
         // Add click listener to map
@@ -236,7 +236,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
           createMarker(markerPosition.lat, markerPosition.lng, mapElement.innerMap);
         } else {
           // Center on default location
-          mapElement.innerMap.setCenter(defaultCenter);
+          mapElement.innerMap.panTo(defaultCenter);
           mapElement.innerMap.setZoom(11);
         }
 
@@ -417,20 +417,23 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
 
             {GOOGLE_MAPS_API_KEY ? (
               <>
-                {/* API Loader - must be rendered first */}
-                <gmpx-api-loader 
-                  ref={(el) => {
-                    if (el && GOOGLE_MAPS_API_KEY) {
-                      el.setAttribute('key', GOOGLE_MAPS_API_KEY);
-                      try {
-                        (el as any).key = GOOGLE_MAPS_API_KEY;
-                      } catch (e) {
-                        // Ignore
+                {/* API Loader - only render if one doesn't already exist globally */}
+                {typeof window !== 'undefined' && !document.querySelector('gmpx-api-loader') && (
+                  <gmpx-api-loader 
+                    ref={(el) => {
+                      if (el && GOOGLE_MAPS_API_KEY) {
+                        el.setAttribute('key', GOOGLE_MAPS_API_KEY);
+                        try {
+                          (el as any).key = GOOGLE_MAPS_API_KEY;
+                        } catch (e) {
+                          // Ignore
+                        }
                       }
-                    }
-                  }}
-                  solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
-                />
+                    }}
+                    solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
+                    style={{ display: 'none' }}
+                  />
+                )}
 
                 {/* Location Search */}
                 {isMapInitialized && (
