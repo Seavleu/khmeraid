@@ -18,6 +18,21 @@ export interface Listing {
   capacity_max?: number | null;
   status: string;
   family_friendly?: boolean;
+  // Accessibility features
+  wheelchair_accessible?: boolean;
+  accessible_parking?: boolean;
+  accessible_restrooms?: boolean;
+  accessible_entrance?: boolean;
+  elevator_available?: boolean;
+  ramp_available?: boolean;
+  sign_language_available?: boolean;
+  braille_available?: boolean;
+  hearing_loop_available?: boolean;
+  // Medical care specific
+  medical_specialties?: string[];
+  emergency_services?: boolean;
+  hours_24?: boolean;
+  insurance_accepted?: boolean;
   notes?: string | null;
   contact_name?: string | null;
   contact_phone?: string | null;
@@ -74,7 +89,9 @@ export const supabaseApi = {
             headers: {
               'api_key': BASE44_API_KEY,
               'Content-Type': 'application/json'
-            }
+            },
+            signal: AbortSignal.timeout(10000), // 10 second timeout for low bandwidth
+            cache: 'default' // Allow browser caching
           });
           if (!response.ok) throw new Error('Failed to fetch listings');
           const data = await response.json();
@@ -94,6 +111,7 @@ export const supabaseApi = {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
+            signal: AbortSignal.timeout(15000), // 15 second timeout for low bandwidth
           });
           if (!response.ok) throw new Error('Failed to create listing');
           return await response.json();
@@ -112,6 +130,7 @@ export const supabaseApi = {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
+            signal: AbortSignal.timeout(15000), // 15 second timeout for low bandwidth
           });
           if (!response.ok) throw new Error('Failed to update listing');
           return await response.json();
@@ -129,6 +148,7 @@ export const supabaseApi = {
               'api_key': BASE44_API_KEY,
               'Content-Type': 'application/json'
             },
+            signal: AbortSignal.timeout(10000), // 10 second timeout for low bandwidth
           });
           if (!response.ok) throw new Error('Failed to delete listing');
         } catch (error) {
@@ -151,7 +171,9 @@ export const supabaseApi = {
             headers: {
               'api_key': BASE44_API_KEY,
               'Content-Type': 'application/json'
-            }
+            },
+            signal: AbortSignal.timeout(10000), // 10 second timeout for low bandwidth
+            cache: 'default' // Allow browser caching
           });
           if (!response.ok) throw new Error('Failed to filter listings');
           const data = await response.json();
@@ -255,6 +277,7 @@ export const supabaseApi = {
               'api_key': BASE44_API_KEY,
             },
             body: formData,
+            signal: AbortSignal.timeout(30000), // 30 second timeout for file uploads on low bandwidth
           });
 
           if (!response.ok) throw new Error('Failed to upload file');

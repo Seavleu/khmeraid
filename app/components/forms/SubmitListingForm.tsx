@@ -11,20 +11,13 @@ import { Checkbox } from '@/app/components/ui/checkbox';
 import { 
   Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
   Phone, Shield, Send, Loader2, CheckCircle, Car,
-  Upload, Image as ImageIcon, Facebook
+  Upload, Image as ImageIcon, Facebook, Stethoscope, Wheelchair
 } from 'lucide-react';
-import { supabaseApi } from '@/api/supabaseClient';
 
 interface SubmitListingFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
-
-import { 
-  Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
-  Phone, Shield, Send, Loader2, CheckCircle, Car,
-  Upload, Image as ImageIcon, Facebook, Stethoscope, Wheelchair
-} from 'lucide-react';
 
 const typeOptions = [
   { value: 'accommodation', label: 'ស្នាក់នៅ / ទីជម្រក', icon: Home, description: 'ផ្តល់កន្លែងស្នាក់នៅ' },
@@ -52,6 +45,21 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     capacity_max: '',
     status: 'open',
     family_friendly: false,
+    // Accessibility fields
+    wheelchair_accessible: false,
+    accessible_parking: false,
+    accessible_restrooms: false,
+    accessible_entrance: false,
+    elevator_available: false,
+    ramp_available: false,
+    sign_language_available: false,
+    braille_available: false,
+    hearing_loop_available: false,
+    // Medical care fields
+    medical_specialties: [] as string[],
+    emergency_services: false,
+    hours_24: false,
+    insurance_accepted: false,
     notes: '',
     contact_name: '',
     contact_phone: '',
@@ -71,7 +79,14 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
 
     setUploadingImage(true);
     try {
-      const { file_url } = await supabaseApi.integrations.Core.UploadFile({ file });
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/data/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Failed to upload image');
+      const { file_url } = await res.json();
       handleChange('image_url', file_url);
       setImagePreview(URL.createObjectURL(file));
     } catch (error) {
@@ -96,7 +111,12 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     };
 
     try {
-      await supabaseApi.entities.Listing.create(listingData);
+      const res = await fetch('/api/listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(listingData),
+      });
+      if (!res.ok) throw new Error('Failed to create listing');
       setSubmitted(true);
       setTimeout(() => {
         onSuccess?.();

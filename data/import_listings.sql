@@ -1,20 +1,19 @@
--- SQL INSERT statements for listings table
--- Generated from listing_cleaned.csv
--- Copy and paste this into Supabase SQL Editor
+-- Seed data for public.listings based on data/listing_cleaned.csv
+-- Assumes Prisma schema has created the table with id default uuid()
 
 BEGIN;
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 1
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ពីកោះកុងមកភ្នំពេញ',
   'car_transportation',
   'កោះកុង',
@@ -37,29 +36,26 @@ INSERT INTO listings (
   NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 2
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ផ្ទះស្នាក់នៅបណ្តោះអាសន្ន - កំពត',
   'accommodation',
   'កំពត',
@@ -80,31 +76,29 @@ INSERT INTO listings (
   NULL,
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 3
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ដឹកជញ្ជូនដោយឥតគិតថ្លៃ - ប៉ោយប៉ែត ទៅ សៀមរាប',
   'car_transportation',
   'ប៉ោយប៉ែត',
@@ -125,31 +119,29 @@ INSERT INTO listings (
   NULL,
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 4
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ត្រូវការកម្លាំងជួយលើកជំនួយភៀសសឹក',
   'volunteer_request',
   'សៀមរាប',
@@ -165,36 +157,33 @@ INSERT INTO listings (
   'Ouk VanDay-អ៊ុក វណ្ណដេ',
   NULL,
   NULL,
-  NULL,
   'https://www.facebook.com/mrdaymedia',
   'https://maps.app.goo.gl/wySrLp5eqvJbWAHb7?g_st=ipc',
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 5
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ត្រូវការកម្លាំងជួយ - Phnom Penh',
   'volunteer_request',
   'ភ្នំពេញ',
@@ -210,36 +199,33 @@ INSERT INTO listings (
   'Ouk VanDay-អ៊ុក វណ្ណដេ',
   NULL,
   NULL,
-  NULL,
   'https://www.facebook.com/mrdaymedia',
   'https://maps.app.goo.gl/7RjiMrb5oChockbu8',
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 6
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ត្រូវការអ្នកស្ម័គ្រចិត្តផលិត Video ភាសាអង់គ្លេស',
   'volunteer_request',
   'ភ្នំពេញ',
@@ -255,36 +241,33 @@ INSERT INTO listings (
   'Zell - សំណាង',
   NULL,
   NULL,
-  NULL,
   'https://www.facebook.com/zellotv',
+  NULL,
   NULL,
   NULL,
   NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 7
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ផ្ទះស្នាក់ ៨ផ្ទះ - កំពត',
   'accommodation',
   'កំពត',
@@ -307,29 +290,26 @@ INSERT INTO listings (
   NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 8
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ផ្ទះសំណាក់ជ័យមង្គល - សៀមរាប',
   'accommodation',
   'សៀមរាប',
@@ -350,31 +330,29 @@ INSERT INTO listings (
   'https://maps.app.goo.gl/sypU879rLo7jvNAy7',
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
+  NULL,
+  0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 9
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ស្ថានីយ៍សាំងឥតគិតថ្លៃ',
   'fuel_service',
   'សៀមរាប',
@@ -395,31 +373,29 @@ INSERT INTO listings (
   NULL,
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 10
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'សាលាតិចណូ - ទីតាំង និងអ្នកស្ម័គ្រចិត្ត',
   'site_sponsor',
   'ភ្នំពេញ',
@@ -440,31 +416,29 @@ INSERT INTO listings (
   NULL,
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 11
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ផ្សារក្រោមថ្មី ៨៩ - សៀមរាប',
   'accommodation',
   'សៀមរាប',
@@ -485,31 +459,29 @@ INSERT INTO listings (
   'https://maps.app.goo.gl/cH8mgGnfW66r4rnc6',
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
+  NULL,
+  0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 12
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ត្រូវការកម្លាំងជួយច្រេីន - សាលាខេត្តកំពង់ធំ',
   'volunteer_request',
   'កំពង់ធំ',
@@ -530,31 +502,29 @@ INSERT INTO listings (
   NULL,
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 13
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ត្រូវការកម្លាំងជួយ - Dav TheCake',
   'volunteer_request',
   'ភ្នំពេញ',
@@ -570,36 +540,33 @@ INSERT INTO listings (
   'Dav TheCake',
   NULL,
   NULL,
-  NULL,
   'https://www.facebook.com/DavTheCakeOfficial',
   'https://maps.app.goo.gl/zCzXtJSkLyGLqcJG7?g_st=ic',
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 14
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'Wat Bo Primary School',
   'school',
   'សៀមរាប',
@@ -622,29 +589,26 @@ INSERT INTO listings (
   NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
+  NULL,
+  0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 15
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'សាលារៀនចិន ចុងសាន - រៀនភាសាចិនឥតគិតថ្លៃ',
   'school',
   'សៀមរាប',
@@ -665,31 +629,29 @@ INSERT INTO listings (
   'https://maps.app.goo.gl/XkDBRLQ8a3JBySZS9',
   NULL,
   NULL,
+  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 16
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ត្រូវការអ្នកស្ម័គ្រចិត្ត - បឹងកេងកងផ្លូវ360',
   'volunteer_request',
   'ភ្នំពេញ',
@@ -705,36 +667,33 @@ INSERT INTO listings (
   'Jingjing Soung',
   NULL,
   NULL,
-  NULL,
   'https://www.facebook.com/jingjingtraveling',
+  NULL,
   NULL,
   NULL,
   NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
-INSERT INTO listings (
-  id, title, type, area, exact_location, location_consent,
+-- Row 17
+INSERT INTO public.listings (
+  title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
   family_friendly, notes, contact_name, contact_phone,
   facebook_contact, image_url, reference_link, google_maps_link,
   duration_days, expires_at, verified, opening_hours,
   services_offered, average_rating, review_count,
   event_date, event_time, event_end_date,
-  organizer_name, organizer_contact, created_at, updated_at
+  organizer_name, organizer_contact
 ) VALUES (
-  gen_random_uuid()::text,
   'ZTO Express - សេវាដឹកជញ្ជូន',
   'car_transportation',
   'ភ្នំពេញ',
@@ -754,21 +713,17 @@ INSERT INTO listings (
   NULL,
   NULL,
   NULL,
-  NULL,
   true,
   NULL,
-  '{}',
+  ARRAY[]::text[],
   NULL,
   0,
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW()
+  NULL
 );
 
 COMMIT;
 
--- Total: 17 listings inserted
+

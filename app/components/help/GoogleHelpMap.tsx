@@ -78,9 +78,9 @@ declare global {
   }
 }
 
-export default function GoogleHelpMap({
-  listings,
-  onSelectListing,
+export default function GoogleHelpMap({ 
+  listings, 
+  onSelectListing, 
   userLocation,
   selectedListing,
   onRecenterRequest,
@@ -497,8 +497,8 @@ export default function GoogleHelpMap({
             {isInitialized && (
               <div slot="control-block-start-inline-start" className="p-5">
                 <gmpx-place-picker placeholder="បញ្ចូលអាសយដ្ឋាន"></gmpx-place-picker>
-              </div>
-            )}
+                        </div>
+                      )}
             <gmp-advanced-marker></gmp-advanced-marker>
           </gmp-map>
 
@@ -506,29 +506,29 @@ export default function GoogleHelpMap({
           {mapError && (
             <div className="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] bg-white py-3 px-5 rounded-lg shadow-md text-red-600 text-sm max-w-md text-center">
               ⚠️ {mapError}
-            </div>
-          )}
+                        </div>
+                      )}
 
           {/* Loading Indicator */}
           {!isInitialized && !mapError && (
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white/95 backdrop-blur-sm p-5 rounded-2xl border-2 border-gray-200 shadow-2xl text-center">
               <div className="w-10 h-10 border-4 border-gray-200 border-t-[#105090] rounded-full animate-spin mx-auto mb-3" />
               <p className="text-gray-500 text-sm">កំពុងផ្ទុកផែនទី...</p>
-            </div>
-          )}
+                        </div>
+                      )}
 
           {/* Control Buttons */}
           {isInitialized && userLocation && (
             <div className="absolute top-20 right-5 z-20">
-              <Button
+                        <Button 
                 onClick={handleRecenter}
                 className="bg-white shadow-lg rounded-full"
                 variant="ghost"
                 size="sm"
               >
                 <Navigation className="w-4 h-4" />
-              </Button>
-            </div>
+                        </Button>
+                    </div>
           )}
 
           {/* Bottom Sheet for Listing Details */}
@@ -608,7 +608,7 @@ export default function GoogleHelpMap({
                   onClick={() => setSheetHeight(sheetHeight === 'partial' ? 'full' : 'partial')}
                 >
                   <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-                </div>
+                  </div>
 
                 {/* Header */}
                 <div className="px-4 pb-3 border-b-2 border-gray-200">
@@ -619,30 +619,30 @@ export default function GoogleHelpMap({
                         <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border-2 ${type.color}`}>
                           <TypeIcon className="w-4 h-4" />
                           <span className="text-xs font-semibold">{type.label}</span>
-                        </div>
+                      </div>
                         <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${status.color}`}>
                           <span className="text-xs font-semibold">{status.label}</span>
-                        </div>
+                      </div>
                         {listing.verified && (
                           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 border-2 border-emerald-200">
                             <ShieldCheck className="w-4 h-4" />
                             <span className="text-xs font-semibold">បានផ្ទៀងផ្ទាត់</span>
-                          </div>
-                        )}
+                  </div>
+                )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                         onClick={() => setSheetHeight(sheetHeight === 'partial' ? 'full' : 'partial')}
                         className="h-8 w-8 p-0"
-                      >
+                  >
                         <ChevronUp className={`w-4 h-4 transition-transform ${sheetHeight === 'full' ? 'rotate-180' : ''}`} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                         onClick={() => {
                           setShowBottomSheet(false);
                           setSelectedMarker(null);
@@ -651,9 +651,9 @@ export default function GoogleHelpMap({
                         className="h-8 w-8 p-0"
                       >
                         <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                    </Button>
+                          </div>
+                        </div>
                 </div>
 
                 {/* Scrollable Content */}
@@ -668,10 +668,10 @@ export default function GoogleHelpMap({
                         {listing.exact_location && listing.location_consent && (
                           <p className="text-xs text-gray-600 mt-1">{listing.exact_location}</p>
                         )}
-                      </div>
-                    </div>
-                  )}
-
+                          </div>
+                        </div>
+                      )}
+                      
                   {/* Contact Info */}
                   {(listing.contact_phone || listing.contact_name) && (
                     <div className="space-y-2">
@@ -696,23 +696,23 @@ export default function GoogleHelpMap({
                           ទូរស័ព្ទ: {listing.contact_phone}
                         </Button>
                       )}
-                    </div>
-                  )}
-
+                        </div>
+                      )}
+                      
                   {/* Additional Info */}
                   {listing.notes && (
                     <div className="p-3 bg-blue-50 rounded-2xl border-2 border-blue-200">
                       <p className="text-xs text-blue-700 font-medium mb-1">កំណត់ចំណាំ</p>
                       <p className="text-sm text-blue-900 leading-relaxed">{listing.notes}</p>
-                    </div>
-                  )}
+                        </div>
+                      )}
 
                   {/* Source Info */}
                   {listing.reference_link && (
                     <a
                       href={listing.reference_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                              target="_blank"
+                              rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       className="flex items-center gap-2 p-3 bg-indigo-50 rounded-2xl border-2 border-indigo-200 hover:bg-indigo-100 transition-all"
                     >
@@ -735,8 +735,8 @@ export default function GoogleHelpMap({
                   >
                     មើលព័ត៌មានលម្អិតទាំងអស់
                   </Button>
-                </div>
-              </div>
+                          </div>
+                        </div>
             );
           })()}
 
@@ -755,16 +755,16 @@ export default function GoogleHelpMap({
                 {/* Header */}
                 <div className="px-4 pb-3 border-b-2 border-red-200">
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex-1">
+                          <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="p-2 bg-red-100 rounded-full">
                           <AlertCircle className="w-5 h-5 text-red-600" />
-                        </div>
+                            </div>
                         <h3 className="text-lg font-bold text-red-600">ត្រូវការជំនួយ</h3>
-                      </div>
+                          </div>
                       <p className="text-base font-semibold text-gray-900">{seeker.name}</p>
-                    </div>
-                    <Button
+                        </div>
+                    <Button 
                       variant="ghost"
                       size="sm"
                       onClick={() => {
@@ -774,9 +774,9 @@ export default function GoogleHelpMap({
                       className="h-8 w-8 p-0 flex-shrink-0"
                     >
                       <X className="w-4 h-4" />
-                    </Button>
+                  </Button>
                   </div>
-                </div>
+                  </div>
 
                 {/* Content */}
                 <div className="px-4 py-4 space-y-3">
@@ -787,8 +787,8 @@ export default function GoogleHelpMap({
                       <div>
                         <p className="text-xs text-amber-700 font-medium">ប្រភេទជំនួយ</p>
                         <p className="text-sm font-semibold text-amber-900">{seeker.help_type}</p>
-                      </div>
-                    </div>
+          </div>
+          </div>
                   )}
 
                   {/* Urgency */}
@@ -798,8 +798,8 @@ export default function GoogleHelpMap({
                       <div>
                         <p className="text-xs text-red-700 font-medium">ការបន្ទាន់</p>
                         <p className="text-sm font-bold text-red-900">{seeker.urgency}</p>
-                      </div>
-                    </div>
+          </div>
+          </div>
                   )}
 
                   {/* Location Info */}
@@ -809,7 +809,7 @@ export default function GoogleHelpMap({
                       <div className="flex-1">
                         <p className="text-xs text-gray-600 font-medium">កូអរឌីណេ</p>
                         <p className="text-xs text-gray-900 font-mono">{seeker.latitude.toFixed(6)}, {seeker.longitude.toFixed(6)}</p>
-                      </div>
+          </div>
                       <Button
                         variant="outline"
                         size="sm"
@@ -819,7 +819,7 @@ export default function GoogleHelpMap({
                         <ExternalLink className="w-3 h-3 mr-1" />
                         Maps
                       </Button>
-                    </div>
+          </div>
                   )}
 
                   {/* Call to Action */}
@@ -827,9 +827,9 @@ export default function GoogleHelpMap({
                     <p className="text-xs text-gray-600 text-center mb-2">
                       សូមទាក់ទងជាមួយអ្នកដែលត្រូវការជំនួយតាមរយៈផ្លូវការណ៍
                     </p>
-                  </div>
-                </div>
-              </div>
+          </div>
+          </div>
+          </div>
             );
           })()}
 
@@ -852,8 +852,8 @@ export default function GoogleHelpMap({
             <p>មិនបានកំណត់រចនាសម្ព័ន្ធ Google Maps API key</p>
             <p className="text-xs mt-1">
               សូមកំណត់ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY នៅក្នុងឯកសារ .env របស់អ្នក
-            </p>
-          </div>
+        </p>
+      </div>
         </div>
       )}
     </div>

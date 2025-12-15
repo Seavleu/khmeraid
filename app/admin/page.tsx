@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabaseApi } from '@/api/supabaseClient';
 import Layout from '@/app/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
@@ -55,21 +54,35 @@ export default function Admin() {
   const { data: listings = [], isLoading } = useQuery({
     queryKey: ['admin-listings'],
     queryFn: async () => {
-      const data = await supabaseApi.entities.Listing.list('-created_at', 500);
+      const res = await fetch('/api/listings?sort=-created_at&limit=500');
+      if (!res.ok) throw new Error('Failed to fetch listings');
+      const data = await res.json();
       return data.map((item: any) => ({
         ...item,
-        created_date: item.created_at || new Date().toISOString()
+        created_date: item.created_date || item.created_at || new Date().toISOString()
       }));
     }
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Listing> }) => supabaseApi.entities.Listing.update(id, data),
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Listing> }) => {
+      const res = await fetch(`/api/listings/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('Failed to update listing');
+      return await res.json();
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-listings'] })
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => supabaseApi.entities.Listing.delete(id),
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/listings/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete listing');
+      return await res.json();
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-listings'] })
   });
 

@@ -6,7 +6,6 @@ import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Badge } from '@/app/components/ui/badge';
-import { supabaseApi } from '@/api/supabaseClient';
 import { 
   AlertCircle, Phone, MapPin, Share2, Copy, Check,
   Heart, Home, Utensils, Car, HelpCircle, X
@@ -72,9 +71,9 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     try {
       // Check for active requests by phone number from form data
       if (formData.phone) {
-        const requests = await supabaseApi.entities.HelpSeeker.filter({ 
-          status: 'active' 
-        });
+        const res = await fetch('/api/help-seekers?status=active');
+        if (!res.ok) throw new Error('Failed to fetch help requests');
+        const requests = await res.json();
         // Find request matching the phone number
         const userRequest = requests.find(r => r.phone === formData.phone);
         if (userRequest) {
@@ -93,10 +92,14 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          await supabaseApi.entities.HelpSeeker.update(activeRequest.id, {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            last_updated: new Date().toISOString()
+          await fetch(`/api/help-seekers/${activeRequest.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              last_updated: new Date().toISOString()
+            })
           });
         } catch (error) {
           console.error('Error updating location:', error);
@@ -120,15 +123,21 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
         .map(c => c.trim())
         .filter(c => c);
 
-      const newRequest = await supabaseApi.entities.HelpSeeker.create({
-        ...formData,
-        latitude: userLocation[0],
-        longitude: userLocation[1],
-        last_updated: new Date().toISOString(),
-        shared_with_contacts: contactsArray,
-        share_token: shareToken,
-        status: 'active'
+      const res = await fetch('/api/help-seekers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          latitude: userLocation[0],
+          longitude: userLocation[1],
+          last_updated: new Date().toISOString(),
+          shared_with_contacts: contactsArray,
+          share_token: shareToken,
+          status: 'active'
+        }),
       });
+      if (!res.ok) throw new Error('Failed to create help request');
+      const newRequest = await res.json();
 
       setActiveRequest(newRequest);
       generateShareLink(shareToken);
@@ -155,11 +164,6 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
       try {
         if (contact.includes('@')) {
           // Email sending functionality - implement based on your backend
-          // await supabaseApi.integrations.Core.SendEmail({
-          //   to: contact,
-          //   subject: 'សំណើជំនួយបន្ទាន់',
-          //   body: message
-          // });
           console.log('Email would be sent to:', contact, 'with message:', message);
         }
       } catch (error) {
@@ -184,8 +188,10 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     
     setLoading(true);
     try {
-      await supabaseApi.entities.HelpSeeker.update(activeRequest.id, {
-        status: 'cancelled'
+      await fetch(`/api/help-seekers/${activeRequest.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'cancelled' }),
       });
       setActiveRequest(null);
       onClose();
@@ -201,8 +207,10 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     
     setLoading(true);
     try {
-      await supabaseApi.entities.HelpSeeker.update(activeRequest.id, {
-        status: 'helped'
+      await fetch(`/api/help-seekers/${activeRequest.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'helped' }),
       });
       setActiveRequest(null);
       onClose();

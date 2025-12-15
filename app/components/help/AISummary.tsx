@@ -110,6 +110,14 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
     volunteer_request: { total: listings.filter(l => l.type === 'volunteer_request' && l.status !== 'full' && l.status !== 'paused').length },
   };
 
+  // Ensure all stats have total property with safe defaults
+  const safeStats = {
+    accommodation: { total: stats.accommodation?.total || 0 },
+    fuel_service: { total: stats.fuel_service?.total || 0 },
+    car_transportation: { total: stats.car_transportation?.total || 0 },
+    volunteer_request: { total: stats.volunteer_request?.total || 0 },
+  };
+
   return (
     <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl shadow-2xl overflow-hidden">
       <CardContent className="p-3 sm:p-4">
@@ -133,28 +141,28 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
 
         {/* Stats Pills */}
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {stats.accommodation.total > 0 && (
+          {safeStats.accommodation.total > 0 && (
             <Badge className="bg-blue-100 text-blue-700 border-blue-200 px-2 py-1 flex items-center gap-1">
               <Home className="w-3 h-3" />
-              <span className="font-semibold text-xs">{stats.accommodation.total}</span>
+              <span className="font-semibold text-xs">{safeStats.accommodation.total}</span>
             </Badge>
           )}
-          {stats.fuel_service.total > 0 && (
+          {safeStats.fuel_service.total > 0 && (
             <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-2 py-1 flex items-center gap-1">
               <Fuel className="w-3 h-3" />
-              <span className="font-semibold text-xs">{stats.fuel_service.total}</span>
+              <span className="font-semibold text-xs">{safeStats.fuel_service.total}</span>
             </Badge>
           )}
-          {stats.car_transportation.total > 0 && (
+          {safeStats.car_transportation.total > 0 && (
             <Badge className="bg-green-100 text-green-700 border-green-200 px-2 py-1 flex items-center gap-1">
               <Car className="w-3 h-3" />
-              <span className="font-semibold text-xs">{stats.car_transportation.total}</span>
+              <span className="font-semibold text-xs">{safeStats.car_transportation.total}</span>
             </Badge>
           )}
-          {stats.volunteer_request.total > 0 && (
+          {safeStats.volunteer_request.total > 0 && (
             <Badge className="bg-purple-100 text-purple-700 border-purple-200 px-2 py-1 flex items-center gap-1">
               <HeartHandshake className="w-3 h-3" />
-              <span className="font-semibold text-xs">{stats.volunteer_request.total}</span>
+              <span className="font-semibold text-xs">{safeStats.volunteer_request.total}</span>
             </Badge>
           )}
         </div>

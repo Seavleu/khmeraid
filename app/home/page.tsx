@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabaseApi } from '@/api/supabaseClient';
 import Layout from '@/app/components/Layout';
 import { Button } from '@/app/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -89,15 +88,6 @@ export default function Home() {
     familyFriendly: false,
     verifiedOnly: false
   });
-  
-  // Update map center when city filter changes
-  useEffect(() => {
-    if (filters.area && cityCenters[filters.area]) {
-      setSelectedCityCenter(cityCenters[filters.area]);
-    } else {
-      setSelectedCityCenter(null);
-    }
-  }, [filters.area, cityCenters]);
 
   // Monitor internet connectivity
   useEffect(() => {
@@ -132,10 +122,12 @@ export default function Home() {
   const { data: listings = [], isLoading, refetch } = useQuery({
     queryKey: ['listings'],
     queryFn: async () => {
-      const data = await supabaseApi.entities.Listing.list('-created_at', 100);
+      const res = await fetch('/api/listings?sort=-created_at&limit=100');
+      if (!res.ok) throw new Error('Failed to fetch listings');
+      const data = await res.json();
       return data.map((item: any) => ({
         ...item,
-        created_date: item.created_at || new Date().toISOString()
+        created_date: item.created_date || item.created_at || new Date().toISOString()
       }));
     },
     refetchInterval: isOnline ? 10000 : false, // Auto-refresh every 10 seconds only when online
@@ -146,7 +138,11 @@ export default function Home() {
   // Fetch help seekers with real-time updates
   const { data: helpSeekers = [] } = useQuery<HelpSeeker[]>({
     queryKey: ['helpSeekers'],
-    queryFn: () => supabaseApi.entities.HelpSeeker.filter({ status: 'active' }),
+    queryFn: async () => {
+      const res = await fetch('/api/help-seekers?status=active');
+      if (!res.ok) throw new Error('Failed to fetch help seekers');
+      return await res.json();
+    },
     refetchInterval: isOnline ? 10000 : false,
     refetchIntervalInBackground: isOnline,
     enabled: isOnline || lowBandwidth
