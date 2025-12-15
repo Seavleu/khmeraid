@@ -1,3 +1,6 @@
+// TEMPORARILY DISABLED - FilterPanel is not functioning properly
+// All usages have been commented out in app/home/page.tsx
+
 'use client'
 
 import React from 'react';
