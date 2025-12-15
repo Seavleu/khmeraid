@@ -65,7 +65,7 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
         <p className="text-gray-500 mt-2">សូមទូរស័ព្ទទៅខ្សែបន្ទាន់សម្រាប់ជំនួយ។</p>
         <Button 
           onClick={() => handleCall()}
-          className="mt-4 bg-emerald-600 hover:bg-emerald-700"
+          className="mt-4 bg-[#105090] hover:bg-[#0d3d6f] text-white rounded-2xl"
         >
           <Phone className="w-4 h-4 mr-2" />
           ទូរស័ព្ទខ្សែបន្ទាន់
@@ -76,16 +76,29 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg">
-        <p className="text-sm text-amber-800 flex items-center gap-1.5">
-          <strong>របៀបបណ្តាញយឺត</strong> — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត
-        </p>
+      {/* Running Text Banner */}
+      <div className="bg-[#105090] border-2 border-[#0d3d6f] rounded-2xl p-3 overflow-hidden relative shadow-2xl">
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 bg-white/20 rounded-full p-2 animate-pulse">
+            <Phone className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1 overflow-hidden relative">
+            <div className="flex animate-marquee whitespace-nowrap">
+              <span className="text-sm sm:text-base font-bold text-white inline-block px-4">
+                ⚠️ របៀបបណ្តាញយឺត — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត — សូមទូរស័ព្ទទៅខ្សែបន្ទាន់សម្រាប់ជំនួយ — 
+              </span>
+              <span className="text-sm sm:text-base font-bold text-white inline-block px-4">
+                ⚠️ របៀបបណ្តាញយឺត — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត — សូមទូរស័ព្ទទៅខ្សែបន្ទាន់សម្រាប់ជំនួយ — 
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {listings.map((listing, index) => (
         <div 
           key={listing.id} 
-          className="bg-white border-2 border-gray-200 rounded-lg p-4 space-y-2"
+          className="bg-white/95 backdrop-blur-sm border-2 border-gray-200 rounded-2xl p-4 space-y-2 shadow-2xl"
         >
           {/* Header */}
           <div className="border-b pb-2">
@@ -156,17 +169,17 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
           </div>
 
           {/* Call Button */}
-          <div className="pt-2 border-t">
+          <div className="pt-2 border-t-2 border-gray-200">
             <Button 
               onClick={() => handleCall(listing.contact_phone)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 font-bold"
+              className="w-full bg-[#105090] hover:bg-[#0d3d6f] text-white font-bold rounded-2xl py-4 transition-all active:scale-[0.98]"
               size="lg"
             >
               <Phone className="w-5 h-5 mr-2" />
               ទូរស័ព្ទដើម្បីបញ្ជាក់
             </Button>
             {listing.verified && (
-              <p className="text-center text-xs text-emerald-600 mt-1 flex items-center justify-center gap-1">
+              <p className="text-center text-xs text-[#105090] mt-2 flex items-center justify-center gap-1 font-semibold">
                 <CheckCircle className="w-3.5 h-3.5" />
                 ការផ្តល់ជំនួយបានផ្ទៀងផ្ទាត់
               </p>
