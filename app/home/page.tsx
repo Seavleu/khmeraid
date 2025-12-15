@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabaseApi } from '@/api/supabaseClient';
+import { secureApi } from '@/api/secureClient';
 import Layout from '@/app/components/Layout';
 import { Button } from '@/app/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -123,7 +123,7 @@ export default function Home() {
   const { data: listings = [], isLoading, refetch } = useQuery({
     queryKey: ['listings'],
     queryFn: async () => {
-      const data = await supabaseApi.entities.Listing.list('-created_at', 100);
+      const data = await secureApi.entities.Listing.list('-created_at', 100);
       return data.map((item: any) => ({
         ...item,
         created_date: item.created_at || new Date().toISOString()
@@ -137,7 +137,7 @@ export default function Home() {
   // Fetch help seekers with real-time updates
   const { data: helpSeekers = [] } = useQuery<HelpSeeker[]>({
     queryKey: ['helpSeekers'],
-    queryFn: () => supabaseApi.entities.HelpSeeker.filter({ status: 'active' }),
+    queryFn: () => secureApi.entities.HelpSeeker.filter({ status: 'active' }),
     refetchInterval: isOnline ? 10000 : false,
     refetchIntervalInBackground: isOnline,
     enabled: isOnline || lowBandwidth

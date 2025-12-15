@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -13,7 +14,7 @@ import {
   Phone, Shield, Send, Loader2, CheckCircle, Car,
   Upload, Image as ImageIcon, Facebook
 } from 'lucide-react';
-import { supabaseApi } from '@/api/supabaseClient';
+import { secureApi } from '@/api/secureClient';
 
 interface SubmitListingFormProps {
   onSuccess?: () => void;
@@ -64,7 +65,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
 
     setUploadingImage(true);
     try {
-      const { file_url } = await supabaseApi.integrations.Core.UploadFile({ file });
+      const { file_url } = await secureApi.integrations.Core.UploadFile(file);
       handleChange('image_url', file_url);
       setImagePreview(URL.createObjectURL(file));
     } catch (error) {
@@ -89,7 +90,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     };
 
     try {
-      await supabaseApi.entities.Listing.create(listingData);
+      await secureApi.entities.Listing.create(listingData);
       setSubmitted(true);
       setTimeout(() => {
         onSuccess?.();
@@ -246,11 +247,15 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
                 {imagePreview ? (
                   <div className="space-y-2">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                      <Image 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
                     <Button
                       type="button"
                       variant="outline"
