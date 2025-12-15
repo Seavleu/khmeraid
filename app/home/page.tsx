@@ -455,15 +455,19 @@ export default function Home() {
                     }
                   };
                   const Icon = getIcon();
+                  const isActive = filters.type === type || (type === 'all' && !filters.type);
                   return (
                     <Button
                       key={type}
                       size="sm"
-                      variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
+                      variant={isActive ? 'default' : 'outline'}
                       onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                      className={`text-xs px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
-                        ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
-                        : ''}`}
+                      style={isActive ? { backgroundColor: '#105090' } : {}}
+                      className={`rounded-full text-xs sm:text-sm px-2 sm:px-3 py-1 h-auto transition-all ${
+                        isActive
+                          ? 'text-white hover:opacity-90'
+                          : ''
+                      }`}
                     >
                       {type === 'all' ? (
                         <>
@@ -632,7 +636,7 @@ export default function Home() {
                 const getIcon = () => {
                   switch(type) {
                     case 'all': return Filter;
-                    case 'accommodation': return Home;
+                    case 'accommodation': return HomeIcon;
                     case 'fuel_service': return Fuel;
                     case 'car_transportation': return Car;
                     case 'volunteer_request': return HeartHandshake;
@@ -641,15 +645,19 @@ export default function Home() {
                   }
                 };
                 const Icon = getIcon();
+                const isActive = filters.type === type || (type === 'all' && !filters.type);
                 return (
                   <Button
                     key={type}
                     size="sm"
-                    variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'outline'}
+                    variant={isActive ? 'default' : 'outline'}
                     onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                    className={`text-xs font-medium px-2 sm:px-3 py-1 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
-                      ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
-                      : ''}`}
+                    style={isActive ? { backgroundColor: '#105090' } : {}}
+                    className={`rounded-full text-xs sm:text-sm px-2 sm:px-3 py-1 h-auto transition-all ${
+                      isActive
+                        ? 'text-white hover:opacity-90'
+                        : ''
+                    }`}
                   >
                     {type === 'all' ? (
                       <>
