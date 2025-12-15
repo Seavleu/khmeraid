@@ -1,23 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, appendFile } from 'fs/promises';
-import { join } from 'path';
-
-async function logDebug(data: any) {
-  // Only log in development mode
-  if (process.env.NODE_ENV !== 'development') return;
-  
-  try {
-    const logPath = join(process.cwd(), '.cursor', 'debug.log');
-    const logEntry = JSON.stringify({...data, timestamp: Date.now()}) + '\n';
-    await appendFile(logPath, logEntry, 'utf8').catch(() => {
-      // Try to create file if it doesn't exist
-      writeFile(logPath, logEntry, 'utf8').catch(() => {});
-    });
-  } catch (e) {
-    // Fallback to console in development
-    console.log('[DEBUG]', data);
-  }
-}
 
 export async function GET(request: NextRequest) {
   // During build time, return early
@@ -28,9 +9,6 @@ export async function GET(request: NextRequest) {
   // Dynamic import to avoid loading Prisma during build
   const { prisma } = await import('@/lib/prisma');
 
-  // #region agent log
-  await logDebug({location:'app/api/listings/route.ts:11',message:'GET listings API called',data:{hasPrisma:!!prisma,hasDatabaseUrl:!!process.env.DATABASE_URL},sessionId:'debug-session',runId:'run1',hypothesisId:'A'});
-  // #endregion
   try {
     const searchParams = request.nextUrl.searchParams;
     const sort = searchParams.get('sort') || '-created_at';
@@ -39,10 +17,6 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const area = searchParams.get('area');
     const verified = searchParams.get('verified');
-
-    // #region agent log
-    await logDebug({location:'app/api/listings/route.ts:20',message:'Query params parsed',data:{sort,limit,status,type,area,verified},sessionId:'debug-session',runId:'run1',hypothesisId:'B'});
-    // #endregion
 
     // Handle sort parameter - remove leading dash and set direction
     const sortField = sort.startsWith('-') ? sort.substring(1) : sort;
@@ -53,10 +27,6 @@ export async function GET(request: NextRequest) {
     
     const orderBy = { [prismaSortField]: sortDirection };
 
-    // #region agent log
-    await logDebug({location:'app/api/listings/route.ts:25',message:'orderBy constructed',data:{orderBy},sessionId:'debug-session',runId:'run1',hypothesisId:'C'});
-    // #endregion
-
     const where: any = {};
     if (status) where.status = status;
     if (type) where.type = type;
@@ -65,27 +35,11 @@ export async function GET(request: NextRequest) {
       where.verified = verified === 'true';
     }
 
-    // #region agent log
-    await logDebug({location:'app/api/listings/route.ts:33',message:'Before Prisma query',data:{where,orderBy,limit},sessionId:'debug-session',runId:'run1',hypothesisId:'D'});
-    // #endregion
-
-    let listings;
-    try {
-      listings = await prisma.listing.findMany({
-        where,
-        orderBy,
-        take: limit,
-      });
-    } catch (prismaError: any) {
-      // #region agent log
-      await logDebug({location:'app/api/listings/route.ts:62',message:'Prisma query failed',data:{errorMessage:prismaError?.message,errorCode:prismaError?.code,errorName:prismaError?.name},sessionId:'debug-session',runId:'run1',hypothesisId:'G'});
-      // #endregion
-      throw prismaError;
-    }
-
-    // #region agent log
-    await logDebug({location:'app/api/listings/route.ts:44',message:'Prisma query succeeded',data:{count:listings.length},sessionId:'debug-session',runId:'run1',hypothesisId:'E'});
-    // #endregion
+    const listings = await prisma.listing.findMany({
+      where,
+      orderBy,
+      take: limit,
+    });
 
     // Format listings to match expected format
     const formatted = listings.map((listing: any) => ({
@@ -99,13 +53,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(formatted, {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
       },
     });
   } catch (error: any) {
-    // #region agent log
-    await logDebug({location:'app/api/listings/route.ts:72',message:'Error caught in listings API',data:{errorMessage:error?.message,errorName:error?.name,errorCode:error?.code,errorMeta:error?.meta,errorStack:error?.stack?.substring(0,500),hasDatabaseUrl:!!process.env.DATABASE_URL,databaseUrlPrefix:process.env.DATABASE_URL?.substring(0,30)},sessionId:'debug-session',runId:'run1',hypothesisId:'F'});
-    // #endregion
     console.error('Error fetching listings:', error);
     const errorResponse: any = { 
       error: 'Failed to fetch listings',

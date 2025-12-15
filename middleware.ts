@@ -1,21 +1,44 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import crypto from 'crypto';
 
-const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || crypto.randomBytes(32).toString('hex');
+// Use Web Crypto API for Edge Runtime compatibility
+const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'default-secret-change-in-production';
 
-// Verify token inline (to avoid circular fetch in middleware)
-function verifyTokenInline(token: string): boolean {
+// Convert string to ArrayBuffer
+function stringToArrayBuffer(str: string): ArrayBuffer {
+  const encoder = new TextEncoder();
+  return encoder.encode(str).buffer;
+}
+
+// Convert ArrayBuffer to hex string
+async function arrayBufferToHex(buffer: ArrayBuffer): Promise<string> {
+  const hashArray = Array.from(new Uint8Array(buffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Verify token inline using Web Crypto API (Edge Runtime compatible)
+async function verifyTokenInline(token: string): Promise<boolean> {
   try {
-    const decoded = Buffer.from(token, 'base64').toString('utf-8');
+    // Decode base64 token
+    const decoded = atob(token);
     const data = JSON.parse(decoded);
     
     const { signature, ...payload } = data;
     
-    const expectedSignature = crypto
-      .createHmac('sha256', TOKEN_SECRET)
-      .update(JSON.stringify(payload))
-      .digest('hex');
+    // Create HMAC signature using Web Crypto API
+    const keyData = stringToArrayBuffer(TOKEN_SECRET);
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    
+    const payloadString = JSON.stringify(payload);
+    const payloadBuffer = stringToArrayBuffer(payloadString);
+    const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, payloadBuffer);
+    const expectedSignature = await arrayBufferToHex(signatureBuffer);
     
     if (signature !== expectedSignature) {
       return false;
@@ -176,7 +199,12 @@ export async function middleware(request: NextRequest) {
     }
 
     // Verify token using inline verification (to avoid circular fetch)
-    const isValid = await verifyTokenInline(token);
+    let isValid = false;
+    try {
+      isValid = await verifyTokenInline(token);
+    } catch (error) {
+      isValid = false;
+    }
     
     if (!isValid) {
       // Invalid token, redirect to login

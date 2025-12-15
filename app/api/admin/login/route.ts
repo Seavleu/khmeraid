@@ -7,8 +7,19 @@ import crypto from 'crypto';
 const ADMIN_CREDENTIALS = {
   username: process.env.ADMIN_USERNAME || 'admin',
   // Password hash should be generated using: crypto.createHash('sha256').update('your_password').digest('hex')
-  passwordHash: process.env.ADMIN_PASSWORD_HASH || crypto.createHash('sha256').update(process.env.ADMIN_PASSWORD || 'changeme').digest('hex'),
+  // Default password is '092862336' (hash: 671ed2d75e8ddc913561013e68a0a78a80603c29f30374573dcf47c28536f996)
+  passwordHash: process.env.ADMIN_PASSWORD_HASH || crypto.createHash('sha256').update(process.env.ADMIN_PASSWORD || '092862336').digest('hex'),
 };
+
+// Log expected credentials at startup (for debugging)
+if (process.env.NODE_ENV === 'development') {
+  console.log('[ADMIN LOGIN] Expected credentials:', {
+    username: ADMIN_CREDENTIALS.username,
+    passwordHashPrefix: ADMIN_CREDENTIALS.passwordHash.substring(0, 20) + '...',
+    usingEnvPassword: !!process.env.ADMIN_PASSWORD,
+    usingEnvPasswordHash: !!process.env.ADMIN_PASSWORD_HASH
+  });
+}
 
 // Secret key for token signing (should be a strong random string in production)
 const TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || crypto.randomBytes(32).toString('hex');
@@ -71,9 +82,28 @@ function hashPassword(password: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  // #region agent log
+  console.log('[LOGIN DEBUG] Login POST called', {
+    hasAdminUsername: !!process.env.ADMIN_USERNAME,
+    hasAdminPassword: !!process.env.ADMIN_PASSWORD,
+    hasAdminPasswordHash: !!process.env.ADMIN_PASSWORD_HASH,
+    expectedUsername: ADMIN_CREDENTIALS.username,
+    expectedPasswordHashPrefix: ADMIN_CREDENTIALS.passwordHash.substring(0, 20)
+  });
+  fetch('http://127.0.0.1:7242/ingest/4f6cab59-3095-4364-9c6b-f783773990a5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/admin/login/route.ts:73',message:'Login POST called',data:{hasAdminUsername:!!process.env.ADMIN_USERNAME,hasAdminPassword:!!process.env.ADMIN_PASSWORD,hasAdminPasswordHash:!!process.env.ADMIN_PASSWORD_HASH,expectedUsername:ADMIN_CREDENTIALS.username,expectedPasswordHashPrefix:ADMIN_CREDENTIALS.passwordHash.substring(0,20)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
   try {
     const body = await request.json();
     const { username, password } = body;
+
+    // #region agent log
+    console.log('[LOGIN DEBUG] Request body parsed', {
+      username,
+      passwordLength: password?.length,
+      expectedUsername: ADMIN_CREDENTIALS.username
+    });
+    fetch('http://127.0.0.1:7242/ingest/4f6cab59-3095-4364-9c6b-f783773990a5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/admin/login/route.ts:76',message:'Request body parsed',data:{username,passwordLength:password?.length,expectedUsername:ADMIN_CREDENTIALS.username},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
 
     // Validate input
     if (!username || !password) {
@@ -86,8 +116,27 @@ export async function POST(request: NextRequest) {
     // Check credentials
     const passwordHash = hashPassword(password);
     
+    // #region agent log
+    console.log('[LOGIN DEBUG] Password hash comparison', {
+      usernameMatch: username === ADMIN_CREDENTIALS.username,
+      passwordHashMatch: passwordHash === ADMIN_CREDENTIALS.passwordHash,
+      expectedPasswordHashPrefix: ADMIN_CREDENTIALS.passwordHash.substring(0, 20),
+      receivedPasswordHashPrefix: passwordHash.substring(0, 20),
+      fullExpectedHash: ADMIN_CREDENTIALS.passwordHash,
+      fullReceivedHash: passwordHash
+    });
+    fetch('http://127.0.0.1:7242/ingest/4f6cab59-3095-4364-9c6b-f783773990a5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/admin/login/route.ts:87',message:'Password hash comparison',data:{usernameMatch:username===ADMIN_CREDENTIALS.username,passwordHashMatch:passwordHash===ADMIN_CREDENTIALS.passwordHash,expectedPasswordHashPrefix:ADMIN_CREDENTIALS.passwordHash.substring(0,20),receivedPasswordHashPrefix:passwordHash.substring(0,20),fullExpectedHash:ADMIN_CREDENTIALS.passwordHash,fullReceivedHash:passwordHash},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    
     if (username !== ADMIN_CREDENTIALS.username || 
         passwordHash !== ADMIN_CREDENTIALS.passwordHash) {
+      // #region agent log
+      console.log('[LOGIN DEBUG] Login failed - invalid credentials', {
+        usernameMatch: username === ADMIN_CREDENTIALS.username,
+        passwordHashMatch: passwordHash === ADMIN_CREDENTIALS.passwordHash
+      });
+      fetch('http://127.0.0.1:7242/ingest/4f6cab59-3095-4364-9c6b-f783773990a5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/admin/login/route.ts:90',message:'Login failed - invalid credentials',data:{usernameMatch:username===ADMIN_CREDENTIALS.username,passwordHashMatch:passwordHash===ADMIN_CREDENTIALS.passwordHash},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+      // #endregion
       // Add delay to prevent brute force attacks
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -96,6 +145,10 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/4f6cab59-3095-4364-9c6b-f783773990a5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/admin/login/route.ts:100',message:'Login successful',data:{username},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
 
     // Generate secure token
     const token = generateToken(username);

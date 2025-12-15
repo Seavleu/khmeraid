@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Noto_Sans_Khmer } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import GoogleMapsLoader from './components/GoogleMapsLoader'
 
 const notoSansKhmer = Noto_Sans_Khmer({ 
   subsets: ['khmer'],
@@ -31,7 +30,6 @@ export default function RootLayout({
         />
       </head>
       <body className={`${notoSansKhmer.className} ${notoSansKhmer.variable}`}>
-        <GoogleMapsLoader />
         <Providers>
           {children}
         </Providers>

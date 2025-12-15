@@ -10,39 +10,54 @@ datasource db {
 }
 
 model Listing {
-  id                String    @id @default(uuid())
-  title             String
-  type              String    // accommodation, fuel_service, volunteer_request, car_transportation, site_sponsor, school, event
-  area              String
-  exact_location    String?
-  location_consent Boolean   @default(false)
-  latitude          Float?
-  longitude         Float?
-  capacity_min      Int?
-  capacity_max      Int?
-  status            String    @default("open") // open, limited, full, paused
-  family_friendly   Boolean   @default(false)
-  notes             String?   @db.Text
-  contact_name      String?
-  contact_phone     String?
-  facebook_contact  String?
-  image_url         String?
-  reference_link    String?
-  google_maps_link  String?
-  duration_days     Int?
-  expires_at        DateTime?
-  verified          Boolean   @default(false)
-  opening_hours     String?
-  services_offered  String[]  @default([])
-  average_rating    Float?    @db.DoublePrecision
-  review_count      Int       @default(0)
-  event_date        DateTime? @db.Date
-  event_time        String?
-  event_end_date    DateTime? @db.Date
-  organizer_name    String?
-  organizer_contact String?
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  id                      String    @id @default(uuid())
+  title                   String
+  type                    String // accommodation, fuel_service, volunteer_request, car_transportation, site_sponsor, school, event, medical_care
+  area                    String
+  exact_location          String?
+  location_consent        Boolean   @default(false)
+  latitude                Float?
+  longitude               Float?
+  capacity_min            Int?
+  capacity_max            Int?
+  status                  String    @default("open") // open, limited, full, paused
+  family_friendly         Boolean   @default(false)
+  // Accessibility features
+  wheelchair_accessible   Boolean   @default(false)
+  accessible_parking      Boolean   @default(false)
+  accessible_restrooms    Boolean   @default(false)
+  accessible_entrance     Boolean   @default(false)
+  elevator_available      Boolean   @default(false)
+  ramp_available          Boolean   @default(false)
+  sign_language_available Boolean   @default(false)
+  braille_available       Boolean   @default(false)
+  hearing_loop_available  Boolean   @default(false)
+  // Medical care specific
+  medical_specialties     String[]  @default([]) // emergency, general, pharmacy, dental, mental_health, rehabilitation, equipment
+  emergency_services      Boolean   @default(false)
+  hours_24                Boolean   @default(false)
+  insurance_accepted      Boolean   @default(false)
+  notes                   String?   @db.Text
+  contact_name            String?
+  contact_phone           String?
+  facebook_contact        String?
+  image_url               String?
+  reference_link          String?
+  google_maps_link        String?
+  duration_days           Int?
+  expires_at              DateTime?
+  verified                Boolean   @default(false)
+  opening_hours           String?
+  services_offered        String[]  @default([])
+  average_rating          Float?    @db.DoublePrecision
+  review_count            Int       @default(0)
+  event_date              DateTime? @db.Date
+  event_time              String?
+  event_end_date          DateTime? @db.Date
+  organizer_name          String?
+  organizer_contact       String?
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
 
   @@index([type])
   @@index([status])
@@ -53,20 +68,20 @@ model Listing {
 }
 
 model HelpSeeker {
-  id                  String    @id @default(uuid())
-  name                String
-  phone               String
-  latitude            Float
-  longitude           Float
-  help_type           String    // medical, shelter, food, transportation, other
-  urgency             String    @default("medium") // low, medium, high, critical
-  status              String    @default("active") // active, helped, cancelled
-  notes               String?   @db.Text
-  last_updated        DateTime? @default(now())
-  shared_with_contacts String[] @default([])
-  share_token         String?   @unique
-  created_at          DateTime  @default(now())
-  updated_at          DateTime  @updatedAt
+  id                   String    @id @default(uuid())
+  name                 String
+  phone                String
+  latitude             Float
+  longitude            Float
+  help_type            String // medical, shelter, food, transportation, other
+  urgency              String    @default("medium") // low, medium, high, critical
+  status               String    @default("active") // active, helped, cancelled
+  notes                String?   @db.Text
+  last_updated         DateTime? @default(now())
+  shared_with_contacts String[]  @default([])
+  share_token          String?   @unique
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
 
   @@index([status])
   @@index([help_type])

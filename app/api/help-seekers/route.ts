@@ -1,23 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, appendFile } from 'fs/promises';
-import { join } from 'path';
-
-async function logDebug(data: any) {
-  // Only log in development mode
-  if (process.env.NODE_ENV !== 'development') return;
-  
-  try {
-    const logPath = join(process.cwd(), '.cursor', 'debug.log');
-    const logEntry = JSON.stringify({...data, timestamp: Date.now()}) + '\n';
-    await appendFile(logPath, logEntry, 'utf8').catch(() => {
-      // Try to create file if it doesn't exist
-      writeFile(logPath, logEntry, 'utf8').catch(() => {});
-    });
-  } catch (e) {
-    // Fallback to console in development
-    console.log('[DEBUG]', data);
-  }
-}
 
 export async function GET(request: NextRequest) {
   // During build time, return early
@@ -28,9 +9,6 @@ export async function GET(request: NextRequest) {
   // Dynamic import to avoid loading Prisma during build
   const { prisma } = await import('@/lib/prisma');
 
-  // #region agent log
-  await logDebug({location:'app/api/help-seekers/route.ts:11',message:'GET help-seekers API called',data:{hasPrisma:!!prisma,hasDatabaseUrl:!!process.env.DATABASE_URL},sessionId:'debug-session',runId:'run1',hypothesisId:'A'});
-  // #endregion
   try {
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
@@ -38,36 +16,16 @@ export async function GET(request: NextRequest) {
     const urgency = searchParams.get('urgency');
     const share_token = searchParams.get('share_token');
 
-    // #region agent log
-    await logDebug({location:'app/api/help-seekers/route.ts:20',message:'Query params parsed',data:{status,help_type,urgency,share_token},sessionId:'debug-session',runId:'run1',hypothesisId:'B'});
-    // #endregion
-
     const where: any = {};
     if (status) where.status = status;
     if (help_type) where.help_type = help_type;
     if (urgency) where.urgency = urgency;
     if (share_token) where.share_token = share_token;
 
-    // #region agent log
-    await logDebug({location:'app/api/help-seekers/route.ts:28',message:'Before Prisma query',data:{where},sessionId:'debug-session',runId:'run1',hypothesisId:'C'});
-    // #endregion
-
-    let helpSeekers;
-    try {
-      helpSeekers = await prisma.helpSeeker.findMany({
-        where,
-        orderBy: { created_at: 'desc' },
-      });
-    } catch (prismaError: any) {
-      // #region agent log
-      await logDebug({location:'app/api/help-seekers/route.ts:45',message:'Prisma query failed',data:{errorMessage:prismaError?.message,errorCode:prismaError?.code,errorName:prismaError?.name},sessionId:'debug-session',runId:'run1',hypothesisId:'G'});
-      // #endregion
-      throw prismaError;
-    }
-
-    // #region agent log
-    await logDebug({location:'app/api/help-seekers/route.ts:34',message:'Prisma query succeeded',data:{count:helpSeekers.length},sessionId:'debug-session',runId:'run1',hypothesisId:'D'});
-    // #endregion
+    const helpSeekers = await prisma.helpSeeker.findMany({
+      where,
+      orderBy: { created_at: 'desc' },
+    });
 
     // Format help seekers to match expected format
     const formatted = helpSeekers.map((helpSeeker: any) => ({
@@ -81,13 +39,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(formatted, {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
       },
     });
   } catch (error: any) {
-    // #region agent log
-    await logDebug({location:'app/api/help-seekers/route.ts:52',message:'Error caught in help-seekers API',data:{errorMessage:error?.message,errorName:error?.name,errorCode:error?.code,errorMeta:error?.meta,errorStack:error?.stack?.substring(0,500),hasDatabaseUrl:!!process.env.DATABASE_URL,databaseUrlPrefix:process.env.DATABASE_URL?.substring(0,30)},sessionId:'debug-session',runId:'run1',hypothesisId:'E'});
-    // #endregion
     console.error('Error fetching help seekers:', error);
     const errorResponse: any = { 
       error: 'Failed to fetch help seekers',

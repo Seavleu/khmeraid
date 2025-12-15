@@ -90,7 +90,7 @@ export default function AdminLogin() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            ចូលប្រើប្រាស់បន្ទះគ្រប់គ្រង
+            For Admin Only
           </CardTitle>
           <p className="text-sm text-gray-500">
             Admin Panel Login
@@ -108,7 +108,7 @@ export default function AdminLogin() {
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                 <User className="w-4 h-4" />
-                ឈ្មោះអ្នកប្រើប្រាស់
+                ID
               </label>
               <Input
                 id="username"
@@ -125,7 +125,7 @@ export default function AdminLogin() {
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                 <Lock className="w-4 h-4" />
-                ពាក្យសម្ងាត់
+                Password
               </label>
               <Input
                 id="password"
@@ -144,15 +144,9 @@ export default function AdminLogin() {
               disabled={loading}
               className="w-full bg-[#105090] hover:bg-[#0d3d6f] text-white font-bold h-11 rounded-lg"
             >
-              {loading ? 'កំពុងចូល...' : 'ចូលប្រើប្រាស់'}
+              {loading ? 'loading...' : 'login'}
             </Button>
           </form>
-
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <p className="text-xs text-center text-gray-500">
-              🔒 Secure authentication required
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

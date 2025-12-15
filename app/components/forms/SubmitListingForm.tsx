@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -14,18 +13,25 @@ import {
   Phone, Shield, Send, Loader2, CheckCircle, Car,
   Upload, Image as ImageIcon, Facebook
 } from 'lucide-react';
-import { secureApi } from '@/api/secureClient';
+import { supabaseApi } from '@/api/supabaseClient';
 
 interface SubmitListingFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
+import { 
+  Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
+  Phone, Shield, Send, Loader2, CheckCircle, Car,
+  Upload, Image as ImageIcon, Facebook, Stethoscope, Wheelchair
+} from 'lucide-react';
+
 const typeOptions = [
   { value: 'accommodation', label: 'ស្នាក់នៅ / ទីជម្រក', icon: Home, description: 'ផ្តល់កន្លែងស្នាក់នៅ' },
   { value: 'fuel_service', label: 'សេវាសាំង', icon: Fuel, description: 'ស្ថានីយសាំង ឬការដឹកជញ្ជូន' },
   { value: 'car_transportation', label: 'ដឹកជញ្ជូន', icon: Car, description: 'ផ្តល់សេវាដឹកជញ្ជូន' },
-  { value: 'volunteer_request', label: 'ត្រូវការស្ម័គ្រចិត្ត', icon: HeartHandshake, description: 'ត្រូវការជំនួយស្ម័គ្រចិត្ត' }
+  { value: 'volunteer_request', label: 'ត្រូវការស្ម័គ្រចិត្ត', icon: HeartHandshake, description: 'ត្រូវការជំនួយស្ម័គ្រចិត្ត' },
+  { value: 'medical_care', label: 'សេវាសុខាភិបាល', icon: Stethoscope, description: 'មន្ទីរពេទ្យ, ស្ថានីយ៍ពេទ្យ, ឱសថស្ថាន' }
 ];
 
 export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListingFormProps) {
@@ -65,7 +71,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
 
     setUploadingImage(true);
     try {
-      const { file_url } = await secureApi.integrations.Core.UploadFile(file);
+      const { file_url } = await supabaseApi.integrations.Core.UploadFile({ file });
       handleChange('image_url', file_url);
       setImagePreview(URL.createObjectURL(file));
     } catch (error) {
@@ -90,7 +96,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     };
 
     try {
-      await secureApi.entities.Listing.create(listingData);
+      await supabaseApi.entities.Listing.create(listingData);
       setSubmitted(true);
       setTimeout(() => {
         onSuccess?.();
@@ -247,15 +253,11 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
                 {imagePreview ? (
                   <div className="space-y-2">
-                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                      <Image 
-                        src={imagePreview} 
-                        alt="Preview" 
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    </div>
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
                     <Button
                       type="button"
                       variant="outline"

@@ -53,6 +53,7 @@ interface GoogleHelpMapProps {
   onRecenterRequest?: () => void;
   helpSeekers?: HelpSeeker[];
   onDrawnAreaChange?: (area: DrawnArea | null) => void;
+  centerLocation?: { lat: number; lng: number } | null;
 }
 
 // Declare global types for Google Maps Extended Component Library
@@ -84,7 +85,8 @@ export default function GoogleHelpMap({
   selectedListing,
   onRecenterRequest,
   helpSeekers = [],
-  onDrawnAreaChange
+  onDrawnAreaChange,
+  centerLocation
 }: GoogleHelpMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [selectedMarker, setSelectedMarker] = useState<Listing | HelpSeeker | null>(null);
@@ -440,6 +442,17 @@ export default function GoogleHelpMap({
     });
   }, [listings, helpSeekers, isInitialized, onSelectListing]);
 
+  // Center map when centerLocation changes
+  useEffect(() => {
+    if (!isInitialized || !centerLocation) return;
+    
+    const mapElement = document.querySelector('gmp-map') as any;
+    if (!mapElement?.innerMap) return;
+    
+    mapElement.innerMap.panTo(centerLocation);
+    mapElement.innerMap.setZoom(12);
+  }, [centerLocation, isInitialized]);
+
   const handleRecenter = useCallback(() => {
     if (userLocation) {
       const mapElement = document.querySelector('gmp-map') as any;
@@ -457,25 +470,22 @@ export default function GoogleHelpMap({
       {/* Google Maps Extended Component Library */}
       {GOOGLE_MAPS_API_KEY ? (
         <>
-          {/* API Loader - only render if one doesn't already exist globally */}
-          {typeof window !== 'undefined' && !document.querySelector('gmpx-api-loader') && (
-            <gmpx-api-loader 
-              ref={(el) => {
-                if (el && GOOGLE_MAPS_API_KEY) {
-                  // Set key immediately when element is available
-                  el.setAttribute('key', GOOGLE_MAPS_API_KEY);
-                  // Also set as property for web component
-                  try {
-                    (el as any).key = GOOGLE_MAPS_API_KEY;
-                  } catch (e) {
-                    // Ignore if property setting fails
-                  }
+          {/* API Loader - must be rendered first and have key set immediately */}
+          <gmpx-api-loader 
+            ref={(el) => {
+              if (el && GOOGLE_MAPS_API_KEY) {
+                // Set key immediately when element is available
+                el.setAttribute('key', GOOGLE_MAPS_API_KEY);
+                // Also set as property for web component
+                try {
+                  (el as any).key = GOOGLE_MAPS_API_KEY;
+                } catch (e) {
+                  // Ignore if property setting fails
                 }
-              }}
-              solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
-              style={{ display: 'none' }}
-            />
-          )}
+              }
+            }}
+            solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
+          />
           <gmp-map 
             center={`${defaultCenter.lat},${defaultCenter.lng}`}
             zoom="13"

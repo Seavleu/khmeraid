@@ -6,7 +6,7 @@ import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Badge } from '@/app/components/ui/badge';
-import { secureApi } from '@/api/secureClient';
+import { supabaseApi } from '@/api/supabaseClient';
 import { 
   AlertCircle, Phone, MapPin, Share2, Copy, Check,
   Heart, Home, Utensils, Car, HelpCircle, X
@@ -72,7 +72,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     try {
       // Check for active requests by phone number from form data
       if (formData.phone) {
-        const requests = await secureApi.entities.HelpSeeker.filter({ 
+        const requests = await supabaseApi.entities.HelpSeeker.filter({ 
           status: 'active' 
         });
         // Find request matching the phone number
@@ -93,7 +93,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          await secureApi.entities.HelpSeeker.update(activeRequest.id, {
+          await supabaseApi.entities.HelpSeeker.update(activeRequest.id, {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             last_updated: new Date().toISOString()
@@ -120,7 +120,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
         .map(c => c.trim())
         .filter(c => c);
 
-      const newRequest = await secureApi.entities.HelpSeeker.create({
+      const newRequest = await supabaseApi.entities.HelpSeeker.create({
         ...formData,
         latitude: userLocation[0],
         longitude: userLocation[1],

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { secureApi } from '@/api/secureClient';
+import { supabaseApi } from '@/api/supabaseClient';
 import Layout from '@/app/components/Layout';
 import { Button } from '@/app/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -15,7 +15,7 @@ import { Input } from '@/app/components/ui/input';
 
 import ListingCard from '@/app/components/help/ListingCard';
 // import FilterPanel from '@/app/components/help/FilterPanel';
-// import AISummary from '@/app/components/help/AISummary';
+import AISummary from '@/app/components/help/AISummary';
 import GoogleHelpMap from '@/app/components/help/GoogleHelpMap';
 import TextListView from '@/app/components/help/TextListView';
 import SafetyNotice from '@/app/components/help/SafetyNotice';
@@ -89,6 +89,15 @@ export default function Home() {
     familyFriendly: false,
     verifiedOnly: false
   });
+  
+  // Update map center when city filter changes
+  useEffect(() => {
+    if (filters.area && cityCenters[filters.area]) {
+      setSelectedCityCenter(cityCenters[filters.area]);
+    } else {
+      setSelectedCityCenter(null);
+    }
+  }, [filters.area, cityCenters]);
 
   // Monitor internet connectivity
   useEffect(() => {
@@ -123,7 +132,7 @@ export default function Home() {
   const { data: listings = [], isLoading, refetch } = useQuery({
     queryKey: ['listings'],
     queryFn: async () => {
-      const data = await secureApi.entities.Listing.list('-created_at', 100);
+      const data = await supabaseApi.entities.Listing.list('-created_at', 100);
       return data.map((item: any) => ({
         ...item,
         created_date: item.created_at || new Date().toISOString()
@@ -137,7 +146,7 @@ export default function Home() {
   // Fetch help seekers with real-time updates
   const { data: helpSeekers = [] } = useQuery<HelpSeeker[]>({
     queryKey: ['helpSeekers'],
-    queryFn: () => secureApi.entities.HelpSeeker.filter({ status: 'active' }),
+    queryFn: () => supabaseApi.entities.HelpSeeker.filter({ status: 'active' }),
     refetchInterval: isOnline ? 10000 : false,
     refetchIntervalInBackground: isOnline,
     enabled: isOnline || lowBandwidth
@@ -245,8 +254,48 @@ export default function Home() {
     return new Date(b.created_date).getTime() - new Date(a.created_date).getTime();
   });
 
-  // Get unique areas
+  // Get unique areas/cities
   const areas: string[] = [...new Set((listings || []).map((l: Listing) => l.area).filter(Boolean) as string[])];
+  
+  // Calculate city centers (average coordinates of listings in each city)
+  const cityCenters = useMemo(() => {
+    const centers: Record<string, { lat: number; lng: number; count: number }> = {};
+    
+    listings.forEach((listing) => {
+      if (listing.area && listing.latitude && listing.longitude) {
+        if (!centers[listing.area]) {
+          centers[listing.area] = { lat: 0, lng: 0, count: 0 };
+        }
+        centers[listing.area].lat += listing.latitude;
+        centers[listing.area].lng += listing.longitude;
+        centers[listing.area].count += 1;
+      }
+    });
+    
+    // Calculate averages
+    const result: Record<string, { lat: number; lng: number }> = {};
+    Object.keys(centers).forEach((city) => {
+      const center = centers[city];
+      result[city] = {
+        lat: center.lat / center.count,
+        lng: center.lng / center.count,
+      };
+    });
+    
+    return result;
+  }, [listings]);
+  
+  // Selected city center for map
+  const [selectedCityCenter, setSelectedCityCenter] = useState<{ lat: number; lng: number } | null>(null);
+  
+  // Update map center when city filter changes
+  useEffect(() => {
+    if (filters.area && cityCenters[filters.area]) {
+      setSelectedCityCenter(cityCenters[filters.area]);
+    } else {
+      setSelectedCityCenter(null);
+    }
+  }, [filters.area, cityCenters]);
 
   // Get user location
   const handleLocate = (): void => {
@@ -397,6 +446,7 @@ export default function Home() {
               onRecenterRequest={handleLocate}
               helpSeekers={helpSeekers}
               onDrawnAreaChange={setDrawnArea}
+              centerLocation={selectedCityCenter}
             />
           </div>
         ) : (
@@ -492,6 +542,27 @@ export default function Home() {
           <>
             {/* Top Controls Bar */}
             <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              {/* City Filter */}
+              {areas.length > 0 && (
+                <div className="bg-white rounded-full shadow-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#105090] flex-shrink-0" />
+                  <select
+                    value={filters.area || 'all'}
+                    onChange={(e) => {
+                      const area = e.target.value === 'all' ? null : e.target.value;
+                      setFilters({...filters, area});
+                    }}
+                    className="text-xs sm:text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer pr-4 appearance-none"
+                  >
+                    <option value="all">ទាំងអស់</option>
+                    {areas.sort().map((area) => (
+                      <option key={area} value={area}>
+                        {area}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {/* Filter Pills - Scrollable on mobile */}
               <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-2 flex-wrap max-w-[calc(100%-5rem)] sm:max-w-none overflow-x-auto scrollbar-hide">
                   {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event', 'site_sponsor', 'school'].map((type) => {
@@ -614,7 +685,11 @@ export default function Home() {
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            {/* <AISummary listings={filteredListings} userLocation={userArea} /> */}
+            <AISummary 
+              listings={filteredListings} 
+              userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : null}
+              selectedCity={filters.area || null}
+            />
           </div>
 
           {/* Sidebar Filters */}

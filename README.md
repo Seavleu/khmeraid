@@ -20,7 +20,7 @@ khmer-aid/
 │   └── admin/            # Admin components
 ├── pages/                # Page components (used by app routes)
 ├── api/                  # API client
-│   └── base44Client.ts   # Base44 API client (needs configuration)
+│   └── supabaseClient.ts   # API client (needs configuration)
 └── lib/                  # Utilities
     └── utils.ts          # Utility functions
 ```
@@ -32,9 +32,8 @@ khmer-aid/
    npm install
    ```
 
-2. **Configure the Base44 API client:**
-   - Edit `api/base44Client.ts` and add your Base44 SDK configuration
-   - The current file is a placeholder and needs to be configured with your actual Base44 credentials
+2. **Configure the API client:**
+   - The current file is a placeholder and needs to be configured with your actual Supabase credentials
 
 3. **Run the development server:**
    ```bash
@@ -58,10 +57,47 @@ khmer-aid/
 - `/` - Home page with map and listings
 - `/admin` - Admin dashboard for managing listings
 
+## Admin Authentication
+
+The admin route (`/admin`) is protected with secure authentication and IP blocking.
+
+### Setup
+
+1. **Generate password hash:**
+   ```bash
+   node scripts/generate-password-hash.js your_secure_password
+   ```
+
+2. **Generate token secret:**
+   ```bash
+   node scripts/generate-token-secret.js
+   ```
+
+3. **Add to `.env.local`:**
+   ```env
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD_HASH=<generated_hash>
+   ADMIN_TOKEN_SECRET=<generated_secret>
+   ```
+
+### Security Features
+
+- **IP Blocking**: All connections from set country are automatically blocked
+- **Secure Tokens**: HMAC-SHA256 signed tokens with expiration (24 hours)
+- **HTTP-Only Cookies**: Tokens stored in secure, HTTP-only cookies
+- **Password Hashing**: SHA-256 hashed passwords (not stored in plain text)
+- **Brute Force Protection**: 1-second delay on failed login attempts
+
+### Access
+
+- Navigate to `/admin/login` to access the admin panel
+- Default credentials can be set via environment variables
+- Logout button available in the admin header
+
 ## Next Steps
 
-1. Configure your Base44 API client in `api/base44Client.ts`
-2. Set up environment variables if needed (create `.env.local`)
+1. Set up environment variables (create `.env.local`)
+2. Generate admin credentials using the scripts above
 3. Customize the UI components as needed
 4. Add any additional routes or features
 
