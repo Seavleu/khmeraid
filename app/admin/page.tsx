@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabaseApi } from '@/api/supabaseClient';
+import { secureApi } from '@/api/secureClient';
 import Layout from '@/app/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
@@ -13,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/ta
 import { 
   CheckCircle, XCircle, Pause, Play, Trash2, Search,
   Home, Fuel, HeartHandshake, Eye, Clock, AlertTriangle,
-  Users, TrendingUp, Car, Edit, MapPin
+  Users, TrendingUp, Car, Edit, MapPin, LogOut
 } from 'lucide-react';
 import EditListingDialog from '@/app/components/admin/EditListingDialog';
 
@@ -46,16 +47,66 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 };
 
 export default function Admin() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const queryClient = useQueryClient();
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/admin/verify');
+        if (response.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          router.push('/admin/login');
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        router.push('/admin/login');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  // Show loading state while checking authentication
+  if (isAuthenticated === null) {
+    return (
+      <Layout currentPageName="Admin">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#105090] mx-auto mb-4"></div>
+            <p className="text-gray-600">កំពុងផ្ទៀងផ្ទាត់...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Don't render admin content if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const { data: listings = [], isLoading } = useQuery({
     queryKey: ['admin-listings'],
     queryFn: async () => {
-      const data = await supabaseApi.entities.Listing.list('-created_at', 500);
+      const data = await secureApi.entities.Listing.list('-created_at', 500);
       return data.map((item: any) => ({
         ...item,
         created_date: item.created_at || new Date().toISOString()
@@ -64,12 +115,12 @@ export default function Admin() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Listing> }) => supabaseApi.entities.Listing.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Listing> }) => secureApi.entities.Listing.update(id, data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-listings'] })
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => supabaseApi.entities.Listing.delete(id),
+    mutationFn: (id: string) => secureApi.entities.Listing.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-listings'] })
   });
 
@@ -130,6 +181,15 @@ export default function Admin() {
             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">បន្ទះគ្រប់គ្រង</h1>
             <p className="text-xs sm:text-sm text-gray-500">គ្រប់គ្រងការផ្តល់ជំនួយ និងផ្ទៀងផ្ទាត់ការដាក់ស្នើ</p>
           </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">ចេញ</span>
+          </Button>
         </div>
 
         {/* Stats */}
