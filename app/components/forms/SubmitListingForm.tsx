@@ -271,7 +271,8 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               // Update form data
               handleChange('latitude', lat);
               handleChange('longitude', lng);
-              handleChange('exact_location', place.formattedAddress || place.name || formData.exact_location);
+              // Use place's formatted address or name, fallback to empty string to avoid dependency
+              handleChange('exact_location', place.formattedAddress || place.name || '');
 
               // Update marker
               if (markerRef.current) {
