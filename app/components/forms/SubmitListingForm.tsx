@@ -11,7 +11,7 @@ import { Checkbox } from '@/app/components/ui/checkbox';
 import { 
   Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
   Phone, Shield, Send, Loader2, CheckCircle, Car,
-  Facebook, Stethoscope, Wheelchair, X
+  Facebook, Stethoscope, X
 } from 'lucide-react';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
