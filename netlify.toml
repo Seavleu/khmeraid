@@ -1,11 +1,10 @@
 [build]
   command = "npm run build"
-  publish = ".next"
 
 # Next.js plugin is automatically detected by Netlify
-# No need to explicitly add it, but you can if needed:
-# [[plugins]]
-#   package = "@netlify/plugin-nextjs"
+# The plugin handles the publish directory automatically
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [build.environment]
   NODE_VERSION = "20"
