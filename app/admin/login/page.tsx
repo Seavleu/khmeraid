@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Shield, Lock, User, AlertCircle } from 'lucide-react';
 
-export default function AdminLogin() {
+function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [username, setUsername] = useState('');
@@ -150,6 +150,25 @@ export default function AdminLogin() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-2 border-gray-200 shadow-2xl">
+          <CardContent className="p-8 text-center">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <AdminLoginForm />
+    </Suspense>
   );
 }
 
