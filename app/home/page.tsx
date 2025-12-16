@@ -21,6 +21,7 @@ import SafetyNotice from '@/app/components/help/SafetyNotice';
 import SubmitListingForm from '@/app/components/forms/SubmitListingForm';
 import DetailedListingDialog from '@/app/components/help/DetailedListingDialog';
 import SeekHelpDialog from '@/app/components/help/SeekHelpDialog';
+import DangerousZones from '@/app/components/help/DangerousZones';
 // import FilterSummaryPanel from '@/app/components/help/FilterSummaryPanel';
 
 interface Listing {
@@ -257,7 +258,7 @@ export default function Home() {
   const cityCenters = useMemo(() => {
     const centers: Record<string, { lat: number; lng: number; count: number }> = {};
     
-    listings.forEach((listing) => {
+    listings.forEach((listing: Listing) => {
       if (listing.area && listing.latitude && listing.longitude) {
         if (!centers[listing.area]) {
           centers[listing.area] = { lat: 0, lng: 0, count: 0 };
@@ -486,6 +487,31 @@ export default function Home() {
                 />
               </div>
 
+              {/* City Filter for Offline Mode */}
+              {areas.length > 0 && (
+                <div className="bg-gray-50 rounded-lg p-2 sm:p-2.5 border border-gray-200">
+                  <label className="text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#105090]" />
+                    តម្រងតាមទីក្រុង
+                  </label>
+                  <select
+                    value={filters.area || 'all'}
+                    onChange={(e) => {
+                      const area = e.target.value === 'all' ? null : e.target.value;
+                      setFilters({...filters, area});
+                    }}
+                    className="w-full text-xs sm:text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 outline-none focus:ring-2 focus:ring-[#105090] focus:border-[#105090]"
+                  >
+                    <option value="all">ទាំងអស់</option>
+                    {areas.sort().map((area) => (
+                      <option key={area} value={area}>
+                        {area}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Quick Filters */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => {
@@ -688,6 +714,9 @@ export default function Home() {
               userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : null}
               selectedCity={filters.area || null}
             />
+            <div className="mt-2 sm:mt-3">
+              <DangerousZones />
+            </div>
           </div>
 
           {/* Sidebar Filters */}

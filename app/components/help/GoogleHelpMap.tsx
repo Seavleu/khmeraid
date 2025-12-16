@@ -8,6 +8,7 @@ import {
   CheckCircle, ShieldCheck, ExternalLink, User, MapPin as LocationIcon
 } from 'lucide-react';
 import ListingCard from '@/app/components/help/ListingCard';
+import { DANGEROUS_ZONES_DATA } from '@/app/components/help/DangerousZones';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
@@ -97,6 +98,7 @@ export default function GoogleHelpMap({
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const userLocationCircleRef = useRef<google.maps.Circle | null>(null);
+  const dangerousZonesRef = useRef<google.maps.Circle[]>([]);
 
   const defaultCenter = { lat: 11.5564, lng: 104.9282 }; // Phnom Penh, Cambodia
 
@@ -357,6 +359,66 @@ export default function GoogleHelpMap({
       }
     };
   }, [userLocation, isInitialized]);
+
+  // Create dangerous zone overlays
+  useEffect(() => {
+    if (!isInitialized || !window.google?.maps) return;
+
+    const mapElement = document.querySelector('gmp-map') as any;
+    if (!mapElement?.innerMap) return;
+
+    // Clear existing dangerous zone circles
+    dangerousZonesRef.current.forEach(circle => {
+      circle.setMap(null);
+    });
+    dangerousZonesRef.current = [];
+
+    // Create circles for red zones (dangerous)
+    DANGEROUS_ZONES_DATA.red.forEach(zone => {
+      const coords = DANGEROUS_ZONES_DATA.coordinates[zone as keyof typeof DANGEROUS_ZONES_DATA.coordinates];
+      if (coords) {
+        const circle = new google.maps.Circle({
+          map: mapElement.innerMap,
+          center: coords,
+          radius: 50000, // 50km radius - adjust as needed
+          fillColor: '#DC2626', // Red
+          fillOpacity: 0.2,
+          strokeColor: '#DC2626',
+          strokeOpacity: 0.6,
+          strokeWeight: 2,
+          zIndex: 0,
+        });
+        dangerousZonesRef.current.push(circle);
+      }
+    });
+
+    // Create circles for orange zones (alert)
+    DANGEROUS_ZONES_DATA.orange.forEach(zone => {
+      const coords = DANGEROUS_ZONES_DATA.coordinates[zone as keyof typeof DANGEROUS_ZONES_DATA.coordinates];
+      if (coords) {
+        const circle = new google.maps.Circle({
+          map: mapElement.innerMap,
+          center: coords,
+          radius: 50000, // 50km radius - adjust as needed
+          fillColor: '#F97316', // Orange
+          fillOpacity: 0.15,
+          strokeColor: '#F97316',
+          strokeOpacity: 0.5,
+          strokeWeight: 2,
+          zIndex: 0,
+        });
+        dangerousZonesRef.current.push(circle);
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      dangerousZonesRef.current.forEach(circle => {
+        circle.setMap(null);
+      });
+      dangerousZonesRef.current = [];
+    };
+  }, [isInitialized]);
 
   // Create markers for listings
   useEffect(() => {
