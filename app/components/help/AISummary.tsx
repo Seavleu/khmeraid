@@ -119,86 +119,86 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
   };
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl shadow-2xl overflow-hidden">
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-100 rounded-full">
-              <Sparkles className="w-4 h-4 text-blue-600" />
+    <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 sm:border-2 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-2xl overflow-hidden">
+      <CardContent className="p-2 sm:p-3 md:p-4">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="p-1.5 sm:p-2 bg-blue-100 rounded-full">
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
             </div>
-            <h3 className="font-bold text-sm sm:text-base text-gray-900">សង្ខេប AI</h3>
+            <h3 className="font-bold text-xs sm:text-sm md:text-base text-gray-900">សង្ខេប AI</h3>
           </div>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={generateSummary}
             disabled={loading}
-            className="h-8 w-8 p-0"
+            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
 
         {/* Stats Pills */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-2 sm:mb-3">
           {safeStats.accommodation.total > 0 && (
-            <Badge className="bg-blue-100 text-blue-700 border-blue-200 px-2 py-1 flex items-center gap-1">
-              <Home className="w-3 h-3" />
-              <span className="font-semibold text-xs">{safeStats.accommodation.total}</span>
+            <Badge className="bg-blue-100 text-blue-700 border-blue-200 px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-0.5 sm:gap-1">
+              <Home className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span className="font-semibold text-[10px] sm:text-xs">{safeStats.accommodation.total}</span>
             </Badge>
           )}
           {safeStats.fuel_service.total > 0 && (
-            <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-2 py-1 flex items-center gap-1">
-              <Fuel className="w-3 h-3" />
-              <span className="font-semibold text-xs">{safeStats.fuel_service.total}</span>
+            <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-0.5 sm:gap-1">
+              <Fuel className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span className="font-semibold text-[10px] sm:text-xs">{safeStats.fuel_service.total}</span>
             </Badge>
           )}
           {safeStats.car_transportation.total > 0 && (
-            <Badge className="bg-green-100 text-green-700 border-green-200 px-2 py-1 flex items-center gap-1">
-              <Car className="w-3 h-3" />
-              <span className="font-semibold text-xs">{safeStats.car_transportation.total}</span>
+            <Badge className="bg-green-100 text-green-700 border-green-200 px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-0.5 sm:gap-1">
+              <Car className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span className="font-semibold text-[10px] sm:text-xs">{safeStats.car_transportation.total}</span>
             </Badge>
           )}
           {safeStats.volunteer_request.total > 0 && (
-            <Badge className="bg-purple-100 text-purple-700 border-purple-200 px-2 py-1 flex items-center gap-1">
-              <HeartHandshake className="w-3 h-3" />
-              <span className="font-semibold text-xs">{safeStats.volunteer_request.total}</span>
+            <Badge className="bg-purple-100 text-purple-700 border-purple-200 px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-0.5 sm:gap-1">
+              <HeartHandshake className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span className="font-semibold text-[10px] sm:text-xs">{safeStats.volunteer_request.total}</span>
             </Badge>
           )}
         </div>
 
         {/* AI Summary Text */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-gray-200 p-3 mb-3">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl border border-gray-200 sm:border-2 p-2 sm:p-2.5 md:p-3 mb-2 sm:mb-3 max-h-24 sm:max-h-32 md:max-h-none overflow-y-auto">
           {loading ? (
-            <div className="flex items-center gap-2 text-gray-500 text-xs">
-              <RefreshCw className="w-3 h-3 animate-spin" />
+            <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 text-[10px] sm:text-xs">
+              <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-spin" />
               <span>កំពុងបង្កើតសង្ខេប...</span>
             </div>
           ) : error ? (
-            <p className="text-red-600 text-xs">{error}</p>
+            <p className="text-red-600 text-[10px] sm:text-xs">{error}</p>
           ) : summaryData ? (
-            <p className="text-gray-800 text-xs sm:text-sm leading-relaxed">{summaryData.summary}</p>
+            <p className="text-gray-800 text-[10px] sm:text-xs md:text-sm leading-relaxed">{summaryData.summary}</p>
           ) : (
-            <p className="text-gray-500 text-xs">កំពុងផ្ទុក...</p>
+            <p className="text-gray-500 text-[10px] sm:text-xs">កំពុងផ្ទុក...</p>
           )}
         </div>
 
         {/* Location Suggestions */}
         {summaryData && summaryData.suggestions.length > 0 && (
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl border-2 border-gray-200 p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-3.5 h-3.5 text-blue-600" />
-              <h4 className="font-semibold text-xs text-gray-900">តំបន់ផ្សេងទៀតដែលមានជំនួយ:</h4>
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl border border-gray-200 sm:border-2 p-2 sm:p-2.5 md:p-3">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600" />
+              <h4 className="font-semibold text-[10px] sm:text-xs text-gray-900">តំបន់ផ្សេងទៀតដែលមានជំនួយ:</h4>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5">
               {summaryData.suggestions.map((area) => (
                 <Badge 
                   key={area}
                   variant="outline"
-                  className="text-xs px-2 py-1 cursor-pointer hover:bg-blue-50 transition-colors"
+                  className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 cursor-pointer hover:bg-blue-50 transition-colors"
                 >
                   {area}
-                  <ArrowRight className="w-2.5 h-2.5 ml-1" />
+                  <ArrowRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-0.5 sm:ml-1" />
                 </Badge>
               ))}
             </div>
