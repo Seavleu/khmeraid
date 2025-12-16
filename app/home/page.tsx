@@ -739,30 +739,32 @@ export default function Home() {
             </div>
 
             {/* Sidebar Filters - Minimal and Compact */}
-            <div className="p-1.5 sm:p-2 border-b bg-white space-y-1.5 sm:space-y-2">
-              {/* City Filter - Compact */}
-            {areas.length > 0 && (
-              <div className="bg-gray-50 rounded-lg p-1.5 sm:p-2 border border-gray-200">
-                <select
-                  value={filters.area || 'all'}
-                  onChange={(e) => {
-                    const area = e.target.value === 'all' ? null : e.target.value;
-                    setFilters({...filters, area});
-                  }}
-                  className="w-full text-[10px] sm:text-xs font-medium text-gray-900 bg-white border border-gray-300 rounded-md px-2 py-1 sm:py-1.5 outline-none focus:ring-1 focus:ring-[#105090] focus:border-[#105090]"
-                >
-                  <option value="all">ទាំងអស់</option>
-                  {areas.sort().map((area) => (
-                    <option key={area} value={area}>
-                      {area}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            <div className="p-1.5 sm:p-2 border-b bg-white">
+              {/* City Filter and Icon Filters - Same Line */}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* City Filter - Compact */}
+                {areas.length > 0 && (
+                  <div className="bg-gray-50 rounded-lg p-1.5 sm:p-2 border border-gray-200 flex-shrink-0">
+                    <select
+                      value={filters.area || 'all'}
+                      onChange={(e) => {
+                        const area = e.target.value === 'all' ? null : e.target.value;
+                        setFilters({...filters, area});
+                      }}
+                      className="text-[10px] sm:text-xs font-medium text-gray-900 bg-white border border-gray-300 rounded-md px-2 py-1 sm:py-1.5 outline-none focus:ring-1 focus:ring-[#105090] focus:border-[#105090] min-w-[80px] sm:min-w-[100px]"
+                    >
+                      <option value="all">ទាំងអស់</option>
+                      {areas.sort().map((area) => (
+                        <option key={area} value={area}>
+                          {area}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-            {/* Quick Type Filters - Single Scrollable Line */}
-            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide flex-nowrap">
+                {/* Quick Type Filters - Single Scrollable Line */}
+                <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide flex-nowrap flex-1 min-w-0">
               {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'medical_care', 'event', 'site_sponsor', 'school'].map((type) => {
                 const getIcon = () => {
                   switch(type) {
@@ -812,7 +814,8 @@ export default function Home() {
                   </Button>
                 );
               })}
-            </div>
+                </div>
+              </div>
 
             {/* More Filters Button */}
             {/* <Button
