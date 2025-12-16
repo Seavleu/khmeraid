@@ -5,10 +5,11 @@ import { Button } from '@/app/components/ui/button';
 import { 
   Phone, X, Navigation, ChevronUp, AlertCircle, 
   Home, Fuel, Car, HeartHandshake, Clock, MapPin, School,
-  CheckCircle, ShieldCheck, ExternalLink, User, MapPin as LocationIcon
+  CheckCircle, ShieldCheck, ExternalLink, User, MapPin as LocationIcon, Search
 } from 'lucide-react';
 import ListingCard from '@/app/components/help/ListingCard';
 import { DANGEROUS_ZONES_DATA } from '@/app/components/help/DangerousZones';
+import DangerousZonesMarquee from '@/app/components/help/DangerousZonesMarquee';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
@@ -95,6 +96,7 @@ export default function GoogleHelpMap({
   const [mapError, setMapError] = useState<string | null>(null);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [sheetHeight, setSheetHeight] = useState<'partial' | 'full'>('partial');
+  const [showSearchBar, setShowSearchBar] = useState(false);
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const userLocationCircleRef = useRef<google.maps.Circle | null>(null);
@@ -233,19 +235,24 @@ export default function GoogleHelpMap({
           const place = placePickerElement.value;
           
           if (!place?.location) {
-            infoWindowRef.current?.close();
             return;
           }
 
           if (place.viewport && mapElement.innerMap) {
             mapElement.innerMap.fitBounds(place.viewport);
-          } else {
-            mapElement.setAttribute('center', `${place.location.lat()},${place.location.lng()}`);
+          } else if (place.location) {
+            const lat = place.location.lat();
+            const lng = place.location.lng();
+            mapElement.setAttribute('center', `${lat},${lng}`);
             mapElement.setAttribute('zoom', '17');
           }
         };
 
         placePickerElement.addEventListener('gmpx-placechange', handlePlaceChange);
+        
+        return () => {
+          placePickerElement.removeEventListener('gmpx-placechange', handlePlaceChange);
+        };
       }
     }, 500);
 
@@ -529,6 +536,9 @@ export default function GoogleHelpMap({
 
   return (
     <div ref={mapContainerRef} className="w-full h-full relative touch-pan-x touch-pan-y" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
+      {/* Dangerous Zones Marquee Banner - Bottom of Map */}
+      <DangerousZonesMarquee />
+      
       {/* Google Maps Extended Component Library */}
       {GOOGLE_MAPS_API_KEY ? (
         <>
@@ -555,14 +565,56 @@ export default function GoogleHelpMap({
             className="w-full h-full"
             style={{ touchAction: 'pan-x pan-y pinch-zoom' }}
           >
-            {/* Only render place picker after API is initialized */}
-            {isInitialized && (
-              <div slot="control-block-start-inline-start" className="p-5">
-                <gmpx-place-picker placeholder="បញ្ចូលអាសយដ្ឋាន"></gmpx-place-picker>
-                        </div>
-                      )}
             <gmp-advanced-marker></gmp-advanced-marker>
           </gmp-map>
+
+          {/* Place Picker - Collapsible Search Icon (Mobile) / Always Visible (Desktop) */}
+          {isInitialized && (
+            <div className="absolute top-14 sm:top-18 left-2 sm:left-4 z-20">
+              {/* Mobile: Search Icon Button */}
+              <div className="sm:hidden">
+                {!showSearchBar ? (
+                  <Button
+                    onClick={() => setShowSearchBar(true)}
+                    className="bg-white shadow-lg rounded-full h-9 w-9 p-0"
+                    variant="ghost"
+                    size="sm"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1 overflow-hidden animate-in slide-in-from-left-2 duration-200">
+                    <div className="flex items-center gap-1">
+                      <div className="flex-1 min-w-0">
+                        <gmpx-place-picker 
+                          placeholder="ស្វែងរក..." 
+                          className="w-full compact-place-picker"
+                        />
+                      </div>
+                      <Button
+                        onClick={() => setShowSearchBar(false)}
+                        className="h-7 w-7 p-0 flex-shrink-0"
+                        variant="ghost"
+                        size="sm"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Desktop: Always Visible Search Bar */}
+              <div className="hidden sm:block w-[160px] md:w-[200px]">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1 overflow-hidden">
+                  <gmpx-place-picker 
+                    placeholder="ស្វែងរក..." 
+                    className="w-full compact-place-picker"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Error Message */}
           {mapError && (

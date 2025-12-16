@@ -3,6 +3,7 @@
 import React from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Phone, MapPin, Users, Clock, CheckCircle, AlertCircle, Baby, Home, Fuel, Car, HeartHandshake, XCircle, PauseCircle } from 'lucide-react';
+import DangerousZonesMarquee from './DangerousZonesMarquee';
 
 interface Listing {
   id: string;
@@ -75,7 +76,12 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative pb-12">
+      {/* Dangerous Zones Marquee - Fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <DangerousZonesMarquee />
+      </div>
+      
       {/* Running Text Banner */}
       <div className="bg-[#105090] border-2 border-[#0d3d6f] rounded-2xl p-3 overflow-hidden relative shadow-2xl">
         <div className="flex items-center gap-3">
@@ -85,10 +91,10 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
           <div className="flex-1 overflow-hidden relative">
             <div className="flex animate-marquee whitespace-nowrap">
               <span className="text-sm sm:text-base font-bold text-white inline-block px-4">
-                ⚠️ របៀបបណ្តាញយឺត — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត — សូមទូរស័ព្ទទៅខ្សែបន្ទាន់សម្រាប់ជំនួយ — 
+                ⚠️ តំបន់ក្រហម៖ បាត់ដំបង ឧត្តរមានជ័យ បន្ទាយមានជ័យ ពោធិសាត់ កោះកុង ព្រះវិហារ — តំបន់ទឹកក្រូច៖ សៀមរាប
               </span>
               <span className="text-sm sm:text-base font-bold text-white inline-block px-4">
-                ⚠️ របៀបបណ្តាញយឺត — ទិដ្ឋភាពអត្ថបទតែប៉ុណ្ណោះសម្រាប់ការតភ្ជាប់យឺត — សូមទូរស័ព្ទទៅខ្សែបន្ទាន់សម្រាប់ជំនួយ — 
+              ⚠️ តំបន់ក្រហម៖ បាត់ដំបង ឧត្តរមានជ័យ បន្ទាយមានជ័យ ពោធិសាត់ កោះកុង ព្រះវិហារ — តំបន់ទឹកក្រូច៖ សៀមរាប — 
               </span>
             </div>
           </div>

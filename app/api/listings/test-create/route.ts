@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 
+// Use Node.js runtime for Supabase compatibility
+export const runtime = 'nodejs';
+
 /**
  * Test endpoint to verify listing creation works
  * POST /api/listings/test-create

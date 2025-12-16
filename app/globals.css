@@ -106,3 +106,95 @@ html {
   }
 }
 
+/* Marquee animation for dangerous zones banner */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Compact Google Place Picker styling for mobile */
+gmpx-place-picker {
+  --gmpx-color-surface: #ffffff;
+  --gmpx-color-on-surface: #1f2937;
+  --gmpx-color-primary: #105090;
+  --gmpx-font-family-base: var(--font-khmer), 'Noto Sans Khmer', sans-serif;
+}
+
+/* Make place picker more compact on mobile */
+@media (max-width: 640px) {
+  gmpx-place-picker {
+    font-size: 12px !important;
+    min-height: 32px !important;
+  }
+  
+  gmpx-place-picker::part(input) {
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+    height: 32px !important;
+  }
+}
+
+/* Compact Google Place Picker styling for mobile */
+gmpx-place-picker.compact-place-picker,
+gmpx-place-picker {
+  --gmpx-color-surface: #ffffff;
+  --gmpx-color-on-surface: #1f2937;
+  --gmpx-color-primary: #105090;
+  --gmpx-font-family-base: var(--font-khmer), 'Noto Sans Khmer', sans-serif;
+  display: block;
+  width: 100%;
+  font-size: 11px !important;
+}
+
+/* Make place picker input much smaller on mobile */
+gmpx-place-picker.compact-place-picker::part(input),
+gmpx-place-picker::part(input) {
+  height: 28px !important;
+  min-height: 28px !important;
+  font-size: 11px !important;
+  padding: 4px 6px !important;
+  border: none !important;
+  outline: none !important;
+  line-height: 1.2 !important;
+}
+
+/* Even smaller on very small screens */
+@media (max-width: 375px) {
+  gmpx-place-picker.compact-place-picker,
+  gmpx-place-picker {
+    font-size: 10px !important;
+  }
+  
+  gmpx-place-picker.compact-place-picker::part(input),
+  gmpx-place-picker::part(input) {
+    height: 26px !important;
+    min-height: 26px !important;
+    font-size: 10px !important;
+    padding: 3px 5px !important;
+  }
+}
+
+/* Slightly larger on desktop */
+@media (min-width: 640px) {
+  gmpx-place-picker.compact-place-picker,
+  gmpx-place-picker {
+    font-size: 13px !important;
+  }
+  
+  gmpx-place-picker.compact-place-picker::part(input),
+  gmpx-place-picker::part(input) {
+    height: 34px !important;
+    min-height: 34px !important;
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+  }
+}
+

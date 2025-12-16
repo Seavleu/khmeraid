@@ -11,17 +11,17 @@ interface DangerousZonesProps {
 
 // Define dangerous zones
 const RED_ZONES = [
-  'Battambang',
-  'Oudar Meanchey',
-  'Banteay Meanchey',
-  'Pursat',
-  'Koh Kong',
-  'Preah Vihear'
+  'បាត់ដំបង',
+'ឧត្តរមានជ័យ',
+'បន្ទាយមានជ័យ',
+'ពោធិសាត់',
+  'កោះកុង',
+  'ព្រះវិហារ'
 ];
 
 const ORANGE_ZONES = [
-  'Siem Reap'
-];
+  'សៀមរាប'
+]; 
 
 export default function DangerousZones({ className = '' }: DangerousZonesProps) {
   return (

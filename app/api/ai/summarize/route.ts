@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Use Node.js runtime for external API calls
+export const runtime = 'nodejs';
+
 // Hugging Face API configuration
 const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models';
 const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY || '';

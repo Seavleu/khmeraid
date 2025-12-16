@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 
+// Use Node.js runtime for Supabase compatibility
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   // During build time, return early
   if (process.env.NEXT_PHASE === 'phase-production-build') {

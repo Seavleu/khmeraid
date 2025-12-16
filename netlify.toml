@@ -1,0 +1,42 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Next.js plugin is automatically detected by Netlify
+# No need to explicitly add it, but you can if needed:
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Next.js App Router redirects are handled automatically by Netlify
+# The following is optional and only needed for custom routing
+
+# Cache configuration
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/_next/image"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# API routes caching
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "public, s-maxage=30, stale-while-revalidate=60"
+

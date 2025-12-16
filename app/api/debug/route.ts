@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 
+// Use Node.js runtime for Supabase compatibility
+export const runtime = 'nodejs';
+
 // Debug endpoint to check environment and Supabase setup
 export async function GET() {
   const diagnostics: any = {

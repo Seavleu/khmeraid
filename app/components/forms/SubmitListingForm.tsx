@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -11,8 +11,37 @@ import { Checkbox } from '@/app/components/ui/checkbox';
 import { 
   Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
   Phone, Shield, Send, Loader2, CheckCircle, Car,
-  Facebook, Stethoscope, Wheelchair
+  Facebook, Stethoscope, Wheelchair, X
 } from 'lucide-react';
+
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+
+// Declare global types for Google Maps Extended Component Library
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'gmpx-api-loader': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        'solution-channel'?: string;
+      }, HTMLElement>;
+      'gmp-map': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        center?: string;
+        zoom?: string;
+        'map-id'?: string;
+      }, HTMLElement & { innerMap?: google.maps.Map }>;
+      'gmp-advanced-marker': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        position?: google.maps.LatLng | null;
+      }, HTMLElement>;
+      'gmpx-place-picker': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        placeholder?: string;
+      }, HTMLElement & { value?: any }>;
+    }
+  }
+}
+
+const defaultCenter = {
+  lat: 11.5564,
+  lng: 104.9282
+};
 
 interface SubmitListingFormProps {
   onSuccess?: () => void;
@@ -31,6 +60,10 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [showMapPicker, setShowMapPicker] = useState<boolean>(false);
+  const [isMapInitialized, setIsMapInitialized] = useState(false);
+  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     type: '',
@@ -71,14 +104,239 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Create marker function
+  const createMarker = useCallback((lat: number, lng: number, map: google.maps.Map) => {
+    if (markerRef.current) {
+      markerRef.current.map = null;
+    }
+    
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      map,
+      position: { lat, lng },
+      title: 'Selected Location',
+      gmpDraggable: true
+    });
+
+    // Add drag end listener to update position
+    marker.addListener('dragend', (e: any) => {
+      const position = e.latLng || (e.target?.position || marker.position);
+      if (position) {
+        let newLat: number, newLng: number;
+        if (typeof position.lat === 'function') {
+          newLat = position.lat();
+          newLng = position.lng();
+        } else {
+          newLat = position.lat;
+          newLng = position.lng;
+        }
+        
+        setFormData(prev => ({ ...prev, latitude: newLat, longitude: newLng }));
+
+        // Reverse geocode to get address
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: { lat: newLat, lng: newLng } }, (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            setFormData(prev => ({ ...prev, exact_location: results[0].formatted_address }));
+          }
+        });
+      }
+    });
+    
+    markerRef.current = marker;
+  }, []);
+
+  // Initialize map when map picker is shown
+  useEffect(() => {
+    if (!showMapPicker || !GOOGLE_MAPS_API_KEY || step !== 3) return;
+
+    const initMap = async () => {
+      try {
+        // Wait for custom elements to be defined
+        await customElements.whenDefined('gmpx-api-loader');
+        await customElements.whenDefined('gmp-map');
+        await customElements.whenDefined('gmp-advanced-marker');
+        await customElements.whenDefined('gmpx-place-picker');
+
+        // Set API key on loader
+        const loader = document.querySelector('#form-map-loader') as any;
+        if (loader) {
+          loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
+          try {
+            loader.key = GOOGLE_MAPS_API_KEY;
+          } catch (e) {
+            // Ignore
+          }
+        }
+
+        // Wait for Google Maps API to load
+        let retries = 0;
+        while (!window.google?.maps && retries < 30) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+          retries++;
+        }
+
+        if (!window.google?.maps) {
+          console.error('Google Maps API failed to load');
+          return;
+        }
+
+        const mapElement = document.querySelector('#form-location-map') as any;
+        if (!mapElement) return;
+
+        // Wait for innerMap to be available
+        let mapRetries = 0;
+        while (!mapElement.innerMap && mapRetries < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          mapRetries++;
+        }
+
+        if (!mapElement.innerMap) {
+          console.error('Map failed to initialize');
+          return;
+        }
+
+        mapRef.current = mapElement.innerMap;
+
+        // Set map options
+        mapElement.innerMap.setOptions({
+          mapTypeControl: false,
+          fullscreenControl: true,
+          zoomControl: true,
+          streetViewControl: false,
+        });
+
+        // Center map on existing location or default
+        const center = formData.latitude && formData.longitude
+          ? { lat: formData.latitude, lng: formData.longitude }
+          : defaultCenter;
+        
+        mapElement.innerMap.setCenter(center);
+        mapElement.innerMap.setZoom(formData.latitude && formData.longitude ? 15 : 11);
+
+        // Create marker if location exists
+        if (formData.latitude && formData.longitude) {
+          createMarker(formData.latitude, formData.longitude, mapElement.innerMap);
+        }
+
+        // Add click listener to map
+        mapElement.innerMap.addListener('click', (e: google.maps.MapMouseEvent) => {
+          if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            
+            // Update form data
+            handleChange('latitude', lat);
+            handleChange('longitude', lng);
+            
+            // Update marker
+            if (markerRef.current) {
+              markerRef.current.position = { lat, lng };
+              mapElement.innerMap.panTo({ lat, lng });
+            } else {
+              createMarker(lat, lng, mapElement.innerMap);
+            }
+
+            // Reverse geocode to get address
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+              if (status === 'OK' && results && results[0]) {
+                handleChange('exact_location', results[0].formatted_address);
+              }
+            });
+          }
+        });
+
+        // Setup place picker
+        setTimeout(() => {
+          const placePickerElement = document.querySelector('#form-place-picker') as any;
+          if (placePickerElement) {
+            const handlePlaceChange = () => {
+              const place = placePickerElement.value;
+              
+              if (!place?.location) return;
+
+              const lat = place.location.lat();
+              const lng = place.location.lng();
+              
+              // Update form data
+              handleChange('latitude', lat);
+              handleChange('longitude', lng);
+              handleChange('exact_location', place.formattedAddress || place.name || formData.exact_location);
+
+              // Update marker
+              if (markerRef.current) {
+                markerRef.current.position = { lat, lng };
+              } else {
+                createMarker(lat, lng, mapElement.innerMap);
+              }
+
+              // Center map on new location
+              if (place.viewport) {
+                mapElement.innerMap.fitBounds(place.viewport);
+              } else {
+                mapElement.innerMap.panTo({ lat, lng });
+                mapElement.innerMap.setZoom(15);
+              }
+            };
+
+            placePickerElement.addEventListener('gmpx-placechange', handlePlaceChange);
+          }
+        }, 500);
+
+        setIsMapInitialized(true);
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
+    };
+
+    initMap();
+  }, [showMapPicker, step, formData.latitude, formData.longitude, createMarker]);
+
+  // Cleanup marker when map picker closes
+  useEffect(() => {
+    if (!showMapPicker && markerRef.current) {
+      markerRef.current.map = null;
+      markerRef.current = null;
+      setIsMapInitialized(false);
+    }
+  }, [showMapPicker]);
+
   const handleSubmit = async () => {
     setLoading(true);
     
-    const listingData = {
-      ...formData,
+      // Ensure all required fields are properly set
+      const listingData = {
+      title: formData.title.trim(),
+      type: formData.type.trim(),
+      area: formData.area.trim(),
+      exact_location: formData.exact_location?.trim() || null,
+      location_consent: Boolean(formData.location_consent),
+      latitude: formData.latitude || null,
+      longitude: formData.longitude || null,
       capacity_min: formData.capacity_min ? parseInt(formData.capacity_min) : null,
       capacity_max: formData.capacity_max ? parseInt(formData.capacity_max) : null,
       duration_days: formData.duration_days ? parseInt(formData.duration_days) : null,
+      status: formData.status || 'open',
+      family_friendly: Boolean(formData.family_friendly),
+      wheelchair_accessible: Boolean(formData.wheelchair_accessible),
+      accessible_parking: Boolean(formData.accessible_parking),
+      accessible_restrooms: Boolean(formData.accessible_restrooms),
+      accessible_entrance: Boolean(formData.accessible_entrance),
+      elevator_available: Boolean(formData.elevator_available),
+      ramp_available: Boolean(formData.ramp_available),
+      sign_language_available: Boolean(formData.sign_language_available),
+      braille_available: Boolean(formData.braille_available),
+      hearing_loop_available: Boolean(formData.hearing_loop_available),
+      medical_specialties: Array.isArray(formData.medical_specialties) ? formData.medical_specialties : [],
+      emergency_services: Boolean(formData.emergency_services),
+      hours_24: Boolean(formData.hours_24),
+      insurance_accepted: Boolean(formData.insurance_accepted),
+      notes: formData.notes?.trim() || null,
+      contact_name: formData.contact_name?.trim() || null,
+      contact_phone: formData.contact_phone?.trim() || null,
+      facebook_contact: formData.facebook_contact?.trim() || null,
+      image_url: formData.image_url?.trim() || null,
+      reference_link: formData.reference_link?.trim() || null,
       verified: false,
       expires_at: formData.duration_days 
         ? new Date(Date.now() + parseInt(formData.duration_days) * 24 * 60 * 60 * 1000).toISOString()
@@ -89,10 +347,17 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
       // Validate required fields before submitting
       if (!formData.title || formData.title.trim() === '') {
         alert('សូមបំពេញចំណងជើង (Title is required)');
+        setLoading(false);
+        return;
+      }
+      if (!formData.type || formData.type.trim() === '') {
+        alert('សូមជ្រើសរើសប្រភេទជំនួយ (Type is required)');
+        setLoading(false);
         return;
       }
       if (!formData.area || formData.area.trim() === '') {
         alert('សូមបំពេញតំបន់ (Area is required)');
+        setLoading(false);
         return;
       }
 
@@ -116,12 +381,14 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
         
         // Show user-friendly error message
         let userMessage = errorMessage;
-        if (errorData.details?.code === 'P2011' || errorData.details?.code === 'P2012') {
-          userMessage = 'សូមបំពេញព័ត៌មានដែលត្រូវការ (Please fill in required information)';
-        } else if (errorData.details?.code === 'P2002') {
+        if (errorData.details?.code === '23505') { // Unique violation
           userMessage = 'ព័ត៌មាននេះមានរួចហើយ (This information already exists)';
+        } else if (errorData.details?.code === '23502') { // Not null violation
+          userMessage = 'សូមបំពេញព័ត៌មានដែលត្រូវការ (Please fill in required information)';
         } else if (res.status === 400) {
-          userMessage = 'ព័ត៌មានមិនត្រឹមត្រូវ (Invalid information)';
+          userMessage = errorData.message || 'ព័ត៌មានមិនត្រឹមត្រូវ (Invalid information)';
+        } else if (res.status === 500) {
+          userMessage = 'មានបញ្ហានៅលើម៉ាស៊ីនមេ (Server error). សូមព្យាយាមម្តងទៀត។';
         }
         
         alert(`មានបញ្ហា: ${userMessage}`);
@@ -340,11 +607,105 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
 
             <div className="space-y-2">
               <Label>អាសយដ្ឋានពិតប្រាកដ (ស្រេចចិត្ត)</Label>
-              <Input 
-                placeholder="123 ផ្លូវធំ"
-                value={formData.exact_location}
-                onChange={(e) => handleChange('exact_location', e.target.value)}
-              />
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="123 ផ្លូវធំ ឬចុចលើផែនទីដើម្បីជ្រើសរើស"
+                    value={formData.exact_location}
+                    onChange={(e) => handleChange('exact_location', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant={showMapPicker ? "default" : "outline"}
+                    onClick={() => setShowMapPicker(!showMapPicker)}
+                    className="flex-shrink-0"
+                  >
+                    <MapPin className="w-4 h-4 mr-1" />
+                    {showMapPicker ? 'លាក់ផែនទី' : 'បើកផែនទី'}
+                  </Button>
+                </div>
+                {formData.latitude && formData.longitude && (
+                  <div className="flex items-center gap-2 text-xs text-gray-600 bg-green-50 p-2 rounded">
+                    <MapPin className="w-3 h-3 text-green-600" />
+                    <span>ទីតាំង: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        handleChange('latitude', null);
+                        handleChange('longitude', null);
+                        if (markerRef.current) {
+                          markerRef.current.map = null;
+                          markerRef.current = null;
+                        }
+                      }}
+                      className="h-5 w-5 p-0 ml-auto"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                )}
+                {showMapPicker && GOOGLE_MAPS_API_KEY && (
+                  <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-gray-200">
+                    <gmpx-api-loader 
+                      id="form-map-loader"
+                      key={GOOGLE_MAPS_API_KEY}
+                      solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
+                    />
+                    <gmp-map 
+                      id="form-location-map"
+                      center={`${formData.latitude || defaultCenter.lat},${formData.longitude || defaultCenter.lng}`}
+                      zoom={formData.latitude && formData.longitude ? "15" : "11"}
+                      map-id="DEMO_MAP_ID"
+                      className="w-full h-full"
+                    >
+                      <gmp-advanced-marker></gmp-advanced-marker>
+                    </gmp-map>
+                    {/* Place Picker - Searchable */}
+                    {isMapInitialized && (
+                      <div className="absolute top-2 left-2 right-2 z-10">
+                        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1">
+                          <style jsx>{`
+                            #form-place-picker {
+                              display: block;
+                              width: 100%;
+                            }
+                            #form-place-picker::part(input) {
+                              height: 32px !important;
+                              font-size: 12px !important;
+                              padding: 4px 8px !important;
+                              border: none !important;
+                              outline: none !important;
+                            }
+                            @media (min-width: 640px) {
+                              #form-place-picker::part(input) {
+                                height: 36px !important;
+                                font-size: 13px !important;
+                                padding: 6px 10px !important;
+                              }
+                            }
+                          `}</style>
+                          <gmpx-place-picker 
+                            id="form-place-picker"
+                            placeholder="ស្វែងរកទីតាំង..."
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700 shadow-sm">
+                      ចុចលើផែនទីឬស្វែងរកដើម្បីជ្រើសរើសទីតាំង
+                    </div>
+                  </div>
+                )}
+                {showMapPicker && !GOOGLE_MAPS_API_KEY && (
+                  <div className="w-full h-64 rounded-lg border-2 border-gray-200 flex items-center justify-center bg-gray-50">
+                    <p className="text-sm text-gray-500">Google Maps API key is not configured</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 
+// Use Node.js runtime for Supabase compatibility (Edge runtime doesn't support all Node.js APIs)
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   // During build time, return early
   if (process.env.NEXT_PHASE === 'phase-production-build') {
@@ -246,6 +249,16 @@ export async function POST(request: NextRequest) {
       organizer_contact: data.organizer_contact || null,
     };
 
+    // Log the data being inserted (without sensitive info)
+    console.log('Creating listing with data:', {
+      title: listingData.title,
+      type: listingData.type,
+      area: listingData.area,
+      hasLocation: !!(listingData.latitude && listingData.longitude),
+      hasExactLocation: !!listingData.exact_location,
+      locationConsent: listingData.location_consent
+    });
+
     const { data: listing, error } = await supabase
       .from('listings')
       .insert(listingData)
@@ -253,7 +266,18 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
+      console.error('Supabase error creating listing:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
       throw error;
+    }
+
+    if (!listing) {
+      console.error('No listing returned from Supabase insert');
+      throw new Error('Failed to create listing: No data returned');
     }
 
     return NextResponse.json({
