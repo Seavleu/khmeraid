@@ -86,6 +86,8 @@ declare namespace google {
         position?: LatLng | LatLngLiteral;
         title?: string;
         gmpDraggable?: boolean;
+        zIndex?: number;
+        content?: HTMLElement | (() => HTMLElement);
       }
     }
 
