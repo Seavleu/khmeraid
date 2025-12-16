@@ -13,12 +13,6 @@ const SelectContext = React.createContext<SelectContextValue | undefined>(undefi
 
 const Select = ({ value, onValueChange, children, defaultOpen = false }: { value: string; onValueChange: (value: string) => void; children: React.ReactNode; defaultOpen?: boolean }) => {
   const [open, setOpen] = React.useState(defaultOpen)
-  
-  React.useEffect(() => {
-    if (defaultOpen) {
-      setOpen(true)
-    }
-  }, [defaultOpen])
 
   return (
     <SelectContext.Provider value={{ value, onValueChange, open, setOpen, defaultOpen }}>
