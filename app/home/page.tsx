@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Sheet, SheetContent, SheetTrigger } from '@/app/components/ui/sheet';
 import { 
   Map, List, Filter, Plus, Locate, Wifi, WifiOff,
-  Menu, X, Search, Home as HomeIcon, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle, Stethoscope
+  Menu, X, Search, Home as HomeIcon, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle, Stethoscope, AlertTriangle
 } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 
@@ -22,6 +22,7 @@ import SubmitListingForm from '@/app/components/forms/SubmitListingForm';
 import DetailedListingDialog from '@/app/components/help/DetailedListingDialog';
 import SeekHelpDialog from '@/app/components/help/SeekHelpDialog';
 import DangerousZones from '@/app/components/help/DangerousZones';
+import { Dialog, DialogContent } from '@/app/components/ui/dialog';
 // import FilterSummaryPanel from '@/app/components/help/FilterSummaryPanel';
 
 interface Listing {
@@ -82,6 +83,7 @@ export default function Home() {
   const [drawnArea, setDrawnArea] = useState<DrawnArea | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [showOfflineAlert, setShowOfflineAlert] = useState<boolean>(false);
+  const [showDangerousZonesModal, setShowDangerousZonesModal] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterState>({
     type: null,
     status: null,
@@ -721,7 +723,18 @@ export default function Home() {
             {/* Sidebar Header - Compact */}
             <div className="p-1.5 sm:p-2 border-b bg-gradient-to-r from-blue-50 to-teal-50">
               <div className="flex items-center justify-between mb-1 sm:mb-1.5">
-                <h2 className="text-sm sm:text-base font-bold text-gray-900">ជំនួយដែលមាន</h2>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <h2 className="text-sm sm:text-base font-bold text-gray-900">ជំនួយដែលមាន</h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDangerousZonesModal(true)}
+                    className="h-6 w-6 sm:h-7 sm:w-7 p-0 hover:bg-red-50"
+                    title="តំបន់គ្រោះថ្នាក់"
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
+                  </Button>
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -905,6 +918,18 @@ export default function Home() {
         onClose={() => setShowSeekHelp(false)}
         userLocation={userLocation}
       /> */}
+
+      {/* Dangerous Zones Modal */}
+      <Dialog open={showDangerousZonesModal} onOpenChange={setShowDangerousZonesModal}>
+        <DialogContent 
+          className="max-w-md max-h-[90vh] overflow-y-auto bg-transparent border-0 shadow-none p-0 cursor-pointer"
+          onClick={() => setShowDangerousZonesModal(false)}
+        >
+          <div className="relative">
+            <DangerousZones />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
     </Layout>
   );

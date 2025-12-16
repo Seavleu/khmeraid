@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { Sparkles, MapPin, RefreshCw, Home, Fuel, HeartHandshake, Car, ArrowRight } from 'lucide-react';
+import { Sparkles, MapPin, RefreshCw, Home, Fuel, HeartHandshake, Car, ArrowRight, Clock, School, Stethoscope } from 'lucide-react';
 
 interface Listing {
   type: string;
@@ -76,6 +76,10 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
         fuel_service: { open: 0, limited: 0, total: 0 },
         car_transportation: { open: 0, limited: 0, total: 0 },
         volunteer_request: { open: 0, limited: 0, total: 0 },
+        medical_care: { open: 0, limited: 0, total: 0 },
+        event: { open: 0, limited: 0, total: 0 },
+        site_sponsor: { open: 0, limited: 0, total: 0 },
+        school: { open: 0, limited: 0, total: 0 },
       };
 
       listings.forEach(l => {
@@ -108,6 +112,10 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
     fuel_service: { total: listings.filter(l => l.type === 'fuel_service' && l.status !== 'full' && l.status !== 'paused').length },
     car_transportation: { total: listings.filter(l => l.type === 'car_transportation' && l.status !== 'full' && l.status !== 'paused').length },
     volunteer_request: { total: listings.filter(l => l.type === 'volunteer_request' && l.status !== 'full' && l.status !== 'paused').length },
+    medical_care: { total: listings.filter(l => l.type === 'medical_care' && l.status !== 'full' && l.status !== 'paused').length },
+    event: { total: listings.filter(l => l.type === 'event' && l.status !== 'full' && l.status !== 'paused').length },
+    site_sponsor: { total: listings.filter(l => l.type === 'site_sponsor' && l.status !== 'full' && l.status !== 'paused').length },
+    school: { total: listings.filter(l => l.type === 'school' && l.status !== 'full' && l.status !== 'paused').length },
   };
 
   // Ensure all stats have total property with safe defaults
@@ -116,6 +124,10 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
     fuel_service: { total: stats.fuel_service?.total || 0 },
     car_transportation: { total: stats.car_transportation?.total || 0 },
     volunteer_request: { total: stats.volunteer_request?.total || 0 },
+    medical_care: { total: stats.medical_care?.total || 0 },
+    event: { total: stats.event?.total || 0 },
+    site_sponsor: { total: stats.site_sponsor?.total || 0 },
+    school: { total: stats.school?.total || 0 },
   };
 
   return (
@@ -163,6 +175,30 @@ export default function AISummary({ listings, userLocation, selectedCity }: AISu
             <Badge className="bg-purple-100 text-purple-700 border-purple-200 px-1 py-0.5 flex items-center gap-0.5">
               <HeartHandshake className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
               <span className="font-semibold text-[9px] sm:text-[10px]">{safeStats.volunteer_request.total}</span>
+            </Badge>
+          )}
+          {safeStats.medical_care.total > 0 && (
+            <Badge className="bg-red-100 text-red-700 border-red-200 px-1 py-0.5 flex items-center gap-0.5">
+              <Stethoscope className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+              <span className="font-semibold text-[9px] sm:text-[10px]">{safeStats.medical_care.total}</span>
+            </Badge>
+          )}
+          {safeStats.event.total > 0 && (
+            <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 px-1 py-0.5 flex items-center gap-0.5">
+              <Clock className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+              <span className="font-semibold text-[9px] sm:text-[10px]">{safeStats.event.total}</span>
+            </Badge>
+          )}
+          {safeStats.site_sponsor.total > 0 && (
+            <Badge className="bg-teal-100 text-teal-700 border-teal-200 px-1 py-0.5 flex items-center gap-0.5">
+              <MapPin className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+              <span className="font-semibold text-[9px] sm:text-[10px]">{safeStats.site_sponsor.total}</span>
+            </Badge>
+          )}
+          {safeStats.school.total > 0 && (
+            <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200 px-1 py-0.5 flex items-center gap-0.5">
+              <School className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+              <span className="font-semibold text-[9px] sm:text-[10px]">{safeStats.school.total}</span>
             </Badge>
           )}
         </div>

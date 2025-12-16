@@ -25,7 +25,7 @@ const ORANGE_ZONES = [
 
 export default function DangerousZones({ className = '' }: DangerousZonesProps) {
   return (
-    <Card className={`bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden ${className}`}>
+    <Card className={`bg-gradient-to-br from-red-50/80 to-orange-50/80 backdrop-blur-md border-2 border-red-200/70 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden ${className}`}>
       <CardContent className="p-2 sm:p-3 md:p-4">
         <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <div className="p-1.5 sm:p-2 bg-red-100 rounded-full">
@@ -36,28 +36,28 @@ export default function DangerousZones({ className = '' }: DangerousZonesProps) 
 
         {/* Red Zone - Dangerous */}
         <div className="mb-2 sm:mb-3">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-600 rounded-full flex-shrink-0" />
-            <h4 className="font-semibold text-[10px] sm:text-xs text-red-900">តំបន់ក្រហម - គ្រោះថ្នាក់</h4>
-          </div>
-          <div className="flex flex-wrap gap-1 sm:gap-1.5">
-            {RED_ZONES.map((zone) => (
-              <Badge
-                key={zone}
-                className="bg-red-100 text-red-800 border-red-300 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium"
-              >
-                <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
-                {zone}
-              </Badge>
-            ))}
-          </div>
-        </div>
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-600 rounded-full flex-shrink-0" />
+                <h4 className="font-semibold text-[10px] sm:text-xs text-red-900">តំបន់ក្រហម - គ្រោះថ្នាក់</h4>
+              </div>
+              <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                {RED_ZONES.map((zone) => (
+                  <Badge
+                    key={zone}
+                    className="bg-red-100 text-red-800 border-red-300 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium"
+                  >
+                    <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
+                    {zone}
+                  </Badge>
+                ))}
+              </div>
+            </div>
 
         {/* Orange Zone - Alert */}
         <div>
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
             <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full flex-shrink-0" />
-            <h4 className="font-semibold text-[10px] sm:text-xs text-orange-900">តំបន់ទឹកក្រូច - ព្រមាន</h4>
+            <h4 className="font-semibold text-[10px] sm:text-xs text-orange-900">តំបន់ទឹកក្រូច - ប្រយ័ត្ន</h4>
           </div>
           <div className="flex flex-wrap gap-1 sm:gap-1.5">
             {ORANGE_ZONES.map((zone) => (

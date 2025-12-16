@@ -46,8 +46,10 @@ function generateDataSummary(
     fuel_service: { open: 0, limited: 0, total: 0 },
     car_transportation: { open: 0, limited: 0, total: 0 },
     volunteer_request: { open: 0, limited: 0, total: 0 },
+    medical_care: { open: 0, limited: 0, total: 0 },
     event: { open: 0, limited: 0, total: 0 },
     site_sponsor: { open: 0, limited: 0, total: 0 },
+    school: { open: 0, limited: 0, total: 0 },
   };
 
   // Group by location
@@ -58,6 +60,10 @@ function generateDataSummary(
       fuel_service: number;
       car_transportation: number;
       volunteer_request: number;
+      medical_care: number;
+      event: number;
+      site_sponsor: number;
+      school: number;
       total: number;
     }
   > = {};
@@ -78,6 +84,10 @@ function generateDataSummary(
         fuel_service: 0,
         car_transportation: 0,
         volunteer_request: 0,
+        medical_care: 0,
+        event: 0,
+        site_sponsor: 0,
+        school: 0,
         total: 0,
       };
     }
@@ -106,9 +116,11 @@ async function callHuggingFace(prompt: string): Promise<string> {
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          max_new_tokens: 200,
-          temperature: 0.7,
-          top_p: 0.9,
+          max_new_tokens: 250,
+          temperature: 0.8,
+          top_p: 0.95,
+          do_sample: true,
+          return_full_text: false, // Don't return the input prompt
         },
       }),
     });
@@ -130,20 +142,39 @@ async function callHuggingFace(prompt: string): Promise<string> {
     const data = await response.json();
 
     // Handle different response formats
+    let generatedText = "";
+    
     if (Array.isArray(data) && data[0]?.generated_text) {
-      return data[0].generated_text.trim();
-    }
-    if (data.generated_text) {
-      return data.generated_text.trim();
-    }
-    if (typeof data === "string") {
-      return data.trim();
-    }
-    if (Array.isArray(data) && data.length > 0 && typeof data[0] === "string") {
-      return data[0].trim();
+      generatedText = data[0].generated_text;
+    } else if (data.generated_text) {
+      generatedText = data.generated_text;
+    } else if (typeof data === "string") {
+      generatedText = data;
+    } else if (Array.isArray(data) && data.length > 0 && typeof data[0] === "string") {
+      generatedText = data[0];
+    } else {
+      console.error("Unexpected response format:", JSON.stringify(data));
+      throw new Error("Unexpected response format from Hugging Face API");
     }
 
-    return JSON.stringify(data);
+    // Clean up the response - remove the prompt if model echoed it back
+    const cleanedText = generatedText.trim();
+    
+    // Check if the response is just the prompt or too similar (model didn't generate)
+    // Remove prompt prefix if present
+    const promptPrefix = "Summarize in Khmer:";
+    let finalText = cleanedText;
+    if (cleanedText.startsWith(promptPrefix)) {
+      finalText = cleanedText.substring(promptPrefix.length).trim();
+    }
+    
+    // Validate the response
+    if (finalText.length < 30 || finalText === prompt.trim() || finalText.length > 1000) {
+      console.warn("Model returned invalid response, using fallback. Response:", finalText.substring(0, 100));
+      throw new Error("Model did not generate proper output");
+    }
+
+    return finalText;
   } catch (error: any) {
     console.error("Hugging Face API error:", error);
     throw error;
@@ -178,60 +209,20 @@ export async function POST(request: NextRequest) {
         )}, ${userLocation.lng.toFixed(4)}`
         : "";
 
-    const prompt = `You are a helpful assistant for a citizen help coordination platform in Cambodia. 
-    Generate a response in Khmer with a warm, calm, and reassuring tone suitable for civilians affected by conflict.
-    Briefly describe the types of assistance available in the selected area and the number of resources available.
-    If nearby areas offer more or better resources, gently suggest them.
-    Always remind readers to call the hotline to confirm availability before visiting.
-    Keep the response concise (4-6 sentences) and do not mention zero availability or counts.
+    // Build a cleaner, more structured prompt for better model understanding
+    const resourceSummary = [
+      counts.accommodation.total > 0 && `កន្លែងស្នាក់នៅ: ${counts.accommodation.total}`,
+      counts.fuel_service.total > 0 && `សេវាសាំង: ${counts.fuel_service.total}`,
+      counts.car_transportation.total > 0 && `សេវាដឹកជញ្ជូន: ${counts.car_transportation.total}`,
+      counts.volunteer_request.total > 0 && `ត្រូវការស្ម័គ្រចិត្ត: ${counts.volunteer_request.total}`,
+      counts.medical_care.total > 0 && `សេវាសុខាភិបាល: ${counts.medical_care.total}`,
+      counts.event.total > 0 && `ព្រឹត្តិការណ៍: ${counts.event.total}`,
+      counts.site_sponsor.total > 0 && `ទីតាំងហ្រ្វី: ${counts.site_sponsor.total}`,
+      counts.school.total > 0 && `សាលា: ${counts.school.total}`,
+    ].filter(Boolean).join(", ");
 
-Here are examples of good summaries:
-
-Example 1:
-Input: Accommodations: 5 open, 2 limited | Fuel Services: 3 open, 1 limited | Transportation: 4 open, 0 limited | Location: Phnom Penh
-Output: នៅក្នុងទីក្រុងភ្នំពេញ មានជំនួយជាច្រើនដែលអាចប្រើប្រាស់បាន។ មានកន្លែងស្នាក់នៅ ៧កន្លែង, សេវាសាំង ៤កន្លែង, និងសេវាដឹកជញ្ជូន ៤កន្លែងដែលកំពុងបើកជួយ។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់ដើម្បីបញ្ជាក់មុនពេលធ្វើដំណើរ។
-
-Example 2:
-Input: Accommodations: 2 open, 0 limited | Fuel Services: 1 open, 0 limited | Transportation: 0 open, 0 limited | Location: Siem Reap
-Output: នៅក្នុងតំបន់សៀមរាប មានកន្លែងស្នាក់នៅ ២កន្លែង និងសេវាសាំង ១កន្លែងដែលអាចប្រើប្រាស់បាន។ ប្រសិនបើអ្នកត្រូវការជំនួយបន្ថែម សូមពិចារណាទៅកាន់តំបន់ផ្សេងទៀតដូចជា ភ្នំពេញ ឬ បាត់ដំបង។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់ដើម្បីផ្ទៀងផ្ទាត់ព័ត៌មានថ្មីៗ។
-
-Example 3:
-Input: Accommodations: 10 open, 3 limited | Fuel Services: 8 open, 2 limited | Transportation: 6 open, 1 limited | Volunteer Requests: 5 open, 0 limited | Location: Battambang
-Output: នៅក្នុងតំបន់បាត់ដំបង មានជំនួយច្រើនប្រភេទដែលអាចប្រើប្រាស់បាន។ មានកន្លែងស្នាក់នៅ ១៣កន្លែង, សេវាសាំង ១០កន្លែង, សេវាដឹកជញ្ជូន ៧កន្លែង, និងមានត្រូវការស្ម័គ្រចិត្ត ៥កន្លែង។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់ដើម្បីបញ្ជាក់មុនពេលធ្វើដំណើរ។
-
-Now generate a summary for this data:
-
-Available Resources:
-- Accommodations: ${counts.accommodation.open} open, ${counts.accommodation.limited
-      } limited
-- Fuel Services: ${counts.fuel_service.open} open, ${counts.fuel_service.limited
-      } limited  
-- Transportation: ${counts.car_transportation.open} open, ${counts.car_transportation.limited
-      } limited
-- Volunteer Requests: ${counts.volunteer_request.open} open, ${counts.volunteer_request.limited
-      } limited
-
-${locationInfo}
-
-Resources by Location:
-${Object.entries(locationGroups)
-        .map(
-          ([area, data]) =>
-            `${area}: ${data.accommodation} accommodations, ${data.fuel_service} fuel, ${data.car_transportation} transport, ${data.volunteer_request} volunteers needed`
-        )
-        .join("\n")}
-
-Instructions:
-- Follow the format and style of the examples above
-- Write in Khmer language using a warm, calm, and reassuring tone
-- Clearly mention the types of assistance or resources available in the selected area
-- If nearby areas offer more or better resources, gently suggest those alternatives
-- Always remind users to call the hotline to confirm current availability
-- Keep it gentle and concise (4-6 sentences max)
-- Do not mention zero availability or zero counts
-- Use natural Khmer language, not literal translations
-
-Generate the summary:`;
+    // Create a simpler, task-oriented prompt for FLAN-T5
+    const prompt = `Summarize in Khmer: ${selectedCity ? `នៅក្នុង${selectedCity}` : "នៅក្នុងតំបន់នេះ"} មាន ${resourceSummary}. Write a warm, reassuring 4-6 sentence summary in Khmer about available help resources. Remind to call hotline.`;
 
     let summary = "";
     let suggestions: string[] = [];
@@ -239,7 +230,11 @@ Generate the summary:`;
     // Try Hugging Face API if key is available
     if (HUGGINGFACE_API_KEY) {
       try {
+        console.log("Calling Hugging Face API with model:", MODEL_NAME);
+        console.log("Prompt length:", prompt.length);
         summary = await callHuggingFace(prompt);
+        console.log("Generated summary length:", summary.length);
+        console.log("Summary preview:", summary.substring(0, 100));
 
         // Extract suggestions (areas with more resources)
         const sortedAreas = Object.entries(locationGroups)
@@ -251,8 +246,9 @@ Generate the summary:`;
         if (sortedAreas.length > 0) {
           suggestions = sortedAreas;
         }
-      } catch (error) {
-        console.error("Hugging Face error, using fallback:", error);
+      } catch (error: any) {
+        console.error("Hugging Face error, using fallback:", error.message);
+        console.error("Error details:", error);
         // Fall back to structured summary
         summary = generateFallbackSummary(counts, locationGroups, selectedCity);
         suggestions = Object.entries(locationGroups)
@@ -310,6 +306,18 @@ function generateFallbackSummary(
   if (counts.volunteer_request.total > 0) {
     parts.push(`${counts.volunteer_request.total} ត្រូវការស្ម័គ្រចិត្ត`);
   }
+  if (counts.medical_care.total > 0) {
+    parts.push(`${counts.medical_care.total} សេវាសុខាភិបាល`);
+  }
+  if (counts.event.total > 0) {
+    parts.push(`${counts.event.total} ព្រឹត្តិការណ៍`);
+  }
+  if (counts.site_sponsor.total > 0) {
+    parts.push(`${counts.site_sponsor.total} ទីតាំងហ្រ្វី`);
+  }
+  if (counts.school.total > 0) {
+    parts.push(`${counts.school.total} សាលា`);
+  }
 
   let summary = "";
   if (selectedCity) {
@@ -320,7 +328,7 @@ function generateFallbackSummary(
       summary = `នៅក្នុង${selectedCity} មានធនធានមានកំណត់។ `;
     }
   } else {
-    summary = `មានជំនួយដែលអាចប្រើប្រាស់បាន: ${parts.join(", ")}។ `;
+    summary = `ជំនួយមាន: ${parts.join(", ")}។ `;
   }
 
   // Add suggestions for other areas

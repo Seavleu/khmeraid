@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import ListingCard from '@/app/components/help/ListingCard';
 import { DANGEROUS_ZONES_DATA } from '@/app/components/help/DangerousZones';
-import DangerousZonesMarquee from '@/app/components/help/DangerousZonesMarquee';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
@@ -139,35 +138,41 @@ export default function GoogleHelpMap({
 
     const initMap = async () => {
       try {
-        // Wait for the API loader to initialize
-        await customElements.whenDefined('gmpx-api-loader');
+        // Wait for the API loader to initialize (with timeout)
+        try {
+          await Promise.race([
+            customElements.whenDefined('gmpx-api-loader'),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
+          ]);
+        } catch (e) {
+          // Continue even if timeout - element might already be defined
+        }
         
-        // Ensure API key is set - try multiple times
+        // Ensure API key is set
         const loader = document.querySelector('gmpx-api-loader') as HTMLElement;
         if (loader) {
           if (!loader.getAttribute('key')) {
             loader.setAttribute('key', GOOGLE_MAPS_API_KEY);
           }
-          // Also try setting it as a property
           try {
             (loader as any).key = GOOGLE_MAPS_API_KEY;
           } catch (e) {
             // Ignore if property setting fails
           }
         }
-        
-        // Wait a bit for the API loader to process the key
-        await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Wait for custom elements to be defined
-        await customElements.whenDefined('gmp-map');
-        await customElements.whenDefined('gmp-advanced-marker');
-        // Don't wait for place-picker here - we'll render it conditionally
+        // Wait for custom elements in parallel (faster)
+        await Promise.all([
+          customElements.whenDefined('gmp-map').catch(() => {}),
+          customElements.whenDefined('gmp-advanced-marker').catch(() => {})
+        ]);
 
-        // Wait for Google Maps API to load
+        // Wait for Google Maps API to load with exponential backoff
         let retries = 0;
-        while (!window.google?.maps && retries < 30) {
-          await new Promise(resolve => setTimeout(resolve, 200));
+        let delay = 50; // Start with 50ms
+        while (!window.google?.maps && retries < 40) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay = Math.min(delay * 1.2, 200); // Exponential backoff, max 200ms
           retries++;
         }
 
@@ -177,17 +182,17 @@ export default function GoogleHelpMap({
         }
 
         const mapElement = document.querySelector('gmp-map') as any;
-        const placePickerElement = document.querySelector('gmpx-place-picker') as any;
-
         if (!mapElement) {
           setMapError('Map element not found');
           return;
         }
 
-        // Wait for innerMap to be available
+        // Wait for innerMap with exponential backoff
         let mapRetries = 0;
-        while (!mapElement.innerMap && mapRetries < 50) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+        let mapDelay = 50;
+        while (!mapElement.innerMap && mapRetries < 60) {
+          await new Promise(resolve => setTimeout(resolve, mapDelay));
+          mapDelay = Math.min(mapDelay * 1.2, 150); // Exponential backoff, max 150ms
           mapRetries++;
         }
 
@@ -202,25 +207,21 @@ export default function GoogleHelpMap({
           fullscreenControl: true,
           zoomControl: true,
           streetViewControl: false,
-          drawingControl: false, // Disable polygon/drawing controls
-          gestureHandling: 'greedy', // Allow one-finger panning on mobile
-          disableDoubleClickZoom: false, // Allow double-click to zoom
+          drawingControl: false,
+          gestureHandling: 'greedy',
+          disableDoubleClickZoom: false,
         });
 
         setIsInitialized(true);
         setMapError(null);
-        
-        // Set up place picker listener after initialization (it will be rendered conditionally)
-        // We'll set this up in a separate effect that runs when isInitialized becomes true
       } catch (error) {
         console.error('Error initializing map:', error);
         setMapError(`Map initialization error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     };
 
-    // Wait for script to load and then initialize
-    const timer = setTimeout(initMap, 1000);
-    return () => clearTimeout(timer);
+    // Start initialization immediately (removed 1 second delay)
+    initMap();
   }, []);
 
   // Set up place picker event listener after map is initialized
@@ -522,7 +523,7 @@ export default function GoogleHelpMap({
     };
   }, [isInitialized]);
 
-  // Create markers for listings
+  // Create markers for listings (batched for better performance)
   useEffect(() => {
     if (!isInitialized || !window.google?.maps || !GOOGLE_MAPS_API_KEY) return;
 
@@ -535,75 +536,91 @@ export default function GoogleHelpMap({
     });
     markersRef.current.clear();
 
-    // Create markers for each listing
-    listings.forEach(listing => {
-      if (!listing.latitude || !listing.longitude) return;
+    // Batch marker creation to avoid blocking UI
+    const createMarkersBatch = async () => {
+      const batchSize = 20; // Create 20 markers at a time
+      const allItems = [
+        ...listings.map(l => ({ ...l, itemType: 'listing' as const })),
+        ...helpSeekers.map(s => ({ ...s, itemType: 'seeker' as const }))
+      ];
 
-      const position = { lat: listing.latitude, lng: listing.longitude };
-      
-      try {
-        // Create marker using AdvancedMarkerElement
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-          map: mapElement.innerMap,
-          position: position,
-          title: listing.title,
-        });
+      for (let i = 0; i < allItems.length; i += batchSize) {
+        const batch = allItems.slice(i, i + batchSize);
+        
+        // Process batch
+        batch.forEach(item => {
+          if (item.itemType === 'listing') {
+            const listing = item as Listing;
+            if (!listing.latitude || !listing.longitude) return;
 
-        // Add click listener
-        marker.addListener('click', () => {
-          setSelectedMarker(listing);
-          onSelectListing(listing);
-          setShowBottomSheet(true);
-          setSheetHeight('partial');
-          
-          // Zoom to marker location with smooth animation
-          if (mapElement.innerMap && listing.latitude && listing.longitude) {
             const position = { lat: listing.latitude, lng: listing.longitude };
-            mapElement.innerMap.setCenter(position);
-            const currentZoom = mapElement.innerMap.getZoom() || 13;
-            // Smooth zoom to at least level 15
-            mapElement.innerMap.setZoom(Math.max(currentZoom + 1, 15));
-          }
-        });
+            
+            try {
+              const marker = new google.maps.marker.AdvancedMarkerElement({
+                map: mapElement.innerMap,
+                position: position,
+                title: listing.title,
+              });
 
-        markersRef.current.set(listing.id, marker);
-      } catch (error) {
-        console.error('Error creating marker:', error);
-      }
-    });
+              marker.addListener('click', () => {
+                setSelectedMarker(listing);
+                onSelectListing(listing);
+                setShowBottomSheet(true);
+                setSheetHeight('partial');
+                
+                if (mapElement.innerMap && listing.latitude && listing.longitude) {
+                  const position = { lat: listing.latitude, lng: listing.longitude };
+                  mapElement.innerMap.setCenter(position);
+                  const currentZoom = mapElement.innerMap.getZoom() || 13;
+                  mapElement.innerMap.setZoom(Math.max(currentZoom + 1, 15));
+                }
+              });
 
-    // Create markers for help seekers
-    helpSeekers.forEach(seeker => {
-      if (!seeker.latitude || !seeker.longitude) return;
+              markersRef.current.set(listing.id, marker);
+            } catch (error) {
+              console.error('Error creating marker:', error);
+            }
+          } else {
+            const seeker = item as HelpSeeker;
+            if (!seeker.latitude || !seeker.longitude) return;
 
-      const position = { lat: seeker.latitude, lng: seeker.longitude };
-      
-      try {
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-          map: mapElement.innerMap,
-          position: position,
-          title: `${seeker.name}`,
-        });
-
-        marker.addListener('click', () => {
-          setSelectedMarker(seeker);
-          setShowBottomSheet(true);
-          setSheetHeight('partial');
-          
-          // Zoom to marker location with smooth animation
-          if (mapElement.innerMap && seeker.latitude && seeker.longitude) {
             const position = { lat: seeker.latitude, lng: seeker.longitude };
-            mapElement.innerMap.setCenter(position);
-            const currentZoom = mapElement.innerMap.getZoom() || 13;
-            mapElement.innerMap.setZoom(Math.max(currentZoom + 1, 15));
+            
+            try {
+              const marker = new google.maps.marker.AdvancedMarkerElement({
+                map: mapElement.innerMap,
+                position: position,
+                title: `${seeker.name}`,
+              });
+
+              marker.addListener('click', () => {
+                setSelectedMarker(seeker);
+                setShowBottomSheet(true);
+                setSheetHeight('partial');
+                
+                if (mapElement.innerMap && seeker.latitude && seeker.longitude) {
+                  const position = { lat: seeker.latitude, lng: seeker.longitude };
+                  mapElement.innerMap.setCenter(position);
+                  const currentZoom = mapElement.innerMap.getZoom() || 13;
+                  mapElement.innerMap.setZoom(Math.max(currentZoom + 1, 15));
+                }
+              });
+
+              markersRef.current.set(`help-${seeker.id}`, marker);
+            } catch (error) {
+              console.error('Error creating help seeker marker:', error);
+            }
           }
         });
 
-        markersRef.current.set(`help-${seeker.id}`, marker);
-      } catch (error) {
-        console.error('Error creating help seeker marker:', error);
+        // Yield to browser between batches for smoother UI
+        if (i + batchSize < allItems.length) {
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
       }
-    });
+    };
+
+    createMarkersBatch();
   }, [listings, helpSeekers, isInitialized, onSelectListing]);
 
   // Center map when centerLocation changes
@@ -631,9 +648,29 @@ export default function GoogleHelpMap({
 
   return (
     <div ref={mapContainerRef} className="w-full h-full relative touch-pan-x touch-pan-y" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
-      {/* Dangerous Zones Marquee Banner - Bottom of Map */}
-      <DangerousZonesMarquee />
+      {/* Loading indicator */}
+      {!isInitialized && !mapError && (
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin w-8 h-8 border-4 border-[#105090] border-t-transparent rounded-full mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600">កំពុងផ្ទុកផែនទី...</p>
+          </div>
+        </div>
+      )}
       
+      {/* Error message */}
+      {mapError && (
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="text-center max-w-md">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-2" />
+            <p className="text-sm text-gray-800 mb-2">{mapError}</p>
+            <Button onClick={() => window.location.reload()} size="sm" className="mt-2">
+              បើកឡើងវិញ
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Google Maps Extended Component Library */}
       {GOOGLE_MAPS_API_KEY ? (
         <>

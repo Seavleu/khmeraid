@@ -120,6 +120,39 @@ html {
   animation: marquee 30s linear infinite;
 }
 
+/* Dialog fade in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Dialog fade in and scale animation */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Dialog modal animation */
+.dialog-modal {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@media (min-width: 640px) {
+  .dialog-modal {
+    animation: fadeInScale 0.3s ease-out;
+  }
+}
+
 /* Compact Google Place Picker styling for mobile */
 gmpx-place-picker {
   --gmpx-color-surface: #ffffff;

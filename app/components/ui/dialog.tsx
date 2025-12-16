@@ -29,13 +29,16 @@ const DialogContent = React.forwardRef<
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-black/50"
+        className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
+        style={{ 
+          animation: 'fadeIn 0.3s ease-out',
+        }}
         onClick={() => context.onOpenChange(false)}
       />
       <div
         ref={ref}
         className={cn(
-          "fixed inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] z-50 flex flex-col w-full sm:w-auto sm:max-w-lg sm:max-h-[90vh] gap-4 border-0 sm:border-2 sm:border-gray-200 bg-white/95 backdrop-blur-sm shadow-2xl duration-200 sm:rounded-2xl",
+          "fixed inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] z-50 flex flex-col w-full sm:w-auto sm:max-w-lg sm:max-h-[90vh] gap-4 border-0 sm:border-2 sm:border-gray-200 bg-white/95 backdrop-blur-sm shadow-2xl sm:rounded-2xl dialog-modal",
           className
         )}
         {...props}

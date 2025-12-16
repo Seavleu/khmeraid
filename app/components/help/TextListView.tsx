@@ -3,7 +3,6 @@
 import React from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Phone, MapPin, Users, Clock, CheckCircle, AlertCircle, Baby, Home, Fuel, Car, HeartHandshake, XCircle, PauseCircle } from 'lucide-react';
-import DangerousZonesMarquee from './DangerousZonesMarquee';
 
 interface Listing {
   id: string;
@@ -37,7 +36,7 @@ const typeLabels: Record<string, string> = {
   accommodation: 'ស្នាក់នៅ',
   fuel_service: 'សេវាសាំង',
   car_transportation: 'ដឹកជញ្ជូន',
-  volunteer_request: 'ត្រូវការស្ម័គ្រចិត្ត'
+  volunteer_request: 'ត្រូវការអ្នកស្ម័គ្រចិត្ត'
 };
 
 const statusIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -77,11 +76,6 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
 
   return (
     <div className="space-y-4 relative pb-12">
-      {/* Dangerous Zones Marquee - Fixed at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50">
-        <DangerousZonesMarquee />
-      </div>
-      
       {/* Running Text Banner */}
       <div className="bg-[#105090] border-2 border-[#0d3d6f] rounded-2xl p-3 overflow-hidden relative shadow-2xl">
         <div className="flex items-center gap-3">
