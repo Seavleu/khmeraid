@@ -6,6 +6,7 @@ declare namespace google {
       setOptions(options: MapOptions): void;
       fitBounds(bounds: LatLngBounds): void;
       panTo(location: LatLng | LatLngLiteral): void;
+      setCenter(location: LatLng | LatLngLiteral): void;
       setZoom(zoom: number): void;
       addListener(event: string, handler: (e: any) => void): void;
       innerMap?: Map;
