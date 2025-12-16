@@ -8,7 +8,8 @@ import { Button } from '@/app/components/ui/button';
 import { 
   Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
   Phone, CheckCircle, AlertCircle, PauseCircle, XCircle,
-  Baby, Car, ExternalLink, Facebook, User, ShieldCheck
+  Baby, Car, ExternalLink, Facebook, User, ShieldCheck,
+  Accessibility, Stethoscope, Building2, Clock as ClockIcon
 } from 'lucide-react';
 
 interface Listing {
@@ -63,6 +64,11 @@ const typeConfig = {
     icon: Car,
     label: 'ដឹកជញ្ជូន',
     color: 'bg-green-100 text-green-700 border-green-200'
+  },
+  medical_care: {
+    icon: Stethoscope,
+    label: 'សេវាសុខាភិបាល',
+    color: 'bg-red-100 text-red-700 border-red-200'
   },
   site_sponsor: {
     icon: MapPin,
@@ -317,6 +323,47 @@ export default function ListingCard({ listing, onSelect, compact = false }: List
               <div className="flex items-center gap-2 text-sm text-pink-600">
                 <Baby className="w-4 h-4" />
                 <span className="font-semibold">សមស្របសម្រាប់គ្រួសារ</span>
+              </div>
+            )}
+
+            {/* Accessibility Features */}
+            {listing.wheelchair_accessible && (
+              <div className="flex items-center gap-2 text-sm text-blue-600">
+                <Accessibility className="w-4 h-4" />
+                <span className="font-semibold">សម្រាប់អ្នកដែលមានជំងឺដំបង</span>
+              </div>
+            )}
+
+            {/* Medical Care Features */}
+            {listing.type === 'medical_care' && (
+              <div className="space-y-1">
+                {listing.emergency_services && (
+                  <div className="flex items-center gap-2 text-sm text-red-600">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="font-semibold">សេវាសង្គ្រោះបន្ទាន់</span>
+                  </div>
+                )}
+                {listing.hours_24 && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <ClockIcon className="w-4 h-4" />
+                    <span className="font-semibold">បើក 24/7</span>
+                  </div>
+                )}
+                {listing.insurance_accepted && (
+                  <div className="flex items-center gap-2 text-sm text-emerald-600">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span className="font-semibold">ទទួលយកធានារ៉ាប់រង</span>
+                  </div>
+                )}
+                {listing.medical_specialties && listing.medical_specialties.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {listing.medical_specialties.map((specialty: string, idx: number) => (
+                      <Badge key={idx} className="bg-red-50 text-red-700 text-xs px-2 py-0.5">
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -86,7 +86,7 @@ export const supabaseApi = {
           if (limit) params.append('limit', limit.toString());
 
           const response = await fetch(`${BASE44_API_URL}/entities/Listing?${params.toString()}`, {
-            headers: {
+            headers: {    
               'api_key': BASE44_API_KEY,
               'Content-Type': 'application/json'
             },

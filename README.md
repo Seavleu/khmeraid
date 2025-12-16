@@ -1,6 +1,6 @@
-# Khmer Aid - Next.js Setup
+# Khmer Aid - Next.js Application
 
-This project has been set up with Next.js 14 using the App Router.
+A Next.js application for managing and sharing aid resources in Cambodia, built with Supabase for database operations.
 
 ## Project Structure
 
@@ -9,57 +9,114 @@ khmer-aid/
 ├── app/                    # Next.js App Router
 │   ├── layout.tsx         # Root layout
 │   ├── page.tsx           # Home page route (/)
+│   ├── api/              # API routes
+│   │   ├── listings/     # Listings API endpoints
+│   │   └── help-seekers/ # Help seekers API endpoints
 │   ├── admin/
 │   │   └── page.tsx       # Admin page route (/admin)
 │   ├── providers.tsx      # React Query provider
 │   └── globals.css        # Global styles
-├── components/            # React components
+├── app/components/        # React components
 │   ├── ui/               # shadcn/ui components
 │   ├── help/             # Help-related components
 │   ├── forms/            # Form components
 │   └── admin/            # Admin components
-├── pages/                # Page components (used by app routes)
-├── api/                  # API client
-│   └── supabaseClient.ts   # API client (needs configuration)
-└── lib/                  # Utilities
-    └── utils.ts          # Utility functions
+├── lib/                  # Utilities
+│   ├── supabase.ts       # Supabase client configuration
+│   └── utils.ts          # Utility functions
+├── entities/              # JSON schema definitions
+│   ├── listing.json      # Listing entity schema
+│   └── helpseeker.json   # Help seeker entity schema
+└── api/                  # Legacy API client (if needed)
+    └── supabaseClient.ts # API client
 ```
 
 ## Getting Started
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 1. Install Dependencies
 
-2. **Configure the API client:**
-   - The current file is a placeholder and needs to be configured with your actual Supabase credentials
+```bash
+npm install
+```
 
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+### 2. Set Up Environment Variables
 
-4. **Open your browser:**
-   - Navigate to [http://localhost:3000](http://localhost:3000) for the home page
-   - Navigate to [http://localhost:3000/admin](http://localhost:3000/admin) for the admin page
+Create a `.env.local` file in the project root with the following variables:
+
+```env
+# Supabase Configuration (Required)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Google Maps API (Optional - for map features)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
+
+# Admin Configuration (Optional)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_password
+ADMIN_PASSWORD_HASH=your_password_hash
+ADMIN_TOKEN_SECRET=your_secret_token
+
+# AI/Hugging Face (Optional - if using AI features)
+HUGGINGFACE_API_KEY=your_huggingface_key
+```
+
+See `ENVIRONMENT_VARIABLES.md` for detailed setup instructions.
+
+### 3. Run the Development Server
+
+```bash
+npm run dev
+```
+
+### 4. Open Your Browser
+
+- Navigate to [http://localhost:3000](http://localhost:3000) for the home page
+- Navigate to [http://localhost:3000/admin](http://localhost:3000/admin) for the admin page
 
 ## Key Features
 
 - **Next.js 14 App Router**: Modern routing with server and client components
+- **Supabase**: PostgreSQL database with real-time capabilities
 - **React Query**: Data fetching and caching
 - **TypeScript**: Full type safety
 - **Tailwind CSS**: Utility-first styling
 - **shadcn/ui Components**: Accessible UI component library
+- **Google Maps Integration**: Interactive map for listings and help seekers
 
-## Routes
+## API Endpoints
 
-- `/` - Home page with map and listings
-- `/admin` - Admin dashboard for managing listings
+### Listings
+- `GET /api/listings` - Get all listings (with filters, sorting, pagination)
+- `GET /api/listings/[id]` - Get single listing
+- `POST /api/listings` - Create new listing
+- `PUT /api/listings/[id]` - Update listing
+- `DELETE /api/listings/[id]` - Delete listing
+
+### Help Seekers
+- `GET /api/help-seekers` - Get all help seekers (with filters)
+- `GET /api/help-seekers/[id]` - Get single help seeker
+- `POST /api/help-seekers` - Create new help seeker
+- `PUT /api/help-seekers/[id]` - Update help seeker
+
+### Utility Endpoints
+- `GET /api/debug` - Debug information and connection status
+- `GET /api/health` - Health check endpoint
+- `GET /api/test-db` - Database connection test
+
+## Database Schema
+
+The application uses Supabase (PostgreSQL) with the following tables:
+
+- **listings**: Stores help offerings (accommodation, services, etc.)
+- **help_seekers**: Stores people seeking help
+
+See `entities/` folder for JSON schema definitions.
 
 ## Admin Authentication
 
-The admin route (`/admin`) is protected with secure authentication and IP blocking.
+The admin route (`/admin`) is protected with secure authentication.
 
 ### Setup
 
@@ -82,11 +139,10 @@ The admin route (`/admin`) is protected with secure authentication and IP blocki
 
 ### Security Features
 
-- **IP Blocking**: All connections from set country are automatically blocked
 - **Secure Tokens**: HMAC-SHA256 signed tokens with expiration (24 hours)
 - **HTTP-Only Cookies**: Tokens stored in secure, HTTP-only cookies
-- **Password Hashing**: SHA-256 hashed passwords (not stored in plain text)
-- **Brute Force Protection**: 1-second delay on failed login attempts
+- **Password Hashing**: SHA-256 hashed passwords
+- **Brute Force Protection**: Delays on failed login attempts
 
 ### Access
 
@@ -94,17 +150,43 @@ The admin route (`/admin`) is protected with secure authentication and IP blocki
 - Default credentials can be set via environment variables
 - Logout button available in the admin header
 
-## Next Steps
+## Technology Stack
 
-1. Set up environment variables (create `.env.local`)
-2. Generate admin credentials using the scripts above
-3. Customize the UI components as needed
-4. Add any additional routes or features
+- **Framework**: Next.js 14 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Data Fetching**: React Query (@tanstack/react-query)
+- **Maps**: Google Maps API, Leaflet
+- **Animations**: Framer Motion
 
-## Notes
+## Development
 
-- All page components in `pages/` are client components (use hooks)
-- The layout component handles navigation between pages
-- React Query is set up for data fetching with auto-refresh
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+### Project Notes
+
+- All API routes are server-side (Next.js API routes)
+- Client components use React Query for data fetching
+- Supabase handles database operations and real-time updates
 - The project uses path aliases (`@/`) for cleaner imports
 
+## Migration Notes
+
+This project has been migrated from Prisma to Supabase. See `PRISMA_TO_SUPABASE_MIGRATION.md` for migration details.
+
+## Documentation
+
+- `ENVIRONMENT_VARIABLES.md` - Environment variables setup guide
+- `PRISMA_TO_SUPABASE_MIGRATION.md` - Migration documentation
+- `entities/` - JSON schema definitions for data models
+
+## Support
+
+For issues or questions, please check the documentation files or create an issue in the repository.

@@ -8,7 +8,8 @@ import { Button } from '@/app/components/ui/button';
 import { 
   Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
   Phone, CheckCircle, AlertCircle, PauseCircle, XCircle,
-  Baby, Car, Facebook, User, ShieldCheck, ExternalLink, Star, MessageCircle
+  Baby, Car, Facebook, User, ShieldCheck, ExternalLink, Star, MessageCircle,
+  Accessibility, Stethoscope, Building2, Clock as ClockIcon, CreditCard
 } from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
@@ -18,6 +19,7 @@ const typeConfig: Record<string, { icon: LucideIcon; label: string; color: strin
   fuel_service: { icon: Fuel, label: 'សេវាសាំង', color: 'bg-amber-100 text-amber-700' },
   volunteer_request: { icon: HeartHandshake, label: 'ត្រូវការស្ម័គ្រចិត្ត', color: 'bg-purple-100 text-purple-700' },
   car_transportation: { icon: Car, label: 'ដឹកជញ្ជូន', color: 'bg-green-100 text-green-700' },
+  medical_care: { icon: Stethoscope, label: 'សេវាសុខាភិបាល', color: 'bg-red-100 text-red-700' },
   site_sponsor: { icon: MapPin, label: 'ទីតាំងហ្រ្វី', color: 'bg-indigo-100 text-indigo-700' },
   school: { icon: Home, label: 'សាលារៀន', color: 'bg-teal-100 text-teal-700' },
   event: { icon: Clock, label: 'ព្រឹត្តិការណ៍', color: 'bg-pink-100 text-pink-700' }
@@ -320,6 +322,105 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
                   </Badge>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Accessibility Features */}
+          {(listing.wheelchair_accessible || listing.accessible_parking || listing.accessible_restrooms || listing.accessible_entrance || listing.elevator_available || listing.ramp_available) && (
+            <div className="space-y-3">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <Accessibility className="w-5 h-5" />
+                សម្រាប់អ្នកដែលមានជំងឺដំបង
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {listing.wheelchair_accessible && (
+                  <Badge className="bg-blue-50 text-blue-700 border-2 border-blue-200 text-sm px-3 py-2 font-semibold">
+                    <Accessibility className="w-4 h-4 mr-1 inline" />
+                    សម្រាប់អ្នកដែលមានជំងឺដំបង
+                  </Badge>
+                )}
+                {listing.accessible_parking && (
+                  <Badge className="bg-green-50 text-green-700 border-2 border-green-200 text-sm px-3 py-2 font-semibold">
+                    <Building2 className="w-4 h-4 mr-1 inline" />
+                    ចតឡានសម្រាប់អ្នកដែលមានជំងឺដំបង
+                  </Badge>
+                )}
+                {listing.accessible_restrooms && (
+                  <Badge className="bg-purple-50 text-purple-700 border-2 border-purple-200 text-sm px-3 py-2 font-semibold">
+                    បន្ទប់ទឹកសម្រាប់អ្នកដែលមានជំងឺដំបង
+                  </Badge>
+                )}
+                {listing.accessible_entrance && (
+                  <Badge className="bg-teal-50 text-teal-700 border-2 border-teal-200 text-sm px-3 py-2 font-semibold">
+                    ច្រកចូលសម្រាប់អ្នកដែលមានជំងឺដំបង
+                  </Badge>
+                )}
+                {listing.elevator_available && (
+                  <Badge className="bg-indigo-50 text-indigo-700 border-2 border-indigo-200 text-sm px-3 py-2 font-semibold">
+                    មានជណ្តើរយន្ត
+                  </Badge>
+                )}
+                {listing.ramp_available && (
+                  <Badge className="bg-amber-50 text-amber-700 border-2 border-amber-200 text-sm px-3 py-2 font-semibold">
+                    មានជណ្តើរទេស
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Medical Care Details */}
+          {listing.type === 'medical_care' && (
+            <div className="space-y-3">
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <Stethoscope className="w-5 h-5" />
+                ព័ត៌មានសេវាសុខាភិបាល
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-3">
+                {listing.emergency_services && (
+                  <div className="bg-red-50 rounded-2xl p-4 border-2 border-red-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertCircle className="w-5 h-5 text-red-600" />
+                      <p className="text-sm text-red-700 font-semibold">សេវាសង្គ្រោះបន្ទាន់</p>
+                    </div>
+                    <p className="text-lg font-bold text-red-900">មាន</p>
+                  </div>
+                )}
+                
+                {listing.hours_24 && (
+                  <div className="bg-green-50 rounded-2xl p-4 border-2 border-green-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <ClockIcon className="w-5 h-5 text-green-600" />
+                      <p className="text-sm text-green-700 font-semibold">ម៉ោងបើក</p>
+                    </div>
+                    <p className="text-lg font-bold text-green-900">24/7</p>
+                  </div>
+                )}
+                
+                {listing.insurance_accepted && (
+                  <div className="bg-emerald-50 rounded-2xl p-4 border-2 border-emerald-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CreditCard className="w-5 h-5 text-emerald-600" />
+                      <p className="text-sm text-emerald-700 font-semibold">ធានារ៉ាប់រង</p>
+                    </div>
+                    <p className="text-lg font-bold text-emerald-900">ទទួលយក</p>
+                  </div>
+                )}
+              </div>
+
+              {listing.medical_specialties && listing.medical_specialties.length > 0 && (
+                <div className="bg-red-50 rounded-2xl p-4 border-2 border-red-200">
+                  <p className="text-sm text-red-700 font-semibold mb-2">ជំនាញពេទ្យ</p>
+                  <div className="flex flex-wrap gap-2">
+                    {listing.medical_specialties.map((specialty: string, idx: number) => (
+                      <Badge key={idx} className="bg-red-100 text-red-700 border-2 border-red-300 text-sm px-3 py-1 font-semibold">
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

@@ -13,10 +13,11 @@ The application uses direct API calls to Base44 backend with API key authenticat
 - Browser caching enabled for GET requests
 
 ### API Routes
-- **Listings API** (`app/api/listings/route.ts`): Prisma-based database queries
-- **Help Seekers API** (`app/api/help-seekers/route.ts`): Prisma-based database queries
+- **Listings API** (`app/api/listings/route.ts`): Supabase-based database queries
+- **Help Seekers API** (`app/api/help-seekers/route.ts`): Supabase-based database queries
 - Implements caching headers for performance
 - Build-time safe (handles missing database during build)
+- Uses Supabase service role key for server-side operations (bypasses RLS)
 
 ## Security Features
 

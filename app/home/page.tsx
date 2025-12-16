@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Sheet, SheetContent, SheetTrigger } from '@/app/components/ui/sheet';
 import { 
   Map, List, Filter, Plus, Locate, Wifi, WifiOff,
-  Menu, X, Search, Home as HomeIcon, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle
+  Menu, X, Search, Home as HomeIcon, Fuel, Car, HeartHandshake, Clock, MapPin, School, AlertCircle, Stethoscope
 } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 
@@ -561,7 +561,7 @@ export default function Home() {
               )}
               {/* Filter Pills - Scrollable on mobile */}
               <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-2 flex-wrap max-w-[calc(100%-5rem)] sm:max-w-none overflow-x-auto scrollbar-hide">
-                  {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event', 'site_sponsor', 'school'].map((type) => {
+                  {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'medical_care', 'event', 'site_sponsor', 'school'].map((type) => {
                     const getIcon = () => {
                       switch(type) {
                         case 'all': return Filter;
@@ -569,6 +569,7 @@ export default function Home() {
                         case 'fuel_service': return Fuel;
                         case 'car_transportation': return Car;
                         case 'volunteer_request': return HeartHandshake;
+                        case 'medical_care': return Stethoscope;
                         case 'event': return Clock;
                         case 'site_sponsor': return MapPin;
                         case 'school': return School;
@@ -583,6 +584,7 @@ export default function Home() {
                         case 'fuel_service': return 'សាំង';
                         case 'car_transportation': return 'ដឹកជញ្ជូន';
                         case 'volunteer_request': return 'ស្ម័គ្រចិត្ត';
+                        case 'medical_care': return 'សុខាភិបាល';
                         case 'event': return 'ព្រឹត្តិការណ៍';
                         case 'site_sponsor': return 'ទីតាំងហ្រ្វី';
                         case 'school': return 'សាលា';

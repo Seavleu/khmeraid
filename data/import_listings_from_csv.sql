@@ -1,18 +1,15 @@
--- Seed data for public.listings based on data/listing_cleaned.csv
--- Assumes Prisma schema has created the table with id default uuid()
+-- Import listings from listing_cleaned.csv
+-- Run this AFTER running fix_id_default.sql
+-- This imports all listings from the CSV with proper data types
 
 BEGIN;
 
--- Row 1
+-- Listing 1: Car Transportation from Koh Kong to Phnom Penh
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
   latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  family_friendly, notes, contact_name, facebook_contact,
+  verified, updated_at
 ) VALUES (
   'ពីកោះកុងមកភ្នំពេញ',
   'car_transportation',
@@ -27,34 +24,16 @@ INSERT INTO public.listings (
   true,
   'បងប្អូនដែរមិនមានអ្វីធ្វើដំណើរចេញពីកោះកុង អាចឆាតមកខ្ញុំបាន ខ្ញុំបើកឡានតែឯងមកភ្នំពេញ កៅអីទំនេរ ជិះបាន5 6 នាក់🙏🏻',
   'VaThana Chhoun',
-  NULL,
   'https://www.facebook.com/vathana.chhoun.2025',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 2
+-- Listing 2: Accommodation in Kampot
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_phone, reference_link, verified, updated_at
 ) VALUES (
   'ផ្ទះស្នាក់នៅបណ្តោះអាសន្ន - កំពត',
   'accommodation',
@@ -63,41 +42,20 @@ INSERT INTO public.listings (
   false,
   10.7325351,
   104.3791912,
-  NULL,
-  NULL,
   'open',
   false,
   'ផ្ទះខ្ញុំនៅខេត្តកំពត អត់មានមនុស្សនៅទេ បើសិនបងប្អូនភាសឹក ពីខេត្តកោះកុងទៅកំពត អត់មានកន្លែងស្នាក់នៅទាក់ទងមកខ្ញុំបាន អាចស្នាក់នៅបណ្តោះអាសន្ន័បាន',
-  NULL,
   '0964018899',
-  NULL,
-  NULL,
   'https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fah.ka.1272%2Fposts%2Fpfbid0VH9L69noh6nqoy25ngj6JZnnmv6mGaC8nr82MYWe4kPNxoNtetRdRA8d11NETHCYl',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 3
+-- Listing 3: Free Transportation from Poipet to Siem Reap
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_phone, reference_link, verified, updated_at
 ) VALUES (
   'ដឹកជញ្ជូនដោយឥតគិតថ្លៃ - ប៉ោយប៉ែត ទៅ សៀមរាប',
   'car_transportation',
@@ -106,41 +64,20 @@ INSERT INTO public.listings (
   false,
   13.6579053,
   102.5809026,
-  NULL,
-  NULL,
   'open',
   false,
   'ជូនដំណឹង! ខាងប៉ោយប៉ែត បន្ទាយមានជ័យ ចង់ភៀសសឹកមកខាងសៀមរាបសូមទាក់ទង 010684172 ដឹកមិនគិតលុយ',
-  NULL,
   '010684172',
-  NULL,
-  NULL,
   'https://www.facebook.com/siemreap2023',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 4
+-- Listing 4: Volunteer Request in Siem Reap
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, reference_link, google_maps_link, verified, updated_at
 ) VALUES (
   'ត្រូវការកម្លាំងជួយលើកជំនួយភៀសសឹក',
   'volunteer_request',
@@ -149,40 +86,21 @@ INSERT INTO public.listings (
   true,
   13.367540237621608,
   103.84849990222956,
-  NULL,
-  NULL,
   'open',
   false,
   'ត្រូវការកំលាំងលើកជំនួយភៀសសឹក នៅសៀមរាបបងប្អូន ៤ឡាន',
   'Ouk VanDay-អ៊ុក វណ្ណដេ',
-  NULL,
-  NULL,
   'https://www.facebook.com/mrdaymedia',
   'https://maps.app.goo.gl/wySrLp5eqvJbWAHb7?g_st=ipc',
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 5
+-- Listing 5: Volunteer Request in Phnom Penh
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, reference_link, google_maps_link, verified, updated_at
 ) VALUES (
   'ត្រូវការកម្លាំងជួយ - Phnom Penh',
   'volunteer_request',
@@ -191,40 +109,21 @@ INSERT INTO public.listings (
   true,
   11.54999882835978,
   104.94214762301785,
-  NULL,
-  NULL,
   'open',
   false,
   NULL,
   'Ouk VanDay-អ៊ុក វណ្ណដេ',
-  NULL,
-  NULL,
   'https://www.facebook.com/mrdaymedia',
   'https://maps.app.goo.gl/7RjiMrb5oChockbu8',
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 6
+-- Listing 6: Volunteer Request for Video Production
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, reference_link, verified, updated_at
 ) VALUES (
   'ត្រូវការអ្នកស្ម័គ្រចិត្តផលិត Video ភាសាអង់គ្លេស',
   'volunteer_request',
@@ -233,40 +132,20 @@ INSERT INTO public.listings (
   false,
   11.5563738,
   104.9282099,
-  NULL,
-  NULL,
   'open',
   false,
   'ត្រូវការអ្នកស្ម័គ្រចិត្តចេញមុខផលិត Video ជាភាសាអង់គ្លេស',
   'Zell - សំណាង',
-  NULL,
-  NULL,
   'https://www.facebook.com/zellotv',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 7
+-- Listing 7: Accommodation - 8 houses in Kampot
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, facebook_contact, verified, updated_at
 ) VALUES (
   'ផ្ទះស្នាក់ ៨ផ្ទះ - កំពត',
   'accommodation',
@@ -275,40 +154,20 @@ INSERT INTO public.listings (
   false,
   10.7325351,
   104.3791912,
-  NULL,
-  NULL,
   'open',
   true,
   'បងប្អូនភាសសឹកខាងកោះកុង បើមកដល់កំពតអត់មានកន្លែងស្នាក់អាចទាក់ទងខ្ញុំបាន ខ្ញុំអោយស្នាក់នៅ8ផ្ទះ',
   'Chey Chanpisey',
-  NULL,
   'https://www.facebook.com/chey.chanpisey.7',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 8
+-- Listing 8: Accommodation - Chhay Mongkol Guesthouse in Siem Reap
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_phone, reference_link, google_maps_link, verified, updated_at
 ) VALUES (
   'ផ្ទះសំណាក់ជ័យមង្គល - សៀមរាប',
   'accommodation',
@@ -317,41 +176,21 @@ INSERT INTO public.listings (
   true,
   13.362222,
   103.860278,
-  NULL,
-  NULL,
   'open',
   true,
   'យើងខ្ញុំជាម្ចាស់ផ្ទះសំណាក់ជ័យមង្គលខេត្តសៀមរាបមានផ្ទះទំនេរមួយកន្លែងសំរាប់បងប្អូនជនភាសសឹក',
-  NULL,
   '092969644',
-  NULL,
-  NULL,
   'https://www.facebook.com/profile.php?id=61554137993006',
   'https://maps.app.goo.gl/sypU879rLo7jvNAy7',
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 9
+-- Listing 9: Free Fuel Service in Siem Reap
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  reference_link, verified, updated_at
 ) VALUES (
   'ស្ថានីយ៍សាំងឥតគិតថ្លៃ',
   'fuel_service',
@@ -360,41 +199,19 @@ INSERT INTO public.listings (
   true,
   13.3560705,
   103.9001486,
-  NULL,
-  NULL,
   'open',
   false,
   'បងប្អូនភៀសសឹក អាចមកចាក់សាំង​ ចាក់ប្រេងនៅទីនេះបាន ចាក់Free​ សំរាប់គោយន្ត​ រោម៉ក​ ម៉ូតូ នៅ Caltex Apollo Siem Reap NR6 & Coffee Plus',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   'https://www.facebook.com/Rithomegaofficial',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 10
+-- Listing 10: Site Sponsor - SAITC School
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_phone, reference_link, verified, updated_at
 ) VALUES (
   'សាលាតិចណូ - ទីតាំង និងអ្នកស្ម័គ្រចិត្ត',
   'site_sponsor',
@@ -403,41 +220,20 @@ INSERT INTO public.listings (
   true,
   11.5703975,
   104.8980857,
-  NULL,
-  NULL,
   'open',
   false,
   'សាលាតិចណូ អាចផ្តល់ជូនទីតាំង និងយុវជនស្ម័គ្រចិត្តរៀបចំស្បៀង',
-  NULL,
   '0962940840',
-  NULL,
-  NULL,
   'https://www.facebook.com/SAITC.edu.kh',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 11
+-- Listing 11: Accommodation - Psar Krom Thmey 89 in Siem Reap
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_phone, facebook_contact, google_maps_link, verified, updated_at
 ) VALUES (
   'ផ្សារក្រោមថ្មី ៨៩ - សៀមរាប',
   'accommodation',
@@ -446,41 +242,21 @@ INSERT INTO public.listings (
   true,
   13.361667,
   103.856389,
-  NULL,
-  NULL,
   'open',
   true,
   'បងប្អូនភាសសឹកមកសៀមរាបអាចទៅស្នាក់នៅផ្សារក្រោមថ្មី ៨៩ ខេត្តសៀមរាបបាន មានបន្ទប់ទឹកច្រើន និងទឹកភ្លើងប្រើដោយមិនគិតថ្លៃទេ',
-  NULL,
   '096 8 5555 90',
   'https://www.facebook.com/bunneammoy',
-  NULL,
-  NULL,
   'https://maps.app.goo.gl/cH8mgGnfW66r4rnc6',
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 12
+-- Listing 12: Volunteer Request - Kampong Thom School
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, reference_link, verified, updated_at
 ) VALUES (
   'ត្រូវការកម្លាំងជួយច្រេីន - សាលាខេត្តកំពង់ធំ',
   'volunteer_request',
@@ -489,41 +265,20 @@ INSERT INTO public.listings (
   true,
   12.7124922,
   104.8821375,
-  NULL,
-  NULL,
   'open',
   false,
   'សាលាខេត្តកំពង់ធំ​ ខ្វះកម្លាំងជួយច្រេីនសូមបងប្អូននៅជិតទៅជួយឲ្យបានច្រេីនផង',
   'សាលាខេត្ត',
-  NULL,
-  NULL,
-  NULL,
   'https://www.facebook.com/Someakarashow',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 13
+-- Listing 13: Volunteer Request - Dav TheCake
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, reference_link, google_maps_link, verified, updated_at
 ) VALUES (
   'ត្រូវការកម្លាំងជួយ - Dav TheCake',
   'volunteer_request',
@@ -532,40 +287,21 @@ INSERT INTO public.listings (
   true,
   11.5316764,
   104.9361264,
-  NULL,
-  NULL,
   'open',
   false,
   'Please verify which location to be exact. Currently there are three branches.',
   'Dav TheCake',
-  NULL,
-  NULL,
   'https://www.facebook.com/DavTheCakeOfficial',
   'https://maps.app.goo.gl/zCzXtJSkLyGLqcJG7?g_st=ic',
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 14
+-- Listing 14: School - Wat Bo Primary School
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  google_maps_link, verified, updated_at
 ) VALUES (
   'Wat Bo Primary School',
   'school',
@@ -574,40 +310,19 @@ INSERT INTO public.listings (
   true,
   13.356111,
   103.858611,
-  NULL,
-  NULL,
   'open',
   false,
   NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   'https://maps.app.goo.gl/XsnDdVdzRv2tDmwk6',
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 15
+-- Listing 15: School - Chinese School Chong San
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  reference_link, google_maps_link, verified, updated_at
 ) VALUES (
   'សាលារៀនចិន ចុងសាន - រៀនភាសាចិនឥតគិតថ្លៃ',
   'school',
@@ -616,41 +331,20 @@ INSERT INTO public.listings (
   true,
   13.3527822,
   103.8672714,
-  NULL,
-  NULL,
   'open',
   true,
   'គណៈគ្រប់គ្រងសាលារៀនចិន ចុងសានខេត្តសៀមរាប សូមជូនដំណឹងដល់មាតាបិតាសិស្សដែលភៀសសឹក អាចយកកូនៗមកចុះឈ្មោះចូលរៀនភាសាចិនជាបណ្តោះអាសន្ននៅសាលាចិន ចុងសានបាន ដោយពុំមានការបង់ប្រាក់ឡើយ',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   'https://www.facebook.com/zhang.yong.977415',
   'https://maps.app.goo.gl/XkDBRLQ8a3JBySZS9',
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 16
+-- Listing 16: Volunteer Request - Boeng Keng Kang
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, reference_link, verified, updated_at
 ) VALUES (
   'ត្រូវការអ្នកស្ម័គ្រចិត្ត - បឹងកេងកងផ្លូវ360',
   'volunteer_request',
@@ -659,40 +353,20 @@ INSERT INTO public.listings (
   true,
   11.5500312,
   104.9257444,
-  NULL,
-  NULL,
   'open',
   false,
   'ពីម៉ោង10ព្រឹកតទៅ',
   'Jingjing Soung',
-  NULL,
-  NULL,
   'https://www.facebook.com/jingjingtraveling',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
--- Row 17
+-- Listing 17: Car Transportation - ZTO Express
 INSERT INTO public.listings (
   title, type, area, exact_location, location_consent,
-  latitude, longitude, capacity_min, capacity_max, status,
-  family_friendly, notes, contact_name, contact_phone,
-  facebook_contact, image_url, reference_link, google_maps_link,
-  duration_days, expires_at, verified, opening_hours,
-  services_offered, average_rating, review_count,
-  event_date, event_time, event_end_date,
-  organizer_name, organizer_contact
+  latitude, longitude, status, family_friendly, notes,
+  contact_name, contact_phone, verified, updated_at
 ) VALUES (
   'ZTO Express - សេវាដឹកជញ្ជូន',
   'car_transportation',
@@ -701,29 +375,31 @@ INSERT INTO public.listings (
   true,
   11.5565822,
   104.894454,
-  NULL,
-  NULL,
   'open',
   false,
   NULL,
   'ZTO Express',
   '087652674 / 069322253',
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
   true,
-  NULL,
-  ARRAY[]::text[],
-  NULL,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-);
+  NOW()
+) RETURNING id;
 
 COMMIT;
 
+-- Verify the data was inserted
+SELECT 
+  COUNT(*) as total_inserted
+FROM public.listings;
+
+-- Show the inserted listings
+SELECT 
+  id, 
+  title, 
+  type, 
+  area, 
+  verified,
+  created_at
+FROM public.listings 
+ORDER BY created_at DESC 
+LIMIT 20;
 

@@ -11,7 +11,7 @@ import { Checkbox } from '@/app/components/ui/checkbox';
 import { 
   Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
   Phone, Shield, Send, Loader2, CheckCircle, Car,
-  Upload, Image as ImageIcon, Facebook, Stethoscope, Wheelchair
+  Facebook, Stethoscope, Wheelchair
 } from 'lucide-react';
 
 interface SubmitListingFormProps {
@@ -31,8 +31,6 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
-  const [uploadingImage, setUploadingImage] = useState<boolean>(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     type: '',
@@ -73,29 +71,6 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingImage(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/data/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!res.ok) throw new Error('Failed to upload image');
-      const { file_url } = await res.json();
-      handleChange('image_url', file_url);
-      setImagePreview(URL.createObjectURL(file));
-    } catch (error) {
-      console.error('Image upload failed:', error);
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
   const handleSubmit = async () => {
     setLoading(true);
     
@@ -111,18 +86,58 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     };
 
     try {
+      // Validate required fields before submitting
+      if (!formData.title || formData.title.trim() === '') {
+        alert('សូមបំពេញចំណងជើង (Title is required)');
+        return;
+      }
+      if (!formData.area || formData.area.trim() === '') {
+        alert('សូមបំពេញតំបន់ (Area is required)');
+        return;
+      }
+
       const res = await fetch('/api/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(listingData),
       });
-      if (!res.ok) throw new Error('Failed to create listing');
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage = errorData.message || errorData.error || `Failed to create listing (${res.status})`;
+        
+        // Log full error details for debugging
+        console.error('Failed to submit listing:', {
+          status: res.status,
+          errorMessage,
+          errorData,
+          submittedData: listingData
+        });
+        
+        // Show user-friendly error message
+        let userMessage = errorMessage;
+        if (errorData.details?.code === 'P2011' || errorData.details?.code === 'P2012') {
+          userMessage = 'សូមបំពេញព័ត៌មានដែលត្រូវការ (Please fill in required information)';
+        } else if (errorData.details?.code === 'P2002') {
+          userMessage = 'ព័ត៌មាននេះមានរួចហើយ (This information already exists)';
+        } else if (res.status === 400) {
+          userMessage = 'ព័ត៌មានមិនត្រឹមត្រូវ (Invalid information)';
+        }
+        
+        alert(`មានបញ្ហា: ${userMessage}`);
+        throw new Error(errorMessage);
+      }
+      
+      const result = await res.json();
       setSubmitted(true);
       setTimeout(() => {
         onSuccess?.();
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to submit listing:', error);
+      if (!error.message?.includes('មានបញ្ហា')) {
+        alert(`មានបញ្ហាក្នុងការដាក់ស្នើ: ${error.message || 'Unknown error'}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -267,54 +282,16 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
               />
             </div>
 
-            {/* Image Upload */}
             <div className="space-y-2">
-              <Label>ផ្ទុករូបភាព (ស្រេចចិត្ត)</Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
-                {imagePreview ? (
-                  <div className="space-y-2">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setImagePreview(null);
-                        handleChange('image_url', '');
-                      }}
-                    >
-                      លុបរូបភាព
-                    </Button>
-                  </div>
-                ) : (
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      disabled={uploadingImage}
-                    />
-                    <div className="flex flex-col items-center gap-2">
-                      {uploadingImage ? (
-                        <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
-                      ) : (
-                        <ImageIcon className="w-8 h-8 text-gray-400" />
-                      )}
-                      <p className="text-sm text-gray-600">
-                        {uploadingImage ? 'កំពុងផ្ទុក...' : 'ចុចដើម្បីផ្ទុករូបភាព'}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        រូបភាពនៃកន្លែង, យានជំនិះ, ឬរូបភាពពាក់ព័ន្ធ
-                      </p>
-                    </div>
-                  </label>
-                )}
-              </div>
+              <Label>តំណភ្ជាប់រូបភាព (ស្រេចចិត្ត)</Label>
+              <Input 
+                placeholder="https://example.com/image.jpg"
+                value={formData.image_url}
+                onChange={(e) => handleChange('image_url', e.target.value)}
+              />
+              <p className="text-xs text-gray-500">
+                បិទភ្ជាប់រូបភាពពីគេហទំព័រផ្សេងៗ (ប្រសិនបើមាន)
+              </p>
             </div>
 
             <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-xl">
