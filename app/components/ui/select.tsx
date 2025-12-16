@@ -84,9 +84,9 @@ const SelectContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const context = React.useContext(SelectContext)
   if (!context) throw new Error("SelectContent must be used within Select")
-  const contentRef = React.useRef<HTMLDivElement>(null)
+  const contentRef = React.useRef<HTMLDivElement | null>(null)
   const combinedRef = React.useCallback((node: HTMLDivElement | null) => {
-    contentRef.current = node
+    (contentRef as React.MutableRefObject<HTMLDivElement | null>).current = node
     if (typeof ref === 'function') {
       ref(node)
     } else if (ref) {

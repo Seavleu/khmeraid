@@ -30,6 +30,7 @@ interface TestResponse {
   listings: TestListing[];
   error?: string;
   details?: any;
+  total_in_db?: number;
 }
 
 export default function TestPage() {
