@@ -97,7 +97,17 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     facebook_contact: '',
     image_url: '',
     reference_link: '',
-    duration_days: ''
+    google_maps_link: '',
+    duration_days: '',
+    opening_hours: '',
+    services_offered: [] as string[],
+    average_rating: '',
+    review_count: '',
+    event_date: '',
+    event_time: '',
+    event_end_date: '',
+    organizer_name: '',
+    organizer_contact: ''
   });
 
   const handleChange = (field: string, value: any) => {
@@ -305,6 +315,7 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
     setLoading(true);
     
       // Ensure all required fields are properly set
+      // Ensure all required fields are properly set
       const listingData = {
       title: formData.title.trim(),
       type: formData.type.trim(),
@@ -337,10 +348,20 @@ export default function SubmitListingForm({ onSuccess, onCancel }: SubmitListing
       facebook_contact: formData.facebook_contact?.trim() || null,
       image_url: formData.image_url?.trim() || null,
       reference_link: formData.reference_link?.trim() || null,
+      google_maps_link: formData.google_maps_link?.trim() || null,
       verified: false,
       expires_at: formData.duration_days 
         ? new Date(Date.now() + parseInt(formData.duration_days) * 24 * 60 * 60 * 1000).toISOString()
-        : null
+        : null,
+      opening_hours: formData.opening_hours?.trim() || null,
+      services_offered: Array.isArray(formData.services_offered) ? formData.services_offered : [],
+      average_rating: formData.average_rating ? parseFloat(formData.average_rating) : null,
+      review_count: formData.review_count ? parseInt(formData.review_count) : 0,
+      event_date: formData.event_date || null,
+      event_time: formData.event_time?.trim() || null,
+      event_end_date: formData.event_end_date || null,
+      organizer_name: formData.organizer_name?.trim() || null,
+      organizer_contact: formData.organizer_contact?.trim() || null,
     };
 
     try {

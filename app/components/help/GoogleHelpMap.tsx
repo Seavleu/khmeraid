@@ -101,6 +101,7 @@ export default function GoogleHelpMap({
   const userLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const userLocationCircleRef = useRef<google.maps.Circle | null>(null);
   const dangerousZonesRef = useRef<google.maps.Circle[]>([]);
+  const searchedLocationMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
   const defaultCenter = { lat: 11.5564, lng: 104.9282 }; // Phnom Penh, Cambodia
 
@@ -201,6 +202,7 @@ export default function GoogleHelpMap({
           fullscreenControl: true,
           zoomControl: true,
           streetViewControl: false,
+          drawingControl: false, // Disable polygon/drawing controls
           gestureHandling: 'greedy', // Allow one-finger panning on mobile
           disableDoubleClickZoom: false, // Allow double-click to zoom
         });
@@ -227,37 +229,117 @@ export default function GoogleHelpMap({
 
     // Wait a bit for the place picker to be rendered
     const timer = setTimeout(() => {
-      const placePickerElement = document.querySelector('gmpx-place-picker') as any;
+      const mobilePlacePicker = document.querySelector('#mobile-place-picker') as any;
+      const desktopPlacePicker = document.querySelector('#desktop-place-picker') as any;
       const mapElement = document.querySelector('gmp-map') as any;
 
-      if (placePickerElement && mapElement) {
-        const handlePlaceChange = () => {
-          const place = placePickerElement.value;
+      if (!mapElement?.innerMap) return;
+
+      const handlePlaceChange = (placePickerElement: any) => {
+        return () => {
+          const place = placePickerElement?.value;
           
           if (!place?.location) {
             return;
           }
 
-          if (place.viewport && mapElement.innerMap) {
-            mapElement.innerMap.fitBounds(place.viewport);
-          } else if (place.location) {
-            const lat = place.location.lat();
-            const lng = place.location.lng();
-            mapElement.setAttribute('center', `${lat},${lng}`);
-            mapElement.setAttribute('zoom', '17');
+          const lat = place.location.lat();
+          const lng = place.location.lng();
+
+          // Remove existing searched location marker
+          if (searchedLocationMarkerRef.current) {
+            searchedLocationMarkerRef.current.map = null;
+            searchedLocationMarkerRef.current = null;
+          }
+
+          // Create marker for searched location
+          try {
+            const searchedMarker = new google.maps.marker.AdvancedMarkerElement({
+              map: mapElement.innerMap,
+              position: { lat, lng },
+              title: place.name || place.formattedAddress || 'Searched Location',
+              zIndex: 10,
+              content: (() => {
+                const container = document.createElement('div');
+                container.style.width = '32px';
+                container.style.height = '32px';
+                container.style.position = 'relative';
+                
+                // Red pin icon
+                const pin = document.createElement('div');
+                pin.innerHTML = `
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#DC2626"/>
+                  </svg>
+                `;
+                pin.style.position = 'absolute';
+                pin.style.top = '0';
+                pin.style.left = '0';
+                
+                container.appendChild(pin);
+                return container;
+              })(),
+            });
+            searchedLocationMarkerRef.current = searchedMarker;
+          } catch (error) {
+            console.error('Error creating searched location marker:', error);
+          }
+
+          // Center map on selected location
+          if (mapElement.innerMap) {
+            if (place.viewport) {
+              mapElement.innerMap.fitBounds(place.viewport);
+            } else {
+              mapElement.innerMap.setCenter({ lat, lng });
+              mapElement.innerMap.setZoom(17);
+            }
+          }
+
+          // Close mobile search bar after selection
+          if (mobilePlacePicker && showSearchBar) {
+            setShowSearchBar(false);
           }
         };
+      };
 
-        placePickerElement.addEventListener('gmpx-placechange', handlePlaceChange);
-        
-        return () => {
-          placePickerElement.removeEventListener('gmpx-placechange', handlePlaceChange);
-        };
+      // Set up listeners for both mobile and desktop place pickers
+      const cleanupFunctions: (() => void)[] = [];
+
+      if (mobilePlacePicker) {
+        const handler = handlePlaceChange(mobilePlacePicker);
+        mobilePlacePicker.addEventListener('gmpx-placechange', handler);
+        cleanupFunctions.push(() => {
+          mobilePlacePicker.removeEventListener('gmpx-placechange', handler);
+        });
       }
+
+      if (desktopPlacePicker) {
+        const handler = handlePlaceChange(desktopPlacePicker);
+        desktopPlacePicker.addEventListener('gmpx-placechange', handler);
+        cleanupFunctions.push(() => {
+          desktopPlacePicker.removeEventListener('gmpx-placechange', handler);
+        });
+      }
+      
+      return () => {
+        cleanupFunctions.forEach(cleanup => cleanup());
+        // Cleanup searched location marker
+        if (searchedLocationMarkerRef.current) {
+          searchedLocationMarkerRef.current.map = null;
+          searchedLocationMarkerRef.current = null;
+        }
+      };
     }, 500);
 
-    return () => clearTimeout(timer);
-  }, [isInitialized]);
+    return () => {
+      clearTimeout(timer);
+      // Cleanup searched location marker on unmount
+      if (searchedLocationMarkerRef.current) {
+        searchedLocationMarkerRef.current.map = null;
+        searchedLocationMarkerRef.current = null;
+      }
+    };
+  }, [isInitialized, showSearchBar]);
 
   // Create and update user location marker
   useEffect(() => {
@@ -380,38 +462,51 @@ export default function GoogleHelpMap({
     });
     dangerousZonesRef.current = [];
 
-    // Create circles for red zones (dangerous)
+    // Map Khmer zone names to English coordinate keys
+    const zoneNameMap: Record<string, string> = {
+      'បាត់ដំបង': 'Battambang',
+      'ឧត្តរមានជ័យ': 'Oudar Meanchey',
+      'បន្ទាយមានជ័យ': 'Banteay Meanchey',
+      'ពោធិសាត់': 'Pursat',
+      'កោះកុង': 'Koh Kong',
+      'ព្រះវិហារ': 'Preah Vihear',
+      'សៀមរាប': 'Siem Reap',
+    };
+
+    // Create circles for red zones (dangerous) - more visible
     DANGEROUS_ZONES_DATA.red.forEach(zone => {
-      const coords = DANGEROUS_ZONES_DATA.coordinates[zone as keyof typeof DANGEROUS_ZONES_DATA.coordinates];
+      const englishName = zoneNameMap[zone] || zone;
+      const coords = DANGEROUS_ZONES_DATA.coordinates[englishName as keyof typeof DANGEROUS_ZONES_DATA.coordinates];
       if (coords) {
         const circle = new google.maps.Circle({
           map: mapElement.innerMap,
           center: coords,
-          radius: 50000, // 50km radius - adjust as needed
+          radius: 50000, // 50km radius
           fillColor: '#DC2626', // Red
-          fillOpacity: 0.2,
+          fillOpacity: 0.25, // Increased opacity for better visibility
           strokeColor: '#DC2626',
-          strokeOpacity: 0.6,
-          strokeWeight: 2,
+          strokeOpacity: 0.8, // Increased stroke opacity
+          strokeWeight: 3, // Thicker stroke
           zIndex: 0,
         });
         dangerousZonesRef.current.push(circle);
       }
     });
 
-    // Create circles for orange zones (alert)
+    // Create circles for orange zones (alert) - more visible
     DANGEROUS_ZONES_DATA.orange.forEach(zone => {
-      const coords = DANGEROUS_ZONES_DATA.coordinates[zone as keyof typeof DANGEROUS_ZONES_DATA.coordinates];
+      const englishName = zoneNameMap[zone] || zone;
+      const coords = DANGEROUS_ZONES_DATA.coordinates[englishName as keyof typeof DANGEROUS_ZONES_DATA.coordinates];
       if (coords) {
         const circle = new google.maps.Circle({
           map: mapElement.innerMap,
           center: coords,
-          radius: 50000, // 50km radius - adjust as needed
+          radius: 50000, // 50km radius
           fillColor: '#F97316', // Orange
-          fillOpacity: 0.15,
+          fillOpacity: 0.2, // Increased opacity for better visibility
           strokeColor: '#F97316',
-          strokeOpacity: 0.5,
-          strokeWeight: 2,
+          strokeOpacity: 0.7, // Increased stroke opacity
+          strokeWeight: 3, // Thicker stroke
           zIndex: 0,
         });
         dangerousZonesRef.current.push(circle);
@@ -570,9 +665,9 @@ export default function GoogleHelpMap({
 
           {/* Place Picker - Collapsible Search Icon (Mobile) / Always Visible (Desktop) */}
           {isInitialized && (
-            <div className="absolute top-14 sm:top-18 left-2 sm:left-4 z-20">
-              {/* Mobile: Search Icon Button */}
-              <div className="sm:hidden">
+            <>
+              {/* Mobile: Search Icon Button - Next to Location Tracker */}
+              <div className="absolute top-20 right-5 z-20 sm:hidden">
                 {!showSearchBar ? (
                   <Button
                     onClick={() => setShowSearchBar(true)}
@@ -583,10 +678,11 @@ export default function GoogleHelpMap({
                     <Search className="w-4 h-4" />
                   </Button>
                 ) : (
-                  <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1 overflow-hidden animate-in slide-in-from-left-2 duration-200">
+                  <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1 overflow-hidden animate-in slide-in-from-right-2 duration-200">
                     <div className="flex items-center gap-1">
                       <div className="flex-1 min-w-0">
                         <gmpx-place-picker 
+                          id="mobile-place-picker"
                           placeholder="ស្វែងរក..." 
                           className="w-full compact-place-picker"
                         />
@@ -604,16 +700,17 @@ export default function GoogleHelpMap({
                 )}
               </div>
               
-              {/* Desktop: Always Visible Search Bar */}
-              <div className="hidden sm:block w-[160px] md:w-[200px]">
+              {/* Desktop: Always Visible Search Bar - Top Left */}
+              <div className="absolute top-14 sm:top-18 left-2 sm:left-4 z-20 hidden sm:block w-[160px] md:w-[200px]">
                 <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1 overflow-hidden">
                   <gmpx-place-picker 
+                    id="desktop-place-picker"
                     placeholder="ស្វែងរក..." 
                     className="w-full compact-place-picker"
                   />
                 </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* Error Message */}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
+import { randomUUID } from 'crypto';
 
 // Use Node.js runtime for Supabase compatibility
 export const runtime = 'nodejs';
@@ -158,7 +159,16 @@ export async function POST(request: NextRequest) {
       }
     };
 
+    // Generate UUID for id if not provided (since Supabase table doesn't have default value)
+    const helpSeekerId = data.id || randomUUID();
+    
+    // Set timestamps for created_at and updated_at
+    const now = new Date().toISOString();
+    
     const helpSeekerData = {
+      id: helpSeekerId,
+      created_at: now,
+      updated_at: now,
       name: data.name.trim(),
       phone: data.phone.trim(),
       latitude: Number(data.latitude),

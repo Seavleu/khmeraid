@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
+import { randomUUID } from 'crypto';
 
 // Use Node.js runtime for Supabase compatibility (Edge runtime doesn't support all Node.js APIs)
 export const runtime = 'nodejs';
@@ -201,67 +202,84 @@ export async function POST(request: NextRequest) {
     };
 
     // Prepare data with proper type conversions
+    // Explicitly exclude auto-generated timestamp fields, but generate ID if needed
+    const { created_at, updated_at, created_date, updated_date, ...dataWithoutAutoFields } = data;
+    
+    // Generate UUID for id if not provided (since Supabase table doesn't have default value)
+    const listingId = data.id || randomUUID();
+    
+    // Set timestamps for created_at and updated_at
+    const now = new Date().toISOString();
+    
     const listingData = {
-      title: data.title.trim(),
-      type: data.type.trim(),
-      area: data.area.trim(),
-      exact_location: data.exact_location || null,
-      location_consent: Boolean(data.location_consent),
-      latitude: toFloatOrNull(data.latitude),
-      longitude: toFloatOrNull(data.longitude),
-      capacity_min: toIntOrNull(data.capacity_min),
-      capacity_max: toIntOrNull(data.capacity_max),
-      status: data.status || 'open',
-      family_friendly: Boolean(data.family_friendly),
+      id: listingId,
+      created_at: now,
+      updated_at: now,
+      title: dataWithoutAutoFields.title.trim(),
+      type: dataWithoutAutoFields.type.trim(),
+      area: dataWithoutAutoFields.area.trim(),
+      exact_location: dataWithoutAutoFields.exact_location || null,
+      location_consent: Boolean(dataWithoutAutoFields.location_consent),
+      latitude: toFloatOrNull(dataWithoutAutoFields.latitude),
+      longitude: toFloatOrNull(dataWithoutAutoFields.longitude),
+      capacity_min: toIntOrNull(dataWithoutAutoFields.capacity_min),
+      capacity_max: toIntOrNull(dataWithoutAutoFields.capacity_max),
+      status: dataWithoutAutoFields.status || 'open',
+      family_friendly: Boolean(dataWithoutAutoFields.family_friendly),
       // Accessibility fields
-      wheelchair_accessible: Boolean(data.wheelchair_accessible),
-      accessible_parking: Boolean(data.accessible_parking),
-      accessible_restrooms: Boolean(data.accessible_restrooms),
-      accessible_entrance: Boolean(data.accessible_entrance),
-      elevator_available: Boolean(data.elevator_available),
-      ramp_available: Boolean(data.ramp_available),
-      sign_language_available: Boolean(data.sign_language_available),
-      braille_available: Boolean(data.braille_available),
-      hearing_loop_available: Boolean(data.hearing_loop_available),
+      wheelchair_accessible: Boolean(dataWithoutAutoFields.wheelchair_accessible),
+      accessible_parking: Boolean(dataWithoutAutoFields.accessible_parking),
+      accessible_restrooms: Boolean(dataWithoutAutoFields.accessible_restrooms),
+      accessible_entrance: Boolean(dataWithoutAutoFields.accessible_entrance),
+      elevator_available: Boolean(dataWithoutAutoFields.elevator_available),
+      ramp_available: Boolean(dataWithoutAutoFields.ramp_available),
+      sign_language_available: Boolean(dataWithoutAutoFields.sign_language_available),
+      braille_available: Boolean(dataWithoutAutoFields.braille_available),
+      hearing_loop_available: Boolean(dataWithoutAutoFields.hearing_loop_available),
       // Medical care fields
-      medical_specialties: Array.isArray(data.medical_specialties) ? data.medical_specialties : [],
-      emergency_services: Boolean(data.emergency_services),
-      hours_24: Boolean(data.hours_24),
-      insurance_accepted: Boolean(data.insurance_accepted),
-      notes: data.notes || null,
-      contact_name: data.contact_name || null,
-      contact_phone: data.contact_phone || null,
-      facebook_contact: data.facebook_contact || null,
-      image_url: data.image_url || null,
-      reference_link: data.reference_link || null,
-      google_maps_link: data.google_maps_link || null,
-      duration_days: toIntOrNull(data.duration_days),
-      expires_at: toDateOrNull(data.expires_at),
-      verified: Boolean(data.verified),
-      opening_hours: data.opening_hours || null,
-      services_offered: Array.isArray(data.services_offered) ? data.services_offered : [],
-      average_rating: toFloatOrNull(data.average_rating),
-      review_count: toIntOrNull(data.review_count) ?? 0,
-      event_date: toDateOrNull(data.event_date),
-      event_time: data.event_time || null,
-      event_end_date: toDateOrNull(data.event_end_date),
-      organizer_name: data.organizer_name || null,
-      organizer_contact: data.organizer_contact || null,
+      medical_specialties: Array.isArray(dataWithoutAutoFields.medical_specialties) ? dataWithoutAutoFields.medical_specialties : [],
+      emergency_services: Boolean(dataWithoutAutoFields.emergency_services),
+      hours_24: Boolean(dataWithoutAutoFields.hours_24),
+      insurance_accepted: Boolean(dataWithoutAutoFields.insurance_accepted),
+      notes: dataWithoutAutoFields.notes || null,
+      contact_name: dataWithoutAutoFields.contact_name || null,
+      contact_phone: dataWithoutAutoFields.contact_phone || null,
+      facebook_contact: dataWithoutAutoFields.facebook_contact || null,
+      image_url: dataWithoutAutoFields.image_url || null,
+      reference_link: dataWithoutAutoFields.reference_link || null,
+      google_maps_link: dataWithoutAutoFields.google_maps_link || null,
+      duration_days: toIntOrNull(dataWithoutAutoFields.duration_days),
+      expires_at: toDateOrNull(dataWithoutAutoFields.expires_at),
+      verified: Boolean(dataWithoutAutoFields.verified),
+      opening_hours: dataWithoutAutoFields.opening_hours || null,
+      services_offered: Array.isArray(dataWithoutAutoFields.services_offered) ? dataWithoutAutoFields.services_offered : [],
+      average_rating: toFloatOrNull(dataWithoutAutoFields.average_rating),
+      review_count: toIntOrNull(dataWithoutAutoFields.review_count) ?? 0,
+      event_date: toDateOrNull(dataWithoutAutoFields.event_date),
+      event_time: dataWithoutAutoFields.event_time || null,
+      event_end_date: toDateOrNull(dataWithoutAutoFields.event_end_date),
+      organizer_name: dataWithoutAutoFields.organizer_name || null,
+      organizer_contact: dataWithoutAutoFields.organizer_contact || null,
     };
+
+    // Remove any undefined values to prevent issues
+    const cleanListingData = Object.fromEntries(
+      Object.entries(listingData).filter(([_, value]) => value !== undefined)
+    ) as typeof listingData;
 
     // Log the data being inserted (without sensitive info)
     console.log('Creating listing with data:', {
-      title: listingData.title,
-      type: listingData.type,
-      area: listingData.area,
-      hasLocation: !!(listingData.latitude && listingData.longitude),
-      hasExactLocation: !!listingData.exact_location,
-      locationConsent: listingData.location_consent
+      title: cleanListingData.title,
+      type: cleanListingData.type,
+      area: cleanListingData.area,
+      hasLocation: !!(cleanListingData.latitude && cleanListingData.longitude),
+      hasExactLocation: !!cleanListingData.exact_location,
+      locationConsent: cleanListingData.location_consent
     });
 
     const { data: listing, error } = await supabase
       .from('listings')
-      .insert(listingData)
+      .insert(cleanListingData)
       .select()
       .single();
 

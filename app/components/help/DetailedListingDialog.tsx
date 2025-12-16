@@ -6,10 +6,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/app/componen
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { 
-  Home, Fuel, HeartHandshake, MapPin, Users, Clock, 
+  Home, Fuel, HeartHandshake, MapPin, Clock, 
   Phone, CheckCircle, AlertCircle, PauseCircle, XCircle,
-  Baby, Car, Facebook, User, ShieldCheck, ExternalLink, Star, MessageCircle,
-  Accessibility, Stethoscope, Building2, Clock as ClockIcon, CreditCard
+  Baby, Car, Facebook, User, ShieldCheck, ExternalLink,
+  Stethoscope, Clock as ClockIcon, CreditCard, Navigation, Link as LinkIcon
 } from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
@@ -73,19 +73,26 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
     window.location.href = `tel:${phone.replace(/[^0-9+]/g, '')}`;
   };
 
+  const getDirectionsUrl = () => {
+    if (listing.latitude && listing.longitude) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${listing.latitude},${listing.longitude}`;
+    }
+    return null;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900 pr-8">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+        <DialogHeader className="pb-2 sm:pb-4">
+          <DialogTitle className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 pr-6 sm:pr-8">
             {listing.title}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-3 sm:space-y-4 lg:space-y-6 py-2 sm:py-4">
           {/* Image */}
           {listing.image_url && (
-            <div className="relative w-full h-64 overflow-hidden rounded-2xl bg-gray-100 border-2 border-gray-200">
+            <div className="relative w-full h-32 sm:h-48 lg:h-64 overflow-hidden rounded-lg sm:rounded-xl lg:rounded-2xl bg-gray-100 border border-gray-200 sm:border-2">
               <Image 
                 src={listing.image_url} 
                 alt={listing.title}
@@ -97,24 +104,24 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
           )}
 
           {/* Badges */}
-          <div className="flex flex-wrap gap-2">
-            <Badge className={`${type.color} text-sm font-bold px-3 py-1.5 rounded-2xl`}>
-              <TypeIcon className="w-4 h-4 mr-1.5" />
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            <Badge className={`${type.color} text-[10px] sm:text-xs lg:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl lg:rounded-2xl`}>
+              <TypeIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 mr-1 sm:mr-1.5" />
               {type.label}
             </Badge>
-            <Badge className={`${status.color} text-sm font-bold px-3 py-1.5 rounded-2xl`}>
-              <StatusIcon className="w-4 h-4 mr-1.5" />
+            <Badge className={`${status.color} text-[10px] sm:text-xs lg:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl lg:rounded-2xl`}>
+              <StatusIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 mr-1 sm:mr-1.5" />
               {status.label}
             </Badge>
             {listing.verified && (
-              <Badge className="bg-emerald-600 text-white text-sm font-bold px-3 py-1.5 rounded-2xl">
-                <ShieldCheck className="w-4 h-4 mr-1.5" />
+              <Badge className="bg-emerald-600 text-white text-[10px] sm:text-xs lg:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl lg:rounded-2xl">
+                <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 mr-1 sm:mr-1.5" />
                 បានផ្ទៀងផ្ទាត់
               </Badge>
             )}
             {listing.family_friendly && (
-              <Badge className="bg-pink-100 text-pink-700 text-sm font-bold px-3 py-1.5 rounded-2xl">
-                <Baby className="w-4 h-4 mr-1.5" />
+              <Badge className="bg-pink-100 text-pink-700 text-[10px] sm:text-xs lg:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl lg:rounded-2xl">
+                <Baby className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 mr-1 sm:mr-1.5" />
                 គ្រួសារ
               </Badge>
             )}
@@ -122,16 +129,16 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Event Details */}
           {listing.type === 'event' && (
-            <div className="space-y-2 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-4 border-2 border-pink-200">
-              <h3 className="text-lg font-bold text-pink-900 flex items-center gap-2">
-                <Clock className="w-5 h-5" />
+            <div className="space-y-2 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-pink-200 sm:border-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-bold text-pink-900 flex items-center gap-1.5 sm:gap-2">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                 ព័ត៌មានព្រឹត្តិការណ៍
               </h3>
               
               {listing.event_date && (
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 border-2 border-pink-200">
-                  <p className="text-xs text-pink-700 font-medium mb-1">កាលបរិច្ឆេទ</p>
-                  <p className="text-base font-bold text-pink-900">
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-pink-200 sm:border-2">
+                  <p className="text-[10px] sm:text-xs text-pink-700 font-medium mb-0.5 sm:mb-1">កាលបរិច្ឆេទ</p>
+                  <p className="text-xs sm:text-sm lg:text-base font-bold text-pink-900">
                     {new Date(listing.event_date).toLocaleDateString('km-KH', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -140,12 +147,12 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
                     })}
                   </p>
                   {listing.event_time && (
-                    <p className="text-sm font-bold text-pink-800 mt-1">
+                    <p className="text-[10px] sm:text-xs lg:text-sm font-bold text-pink-800 mt-0.5 sm:mt-1">
                       ម៉ោង: {listing.event_time}
                     </p>
                   )}
                   {listing.event_end_date && (
-                    <p className="text-xs font-semibold text-pink-700 mt-1">
+                    <p className="text-[10px] sm:text-xs font-semibold text-pink-700 mt-0.5 sm:mt-1">
                       រហូតដល់: {new Date(listing.event_end_date).toLocaleDateString('km-KH')}
                     </p>
                   )}
@@ -153,28 +160,28 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
               )}
 
               {listing.organizer_name && (
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 border-2 border-pink-200">
-                  <div className="flex items-center gap-2 mb-1">
-                    <User className="w-4 h-4 text-pink-700" />
-                    <p className="text-xs text-pink-700 font-medium">អ្នករៀបចំព្រឹត្តិការណ៍</p>
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-pink-200 sm:border-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-700" />
+                    <p className="text-[10px] sm:text-xs text-pink-700 font-medium">អ្នករៀបចំព្រឹត្តិការណ៍</p>
                   </div>
-                  <p className="text-base font-bold text-pink-900">{listing.organizer_name}</p>
+                  <p className="text-xs sm:text-sm lg:text-base font-bold text-pink-900">{listing.organizer_name}</p>
                 </div>
               )}
 
               {listing.organizer_contact && (
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 border-2 border-pink-200">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Phone className="w-4 h-4 text-pink-700" />
-                    <p className="text-xs text-pink-700 font-medium">ទំនាក់ទំនងអ្នករៀបចំ</p>
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-pink-200 sm:border-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                    <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-700" />
+                    <p className="text-[10px] sm:text-xs text-pink-700 font-medium">ទំនាក់ទំនងអ្នករៀបចំ</p>
                   </div>
-                  <p className="text-lg font-bold text-pink-900 mb-2">{listing.organizer_contact}</p>
+                  <p className="text-sm sm:text-base lg:text-lg font-bold text-pink-900 mb-1.5 sm:mb-2">{listing.organizer_contact}</p>
                   <Button 
                     onClick={() => window.location.href = `tel:${listing.organizer_contact.replace(/[^0-9+]/g, '')}`}
-                    size="lg"
-                    className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold text-base py-4 rounded-2xl"
+                    size="sm"
+                    className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs sm:text-sm lg:text-base py-2 sm:py-3 lg:py-4 h-8 sm:h-10 lg:h-12 rounded-lg sm:rounded-xl lg:rounded-2xl"
                   >
-                    <Phone className="w-5 h-5 mr-2" />
+                    <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1.5 sm:mr-2" />
                     ទាក់ទងអ្នករៀបចំ
                   </Button>
                 </div>
@@ -184,18 +191,18 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Contact Phone - Prominent */}
           {listing.contact_phone && (
-            <div className="bg-emerald-50 rounded-2xl p-4 border-2 border-emerald-200">
-              <div className="flex items-center gap-2 mb-1">
-                <Phone className="w-4 h-4 text-emerald-700" />
-                <p className="text-xs text-emerald-700 font-medium">លេខទូរស័ព្ទ</p>
+            <div className="bg-emerald-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-emerald-200 sm:border-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-700" />
+                <p className="text-[10px] sm:text-xs text-emerald-700 font-medium">លេខទូរស័ព្ទ</p>
               </div>
-              <p className="text-lg font-bold text-emerald-800 mb-2">{listing.contact_phone}</p>
+              <p className="text-sm sm:text-base lg:text-lg font-bold text-emerald-800 mb-1.5 sm:mb-2">{listing.contact_phone}</p>
               <Button 
                 onClick={handleCall}
-                size="lg"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-4 rounded-2xl"
+                size="sm"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm lg:text-base py-2 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl lg:rounded-2xl h-8 sm:h-10 lg:h-12"
               >
-                <Phone className="w-5 h-5 mr-2" />
+                <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1.5 sm:mr-2" />
                 ទូរស័ព្ទឥឡូវនេះ
               </Button>
             </div>
@@ -238,12 +245,12 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
 
           {/* Contact Details */}
           {listing.contact_name && (
-            <div className="bg-gray-50 rounded-2xl p-4">
-              <div className="flex items-center gap-3">
-                <User className="w-6 h-6 text-gray-600" />
+            <div className="bg-gray-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <User className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-600 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-gray-600 font-semibold">អ្នកទំនាក់ទំនង</p>
-                  <p className="text-xl font-bold text-gray-900">{listing.contact_name}</p>
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 font-semibold">អ្នកទំនាក់ទំនង</p>
+                  <p className="text-sm sm:text-base lg:text-xl font-bold text-gray-900">{listing.contact_name}</p>
                 </div>
               </div>
             </div>
@@ -255,166 +262,76 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
               href={listing.facebook_contact.startsWith('http') ? listing.facebook_contact : `https://facebook.com/${listing.facebook_contact}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 bg-blue-50 border-2 border-blue-200 p-4 rounded-2xl hover:bg-blue-100 transition-all"
+              className="flex items-center gap-2 sm:gap-3 lg:gap-4 bg-blue-50 border border-blue-200 sm:border-2 p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl lg:rounded-2xl hover:bg-blue-100 transition-all"
             >
-              <Facebook className="w-7 h-7 text-blue-600" />
+              <Facebook className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-blue-600 flex-shrink-0" />
               <div>
-                <p className="text-sm text-blue-600 font-semibold">ហ្វេសប៊ុក</p>
-                <p className="text-lg font-bold text-blue-700">ផ្ញើសារតាម Facebook</p>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-blue-600 font-semibold">ហ្វេសប៊ុក</p>
+                <p className="text-xs sm:text-sm lg:text-lg font-bold text-blue-700">ផ្ញើសារតាម Facebook</p>
               </div>
             </a>
           )}
 
           {/* Opening Hours */}
           {listing.opening_hours && (
-            <div className="bg-indigo-50 rounded-2xl p-4 border-2 border-indigo-200">
-              <div className="flex items-center gap-3">
-                <Clock className="w-6 h-6 text-indigo-600" />
+            <div className="bg-indigo-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-indigo-200 sm:border-2">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-indigo-600 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-indigo-600 font-semibold">ម៉ោងបើក</p>
-                  <p className="text-xl font-bold text-indigo-900">{listing.opening_hours}</p>
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 font-semibold">ម៉ោងបើក</p>
+                  <p className="text-sm sm:text-base lg:text-xl font-bold text-indigo-900">{listing.opening_hours}</p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Capacity & Duration */}
-          {(listing.capacity_min || listing.capacity_max || listing.duration_days) && (
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-gray-900">ℹ️ ព័ត៌មានលម្អិត</h3>
-              
-              {(listing.capacity_min || listing.capacity_max) && (
-                <div className="bg-gray-50 rounded-2xl p-4">
-                  <div className="flex items-center gap-3">
-                    <Users className="w-6 h-6 text-gray-600" />
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">សមត្ថភាព</p>
-                      <p className="text-xl font-bold text-gray-900">
-                        {listing.capacity_min || 1} - {listing.capacity_max || '?'} នាក់
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {listing.duration_days && (
-                <div className="bg-gray-50 rounded-2xl p-4">
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-6 h-6 text-gray-600" />
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">រយៈពេល</p>
-                      <p className="text-xl font-bold text-gray-900">{listing.duration_days} ថ្ងៃ</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Services Offered */}
-          {listing.services_offered && listing.services_offered.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-gray-900">✓ សេវាកម្មផ្តល់ជូន</h3>
-              <div className="flex flex-wrap gap-2">
-                {listing.services_offered?.map((service: string, idx: number) => (
-                  <Badge key={idx} className="bg-green-50 text-green-700 border-2 border-green-200 text-base px-4 py-2 font-semibold">
-                    {service}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Accessibility Features */}
-          {(listing.wheelchair_accessible || listing.accessible_parking || listing.accessible_restrooms || listing.accessible_entrance || listing.elevator_available || listing.ramp_available) && (
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Accessibility className="w-5 h-5" />
-                សម្រាប់អ្នកដែលមានជំងឺដំបង
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                {listing.wheelchair_accessible && (
-                  <Badge className="bg-blue-50 text-blue-700 border-2 border-blue-200 text-sm px-3 py-2 font-semibold">
-                    <Accessibility className="w-4 h-4 mr-1 inline" />
-                    សម្រាប់អ្នកដែលមានជំងឺដំបង
-                  </Badge>
-                )}
-                {listing.accessible_parking && (
-                  <Badge className="bg-green-50 text-green-700 border-2 border-green-200 text-sm px-3 py-2 font-semibold">
-                    <Building2 className="w-4 h-4 mr-1 inline" />
-                    ចតឡានសម្រាប់អ្នកដែលមានជំងឺដំបង
-                  </Badge>
-                )}
-                {listing.accessible_restrooms && (
-                  <Badge className="bg-purple-50 text-purple-700 border-2 border-purple-200 text-sm px-3 py-2 font-semibold">
-                    បន្ទប់ទឹកសម្រាប់អ្នកដែលមានជំងឺដំបង
-                  </Badge>
-                )}
-                {listing.accessible_entrance && (
-                  <Badge className="bg-teal-50 text-teal-700 border-2 border-teal-200 text-sm px-3 py-2 font-semibold">
-                    ច្រកចូលសម្រាប់អ្នកដែលមានជំងឺដំបង
-                  </Badge>
-                )}
-                {listing.elevator_available && (
-                  <Badge className="bg-indigo-50 text-indigo-700 border-2 border-indigo-200 text-sm px-3 py-2 font-semibold">
-                    មានជណ្តើរយន្ត
-                  </Badge>
-                )}
-                {listing.ramp_available && (
-                  <Badge className="bg-amber-50 text-amber-700 border-2 border-amber-200 text-sm px-3 py-2 font-semibold">
-                    មានជណ្តើរទេស
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* Medical Care Details */}
           {listing.type === 'medical_care' && (
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Stethoscope className="w-5 h-5" />
+            <div className="space-y-2 sm:space-y-3">
+              <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+                <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5" />
                 ព័ត៌មានសេវាសុខាភិបាល
               </h3>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 {listing.emergency_services && (
-                  <div className="bg-red-50 rounded-2xl p-4 border-2 border-red-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertCircle className="w-5 h-5 text-red-600" />
-                      <p className="text-sm text-red-700 font-semibold">សេវាសង្គ្រោះបន្ទាន់</p>
+                  <div className="bg-red-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-4 border border-red-200 sm:border-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                      <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-red-700 font-semibold">សេវាសង្គ្រោះបន្ទាន់</p>
                     </div>
-                    <p className="text-lg font-bold text-red-900">មាន</p>
+                    <p className="text-xs sm:text-sm lg:text-lg font-bold text-red-900">មាន</p>
                   </div>
                 )}
                 
                 {listing.hours_24 && (
-                  <div className="bg-green-50 rounded-2xl p-4 border-2 border-green-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <ClockIcon className="w-5 h-5 text-green-600" />
-                      <p className="text-sm text-green-700 font-semibold">ម៉ោងបើក</p>
+                  <div className="bg-green-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-4 border border-green-200 sm:border-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                      <ClockIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-green-700 font-semibold">ម៉ោងបើក</p>
                     </div>
-                    <p className="text-lg font-bold text-green-900">24/7</p>
+                    <p className="text-xs sm:text-sm lg:text-lg font-bold text-green-900">24/7</p>
                   </div>
                 )}
                 
                 {listing.insurance_accepted && (
-                  <div className="bg-emerald-50 rounded-2xl p-4 border-2 border-emerald-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <CreditCard className="w-5 h-5 text-emerald-600" />
-                      <p className="text-sm text-emerald-700 font-semibold">ធានារ៉ាប់រង</p>
+                  <div className="bg-emerald-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-4 border border-emerald-200 sm:border-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-emerald-700 font-semibold">ធានារ៉ាប់រង</p>
                     </div>
-                    <p className="text-lg font-bold text-emerald-900">ទទួលយក</p>
+                    <p className="text-xs sm:text-sm lg:text-lg font-bold text-emerald-900">ទទួលយក</p>
                   </div>
                 )}
               </div>
 
               {listing.medical_specialties && listing.medical_specialties.length > 0 && (
-                <div className="bg-red-50 rounded-2xl p-4 border-2 border-red-200">
-                  <p className="text-sm text-red-700 font-semibold mb-2">ជំនាញពេទ្យ</p>
-                  <div className="flex flex-wrap gap-2">
+                <div className="bg-red-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-4 border border-red-200 sm:border-2">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-red-700 font-semibold mb-1.5 sm:mb-2">ជំនាញពេទ្យ</p>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {listing.medical_specialties.map((specialty: string, idx: number) => (
-                      <Badge key={idx} className="bg-red-100 text-red-700 border-2 border-red-300 text-sm px-3 py-1 font-semibold">
+                      <Badge key={idx} className="bg-red-100 text-red-700 border border-red-300 sm:border-2 text-[10px] sm:text-xs lg:text-sm px-2 sm:px-3 py-0.5 sm:py-1 font-semibold">
                         {specialty}
                       </Badge>
                     ))}
@@ -424,65 +341,93 @@ export default function DetailedListingDialog({ listing, open, onClose }: Detail
             </div>
           )}
 
-          {/* Rating */}
-          {listing.average_rating > 0 && (
-            <div className="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i}
-                      className={`w-6 h-6 ${i < Math.floor(listing.average_rating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-2 text-lg text-gray-600">
-                  <MessageCircle className="w-5 h-5" />
-                  <span className="font-bold">{listing.review_count || 0}</span>
-                </div>
-              </div>
-              <p className="text-2xl font-bold text-amber-800">
-                {listing.average_rating.toFixed(1)} / 5.0
-              </p>
-            </div>
-          )}
 
           {/* Notes */}
           {listing.notes && (
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-gray-900">📝 កំណត់ចំណាំ</h3>
-              <div className="bg-yellow-50 rounded-2xl p-5 border-2 border-yellow-200">
-                <p className="text-lg text-gray-800 leading-relaxed font-medium">
+            <div className="space-y-2 sm:space-y-3">
+              <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900">📝 កំណត់ចំណាំ</h3>
+              <div className="bg-yellow-50 rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-5 border border-yellow-200 sm:border-2">
+                <p className="text-xs sm:text-sm lg:text-lg text-gray-800 leading-relaxed font-medium">
                   {listing.notes}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Reference Link */}
-          {listing.reference_link && (
-            <a
-              href={listing.reference_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-blue-600 hover:text-blue-800 text-lg font-bold"
-            >
-              <ExternalLink className="w-6 h-6" />
-              មើលប្រភពទិន្នន័យ
-            </a>
+          {/* Directions & Maps */}
+          {listing.latitude && listing.longitude && (
+            <div className="space-y-2 sm:space-y-3">
+              <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+                <Navigation className="w-4 h-4 sm:w-5 sm:h-5" />
+                ទិសដៅ
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                {getDirectionsUrl() && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm lg:text-base py-2 sm:py-3 lg:py-4 h-8 sm:h-10 lg:h-12 rounded-lg sm:rounded-xl lg:rounded-2xl"
+                    onClick={() => window.open(getDirectionsUrl()!, '_blank')}
+                  >
+                    <Navigation className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1.5 sm:mr-2" />
+                    ទិសដៅ
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs sm:text-sm lg:text-base font-bold py-2 sm:py-3 lg:py-4 h-8 sm:h-10 lg:h-12 rounded-lg sm:rounded-xl lg:rounded-2xl"
+                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${listing.latitude},${listing.longitude}`, '_blank')}
+                >
+                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1.5 sm:mr-2" />
+                  មើលក្នុង Google Maps
+                </Button>
+              </div>
+            </div>
           )}
 
-          {/* Google Maps Link */}
-          {listing.latitude && listing.longitude && (
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full text-lg font-bold py-6"
-              onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${listing.latitude},${listing.longitude}`, '_blank')}
-            >
-              <ExternalLink className="w-6 h-6 mr-2" />
-              មើលក្នុង Google Maps
-            </Button>
+          {/* Reference Link */}
+          {listing.reference_link && (
+            <div className="space-y-2 sm:space-y-3">
+              <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+                <LinkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                ប្រភពទិន្នន័យ
+              </h3>
+              <a
+                href={listing.reference_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 sm:gap-3 bg-blue-50 border border-blue-200 sm:border-2 p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl lg:rounded-2xl hover:bg-blue-100 transition-all"
+              >
+                <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-blue-600 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-blue-600 font-semibold">មើលប្រភពទិន្នន័យ</p>
+                  <p className="text-xs sm:text-sm lg:text-base text-blue-700 font-medium truncate">{listing.reference_link}</p>
+                </div>
+              </a>
+            </div>
+          )}
+
+          {/* Google Maps Link (if no coordinates but has link) */}
+          {listing.google_maps_link && !listing.latitude && (
+            <div className="space-y-2 sm:space-y-3">
+              <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+                ទីតាំង
+              </h3>
+              <a
+                href={listing.google_maps_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 sm:gap-3 bg-green-50 border border-green-200 sm:border-2 p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl lg:rounded-2xl hover:bg-green-100 transition-all"
+              >
+                <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green-600 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-green-600 font-semibold">មើលក្នុង Google Maps</p>
+                  <p className="text-xs sm:text-sm lg:text-base text-green-700 font-medium truncate">{listing.google_maps_link}</p>
+                </div>
+              </a>
+            </div>
           )}
         </div>
       </DialogContent>

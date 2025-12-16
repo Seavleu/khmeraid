@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     if (!listings || listings.length === 0) {
       return NextResponse.json({
-        summary: 'មិនមានជំនួយនៅក្នុងតំបន់នេះនៅពេលនេះទេ។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់របស់យើង។',
+        summary: 'មិនមានជំនួយនៅក្នុងតំបន់នេះនៅពេលនេះទេ។',
         suggestions: [],
         stats: {},
       });
@@ -165,7 +165,23 @@ export async function POST(request: NextRequest) {
       : '';
 
     const prompt = `You are a helpful assistant for a citizen help coordination platform in Cambodia. 
-Generate a warm, reassuring summary in Khmer language (3-4 sentences) based on this data:
+Generate a warm, reassuring summary in Khmer language (3-4 sentences) based on this data.
+
+Here are examples of good summaries:
+
+Example 1:
+Input: Accommodations: 5 open, 2 limited | Fuel Services: 3 open, 1 limited | Transportation: 4 open, 0 limited | Location: Phnom Penh
+Output: នៅក្នុងទីក្រុងភ្នំពេញ មានជំនួយជាច្រើនដែលអាចប្រើប្រាស់បាន។ មានកន្លែងស្នាក់នៅ ៧កន្លែង, សេវាសាំង ៤កន្លែង, និងសេវាដឹកជញ្ជូន ៤កន្លែងដែលកំពុងបើកជួយ។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់ដើម្បីបញ្ជាក់មុនពេលធ្វើដំណើរ។
+
+Example 2:
+Input: Accommodations: 2 open, 0 limited | Fuel Services: 1 open, 0 limited | Transportation: 0 open, 0 limited | Location: Siem Reap
+Output: នៅក្នុងតំបន់សៀមរាប មានកន្លែងស្នាក់នៅ ២កន្លែង និងសេវាសាំង ១កន្លែងដែលអាចប្រើប្រាស់បាន។ ប្រសិនបើអ្នកត្រូវការជំនួយបន្ថែម សូមពិចារណាទៅកាន់តំបន់ផ្សេងទៀតដូចជា ភ្នំពេញ ឬ បាត់ដំបង។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់ដើម្បីផ្ទៀងផ្ទាត់ព័ត៌មានថ្មីៗ។
+
+Example 3:
+Input: Accommodations: 10 open, 3 limited | Fuel Services: 8 open, 2 limited | Transportation: 6 open, 1 limited | Volunteer Requests: 5 open, 0 limited | Location: Battambang
+Output: នៅក្នុងតំបន់បាត់ដំបង មានជំនួយច្រើនប្រភេទដែលអាចប្រើប្រាស់បាន។ មានកន្លែងស្នាក់នៅ ១៣កន្លែង, សេវាសាំង ១០កន្លែង, សេវាដឹកជញ្ជូន ៧កន្លែង, និងមានត្រូវការស្ម័គ្រចិត្ត ៥កន្លែង។ សូមទូរស័ព្ទទៅខ្សែបន្ទាន់ដើម្បីបញ្ជាក់មុនពេលធ្វើដំណើរ។
+
+Now generate a summary for this data:
 
 Available Resources:
 - Accommodations: ${counts.accommodation.open} open, ${counts.accommodation.limited} limited
@@ -181,13 +197,14 @@ ${Object.entries(locationGroups)
   .join('\n')}
 
 Instructions:
-- Write in Khmer language
-- Be warm and reassuring
-- Mention what's available in the selected area
-- Suggest other nearby areas if they have more resources
-- Always remind to call hotline to confirm availability
+- Follow the format and style of the examples above
+- Write in Khmer language using a warm, calm, and reassuring tone
+- Clearly mention the types of assistance or resources available in the selected area
+- If nearby areas offer more or better resources, gently suggest those alternatives
+- Always remind users to call the hotline to confirm current availability
 - Keep it concise (3-4 sentences max)
-- Don't mention zero counts
+- Do not mention zero availability or zero counts
+- Use natural Khmer language, not literal translations
 
 Generate the summary:`;
 

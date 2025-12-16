@@ -80,6 +80,65 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
+  // Update marker position function
+  // Note: Marker creation is handled by the useEffect that watches markerPosition
+  const updateMarkerPosition = useCallback((lat: number, lng: number) => {
+    setMarkerPosition({ lat, lng });
+    setFormData((prev) => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng
+    }));
+
+    // Update marker position if map is initialized and marker exists
+    if (isMapInitialized && mapRef.current && markerRef.current) {
+      // Update existing marker position
+      markerRef.current.position = { lat, lng };
+      // Center map on marker
+      mapRef.current.panTo({ lat, lng });
+    }
+    // If marker doesn't exist, the useEffect watching markerPosition will create it
+  }, [isMapInitialized]);
+
+  // Create marker function - must be defined before useEffects that use it
+  const createMarker = useCallback((lat: number, lng: number, map: google.maps.Map) => {
+    if (!window.google?.maps) return;
+
+    // Remove existing marker
+    if (markerRef.current) {
+      markerRef.current.map = null;
+      markerRef.current = null;
+    }
+
+    // Create new marker
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      map: map,
+      position: { lat, lng },
+      gmpDraggable: true,
+    });
+
+    // Add drag end listener
+    marker.addListener('dragend', (e: any) => {
+      const position = e.latLng || (e.target?.position || marker.position);
+      if (position) {
+        let newLat: number, newLng: number;
+        if (typeof position.lat === 'function') {
+          newLat = position.lat();
+          newLng = position.lng();
+        } else {
+          newLat = position.lat;
+          newLng = position.lng;
+        }
+        updateMarkerPosition(newLat, newLng);
+      }
+    });
+
+    markerRef.current = marker;
+    // Center map on marker
+    map.panTo({ lat, lng });
+    map.setZoom(15);
+  }, [updateMarkerPosition]);
+
   // Update form data when listing changes
   useEffect(() => {
     if (listing) {
@@ -249,67 +308,7 @@ export default function EditListingDialog({ listing, open, onClose, onSave }: Ed
     const timer = setTimeout(initMap, 500);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, GOOGLE_MAPS_API_KEY]);
-
-  const createMarker = useCallback((lat: number, lng: number, map: google.maps.Map) => {
-    if (!window.google?.maps) return;
-
-    // Remove existing marker
-    if (markerRef.current) {
-      markerRef.current.map = null;
-      markerRef.current = null;
-    }
-
-    // Create new marker
-    const marker = new google.maps.marker.AdvancedMarkerElement({
-      map: map,
-      position: { lat, lng },
-      gmpDraggable: true,
-    });
-
-    // Add drag end listener
-    marker.addListener('dragend', (e: any) => {
-      const position = e.latLng || (e.target?.position || marker.position);
-      if (position) {
-        let newLat: number, newLng: number;
-        if (typeof position.lat === 'function') {
-          newLat = position.lat();
-          newLng = position.lng();
-        } else {
-          newLat = position.lat;
-          newLng = position.lng;
-        }
-        updateMarkerPosition(newLat, newLng);
-      }
-    });
-
-    markerRef.current = marker;
-    // Center map on marker
-    map.panTo({ lat, lng });
-    map.setZoom(15);
-  }, [updateMarkerPosition]);
-
-  const updateMarkerPosition = useCallback((lat: number, lng: number) => {
-    setMarkerPosition({ lat, lng });
-    setFormData((prev) => ({
-      ...prev,
-      latitude: lat,
-      longitude: lng
-    }));
-
-    // Update marker position if map is initialized
-    if (isMapInitialized && mapRef.current) {
-      if (markerRef.current) {
-        // Update existing marker position
-        markerRef.current.position = { lat, lng };
-        // Center map on marker
-        mapRef.current.panTo({ lat, lng });
-      } else {
-        // Create new marker
-        createMarker(lat, lng, mapRef.current);
-      }
-    }
-  }, [isMapInitialized, createMarker]);
+  }, [open, GOOGLE_MAPS_API_KEY, markerPosition, createMarker, updateMarkerPosition]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData({ ...formData, [field]: value });

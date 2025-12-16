@@ -369,14 +369,14 @@ export default function Home() {
               {lowBandwidth ? <WifiOff className="w-4 h-4" /> : <Wifi className="w-4 h-4" />}
             </Button>
 
-            <Button
+            {/* <Button
               size="sm"
               onClick={() => setShowSeekHelp(true)}
               className="bg-red-600 hover:bg-red-700 text-white rounded-full font-semibold text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2 h-auto transition-all"
             >
               <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5" />
               <span className="hidden xs:inline">ត្រូវការជំនួយ</span>
-            </Button>
+            </Button> */}
 
             <Sheet open={showSubmitForm} onOpenChange={setShowSubmitForm}>
               <SheetTrigger asChild>
@@ -591,18 +591,18 @@ export default function Home() {
         {!lowBandwidth && (
           <>
             {/* Top Controls Bar */}
-            <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex items-center gap-1 sm:gap-1.5 flex-nowrap">
               {/* City Filter */}
               {areas.length > 0 && (
-                <div className="bg-white rounded-full shadow-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#105090] flex-shrink-0" />
+                <div className="bg-white rounded-full shadow-lg px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+                  <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#105090] flex-shrink-0" />
                   <select
                     value={filters.area || 'all'}
                     onChange={(e) => {
                       const area = e.target.value === 'all' ? null : e.target.value;
                       setFilters({...filters, area});
                     }}
-                    className="text-xs sm:text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer pr-4 appearance-none"
+                    className="text-[10px] sm:text-xs font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer pr-3 sm:pr-4 appearance-none"
                   >
                     <option value="all">ទាំងអស់</option>
                     {areas.sort().map((area) => (
@@ -614,7 +614,7 @@ export default function Home() {
                 </div>
               )}
               {/* Filter Icons - Single Scrollable Line */}
-              <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide flex-nowrap max-w-[calc(100%-5rem)] sm:max-w-none">
+              <div className="bg-white rounded-full shadow-lg p-0.5 sm:p-1 flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide flex-nowrap flex-1 min-w-0">
                   {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'medical_care', 'event', 'site_sponsor', 'school'].map((type) => {
                     const getIcon = () => {
                       switch(type) {
@@ -653,14 +653,14 @@ export default function Home() {
                         variant={isActive ? 'default' : 'outline'}
                         onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
                         style={isActive ? { backgroundColor: '#105090' } : {}}
-                        className={`rounded-full p-2 sm:p-2.5 h-8 sm:h-9 w-8 sm:w-9 flex-shrink-0 transition-all flex items-center justify-center ${
+                        className={`rounded-full p-0.5 sm:p-1.5 h-5 sm:h-7 w-5 sm:w-7 flex-shrink-0 transition-all flex items-center justify-center ${
                           isActive
                             ? 'text-white hover:opacity-90'
                             : 'border-gray-200'
                         }`}
                         title={getLabel()}
                       >
-                        <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5 flex-shrink-0" />
+                        <Icon className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
                       </Button>
                     );
                   })}
@@ -801,14 +801,14 @@ export default function Home() {
                     variant={isActive ? 'default' : 'outline'}
                     onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
                     style={isActive ? { backgroundColor: '#105090' } : {}}
-                    className={`rounded-full p-1.5 sm:p-2 h-8 sm:h-9 w-8 sm:w-9 flex-shrink-0 transition-all flex items-center justify-center ${
+                    className={`rounded-full p-1 sm:p-2 h-7 sm:h-9 w-7 sm:w-9 flex-shrink-0 transition-all flex items-center justify-center ${
                       isActive
                         ? 'text-white hover:opacity-90'
                         : 'border-gray-200'
                     }`}
                     title={getLabel()}
                   >
-                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                    <Icon className="w-2.5 h-2.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   </Button>
                 );
               })}
@@ -897,11 +897,11 @@ export default function Home() {
       />
 
       {/* Seek Help Dialog */}
-      <SeekHelpDialog
+      {/* <SeekHelpDialog
         open={showSeekHelp}
         onClose={() => setShowSeekHelp(false)}
         userLocation={userLocation}
-      />
+      /> */}
     </div>
     </Layout>
   );

@@ -146,19 +146,6 @@ export default function TextListView({ listings, onCall }: TextListViewProps) {
               {listing.area}
             </p>
 
-            {(listing.capacity_min || listing.capacity_max) && (
-              <p>
-                <span className="text-gray-500">សមត្ថភាព:</span>{' '}
-                {listing.capacity_min || 1} - {listing.capacity_max || '?'} នាក់
-              </p>
-            )}
-
-            {listing.duration_days && (
-              <p>
-                <span className="text-gray-500">រយៈពេល:</span>{' '}
-                {listing.duration_days} ថ្ងៃ
-              </p>
-            )}
 
             {listing.family_friendly && (
               <p className="text-pink-600 font-bold flex items-center gap-1.5">

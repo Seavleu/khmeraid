@@ -202,34 +202,38 @@ export default function Admin() {
                     placeholder="ស្វែងរកការផ្តល់ជំនួយ..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-8 sm:pl-10 h-9 sm:h-10 text-sm sm:text-base"
+                    className="pl-8 sm:pl-10 h-7 sm:h-9 lg:h-10 text-xs sm:text-sm lg:text-base"
                   />
                 </div>
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[140px] lg:w-[150px] h-9 sm:h-10 text-sm">
-                  <SelectValue placeholder="ស្ថានភាព" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">ស្ថានភាពទាំងអស់</SelectItem>
-                  <SelectItem value="open">បើក</SelectItem>
-                  <SelectItem value="limited">មានកំណត់</SelectItem>
-                  <SelectItem value="full">ពេញ</SelectItem>
-                  <SelectItem value="paused">ផ្អាក</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-full sm:w-[140px] lg:w-[150px] h-9 sm:h-10 text-sm">
-                  <SelectValue placeholder="ប្រភេទ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">ប្រភេទទាំងអស់</SelectItem>
-                  <SelectItem value="accommodation">ស្នាក់នៅ</SelectItem>
-                  <SelectItem value="fuel_service">សាំង</SelectItem>
-                  <SelectItem value="car_transportation">ដឹកជញ្ជូន</SelectItem>
-                  <SelectItem value="volunteer_request">ស្ម័គ្រចិត្ត</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="relative">
+                <Select value={statusFilter} onValueChange={setStatusFilter} defaultOpen={true}>
+                  <SelectTrigger className="w-full sm:w-[140px] lg:w-[150px] h-7 sm:h-9 lg:h-10 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2">
+                    <SelectValue placeholder="ស្ថានភាព" />
+                  </SelectTrigger>
+                  <SelectContent className="text-xs sm:text-sm max-h-[200px] sm:max-h-[300px]">
+                    <SelectItem value="all" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ស្ថានភាពទាំងអស់</SelectItem>
+                    <SelectItem value="open" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">បើក</SelectItem>
+                    <SelectItem value="limited" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">មានកំណត់</SelectItem>
+                    <SelectItem value="full" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ពេញ</SelectItem>
+                    <SelectItem value="paused" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ផ្អាក</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="relative">
+                <Select value={typeFilter} onValueChange={setTypeFilter} defaultOpen={true}>
+                  <SelectTrigger className="w-full sm:w-[140px] lg:w-[150px] h-7 sm:h-9 lg:h-10 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2">
+                    <SelectValue placeholder="ប្រភេទ" />
+                  </SelectTrigger>
+                  <SelectContent className="text-xs sm:text-sm max-h-[200px] sm:max-h-[300px]">
+                    <SelectItem value="all" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ប្រភេទទាំងអស់</SelectItem>
+                    <SelectItem value="accommodation" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ស្នាក់នៅ</SelectItem>
+                    <SelectItem value="fuel_service" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">សាំង</SelectItem>
+                    <SelectItem value="car_transportation" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ដឹកជញ្ជូន</SelectItem>
+                    <SelectItem value="volunteer_request" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ស្ម័គ្រចិត្ត</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -282,14 +286,14 @@ export default function Admin() {
                           value={listing.status} 
                           onValueChange={(value) => handleStatusChange(listing.id, value)}
                         >
-                          <SelectTrigger className="h-8 text-xs flex-1">
+                          <SelectTrigger className="h-7 text-xs flex-1 px-2 py-1">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="open">បើក</SelectItem>
-                            <SelectItem value="limited">មានកំណត់</SelectItem>
-                            <SelectItem value="full">ពេញ</SelectItem>
-                            <SelectItem value="paused">ផ្អាក</SelectItem>
+                          <SelectContent className="text-xs max-h-[180px]">
+                            <SelectItem value="open" className="py-1.5 px-2 text-xs">បើក</SelectItem>
+                            <SelectItem value="limited" className="py-1.5 px-2 text-xs">មានកំណត់</SelectItem>
+                            <SelectItem value="full" className="py-1.5 px-2 text-xs">ពេញ</SelectItem>
+                            <SelectItem value="paused" className="py-1.5 px-2 text-xs">ផ្អាក</SelectItem>
                           </SelectContent>
                         </Select>
                         <Button
@@ -388,14 +392,14 @@ export default function Admin() {
                             value={listing.status} 
                             onValueChange={(value) => handleStatusChange(listing.id, value)}
                           >
-                            <SelectTrigger className="w-[100px] sm:w-[120px] h-8 sm:h-10 text-xs sm:text-sm">
+                            <SelectTrigger className="w-[100px] sm:w-[120px] h-7 sm:h-9 lg:h-10 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="open">បើក</SelectItem>
-                              <SelectItem value="limited">មានកំណត់</SelectItem>
-                              <SelectItem value="full">ពេញ</SelectItem>
-                              <SelectItem value="paused">ផ្អាក</SelectItem>
+                            <SelectContent className="text-xs sm:text-sm max-h-[200px] sm:max-h-[300px]">
+                              <SelectItem value="open" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">បើក</SelectItem>
+                              <SelectItem value="limited" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">មានកំណត់</SelectItem>
+                              <SelectItem value="full" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ពេញ</SelectItem>
+                              <SelectItem value="paused" className="py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm">ផ្អាក</SelectItem>
                             </SelectContent>
                           </Select>
                         </td>

@@ -301,23 +301,6 @@ export default function ListingCard({ listing, onSelect, compact = false }: List
 
           {/* Key Details */}
           <div className="space-y-1.5">
-            {(listing.capacity_min || listing.capacity_max) && (
-              <div className="flex items-center gap-2 text-sm text-gray-700">
-                <Users className="w-4 h-4 text-gray-500" />
-                <span>
-                  <strong>សមត្ថភាព:</strong> {listing.capacity_min || 1} - {listing.capacity_max || '?'} នាក់
-                </span>
-              </div>
-            )}
-
-            {listing.duration_days && (
-              <div className="flex items-center gap-2 text-sm text-gray-700">
-                <Clock className="w-4 h-4 text-gray-500" />
-                <span>
-                  <strong>រយៈពេល:</strong> {listing.duration_days} ថ្ងៃ
-                </span>
-              </div>
-            )}
 
             {listing.family_friendly && (
               <div className="flex items-center gap-2 text-sm text-pink-600">
@@ -326,13 +309,6 @@ export default function ListingCard({ listing, onSelect, compact = false }: List
               </div>
             )}
 
-            {/* Accessibility Features */}
-            {listing.wheelchair_accessible && (
-              <div className="flex items-center gap-2 text-sm text-blue-600">
-                <Accessibility className="w-4 h-4" />
-                <span className="font-semibold">សម្រាប់អ្នកដែលមានជំងឺដំបង</span>
-              </div>
-            )}
 
             {/* Medical Care Features */}
             {listing.type === 'medical_care' && (
