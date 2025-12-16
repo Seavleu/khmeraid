@@ -40,6 +40,27 @@ declare namespace google {
       constructor(sw?: LatLng | LatLngLiteral, ne?: LatLng | LatLngLiteral);
     }
 
+    class Circle {
+      constructor(options?: CircleOptions);
+      setMap(map: Map | null): void;
+      setCenter(center: LatLng | LatLngLiteral): void;
+      setRadius(radius: number): void;
+      getCenter(): LatLng;
+      getRadius(): number;
+    }
+
+    interface CircleOptions {
+      map?: Map;
+      center?: LatLng | LatLngLiteral;
+      radius?: number;
+      fillColor?: string;
+      fillOpacity?: number;
+      strokeColor?: string;
+      strokeOpacity?: number;
+      strokeWeight?: number;
+      zIndex?: number;
+    }
+
     class InfoWindow {
       constructor(options?: InfoWindowOptions);
       setContent(content: string | HTMLElement): void;
