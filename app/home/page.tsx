@@ -294,6 +294,14 @@ export default function Home() {
     }
   }, [filters.area, cityCenters]);
 
+  // Reset type filter when city filter changes to show all available locations in that city by default
+  useEffect(() => {
+    if (filters.area) {
+      // When a city is selected, reset type to null to show all types in that city
+      setFilters(prev => ({ ...prev, type: null }));
+    }
+  }, [filters.area]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Get user location
   const handleLocate = (): void => {
     if (navigator.geolocation) {
@@ -331,17 +339,24 @@ export default function Home() {
       <header className="bg-white border-b z-50 shadow-sm shrink-0 transition-all">
         <div className="px-2 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="lg:hidden h-8 w-8 p-0 flex-shrink-0"
             >
               <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Button>
+            </Button> */}
             <h1 className="text-base sm:text-xl lg:text-2xl font-bold text-[#105090] truncate">
               ចង់ជួយ
             </h1>
+            {/* Listing Count Badge */}
+            <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 flex-shrink-0">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-semibold text-green-700">
+                {filteredListings.length} ទំនេរ
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
@@ -514,7 +529,7 @@ export default function Home() {
 
               {/* Quick Filters */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => {
+                {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'medical_care', 'event', 'school'].map((type) => {
                   const getIcon = () => {
                     switch(type) {
                       case 'all': return Filter;
@@ -522,11 +537,26 @@ export default function Home() {
                       case 'fuel_service': return Fuel;
                       case 'car_transportation': return Car;
                       case 'volunteer_request': return HeartHandshake;
+                      case 'medical_care': return Stethoscope;
                       case 'event': return Clock;
+                      case 'school': return School;
                       default: return Filter;
                     }
                   };
                   const Icon = getIcon();
+                  const getLabel = () => {
+                    switch(type) {
+                      case 'all': return 'ទាំងអស់';
+                      case 'accommodation': return 'ស្នាក់នៅ';
+                      case 'fuel_service': return 'សាំង';
+                      case 'car_transportation': return 'ដឹកជញ្ជូន';
+                      case 'volunteer_request': return 'ស្ម័គ្រចិត្ត';
+                      case 'medical_care': return 'សុខាភិបាល';
+                      case 'event': return 'ព្រឹត្តិការណ៍';
+                      case 'school': return 'សាលា';
+                      default: return '';
+                    }
+                  };
                   const isActive = filters.type === type || (type === 'all' && !filters.type);
                   return (
                     <Button
@@ -535,19 +565,17 @@ export default function Home() {
                       variant={isActive ? 'default' : 'outline'}
                       onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
                       style={isActive ? { backgroundColor: '#105090' } : {}}
-                      className={`rounded-full text-xs sm:text-sm px-2 sm:px-3 py-1 h-auto transition-all ${
+                      className={`rounded-full text-xs sm:text-sm px-2 sm:px-3 py-1 h-auto transition-all flex items-center gap-1 ${
                         isActive
                           ? 'text-white hover:opacity-90'
                           : ''
                       }`}
                     >
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                       {type === 'all' ? (
-                        <>
-                          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
-                          ទាំងអស់
-                        </>
+                        <span className="hidden sm:inline">{getLabel()}</span>
                       ) : (
-                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">{getLabel()}</span>
                       )}
                     </Button>
                   );
@@ -585,8 +613,8 @@ export default function Home() {
                   </select>
                 </div>
               )}
-              {/* Filter Pills - Scrollable on mobile */}
-              <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-2 flex-wrap max-w-[calc(100%-5rem)] sm:max-w-none overflow-x-auto scrollbar-hide">
+              {/* Filter Icons - Single Scrollable Line */}
+              <div className="bg-white rounded-full shadow-lg p-1 sm:p-1.5 flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide flex-nowrap max-w-[calc(100%-5rem)] sm:max-w-none">
                   {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'medical_care', 'event', 'site_sponsor', 'school'].map((type) => {
                     const getIcon = () => {
                       switch(type) {
@@ -617,18 +645,22 @@ export default function Home() {
                         default: return '';
                       }
                     };
+                    const isActive = filters.type === type || (type === 'all' && !filters.type);
                     return (
                       <Button
                         key={type}
                         size="sm"
-                        variant={filters.type === type || (type === 'all' && !filters.type) ? 'default' : 'ghost'}
+                        variant={isActive ? 'default' : 'outline'}
                         onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
-                        className={`rounded-full text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 sm:py-1.5 h-auto transition-all ${filters.type === type || (type === 'all' && !filters.type) 
-                          ? 'bg-[#105090] hover:bg-[#0d3d6f] text-white' 
-                          : ''}`}
+                        style={isActive ? { backgroundColor: '#105090' } : {}}
+                        className={`rounded-full p-2 sm:p-2.5 h-8 sm:h-9 w-8 sm:w-9 flex-shrink-0 transition-all flex items-center justify-center ${
+                          isActive
+                            ? 'text-white hover:opacity-90'
+                            : 'border-gray-200'
+                        }`}
+                        title={getLabel()}
                       >
-                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1.5" />
-                        <span className="hidden sm:inline">{getLabel()}</span>
+                        <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5 flex-shrink-0" />
                       </Button>
                     );
                   })}
@@ -675,18 +707,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Results Count Badge */}
-            <div className="absolute top-14 sm:top-20 left-2 sm:left-4 z-10 bg-white rounded-full shadow-lg px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3 transition-all">
-              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs sm:text-base font-bold">{filteredListings.length} ទំនេរ</span>
-              {drawnArea && (
-                <span className="text-xs text-gray-500 hidden sm:flex items-center gap-1">
-                  <Search className="w-3 h-3" />
-                  តំបន់ផ្ទាល់ខ្លួន
-                </span>
-              )}
-            </div>
-
           </>
         )}
 
@@ -694,47 +714,56 @@ export default function Home() {
         <div 
           className={`absolute top-0 bottom-0 left-0 z-30 bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } w-full sm:w-96 overflow-hidden flex flex-col`}
+          } w-full sm:w-96 overflow-y-auto flex flex-col`}
         >
-          {/* Sidebar Header */}
-          <div className="p-2 sm:p-3 border-b bg-gradient-to-r from-blue-50 to-teal-50 shrink-0">
-            <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">ជំនួយដែលមាន</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarOpen(false)}
-                className="h-7 w-7 p-0"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-            <AISummary 
-              listings={filteredListings} 
-              userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : null}
-              selectedCity={filters.area || null}
-            />
-            <div className="mt-2 sm:mt-3">
-              <DangerousZones />
-            </div>
-          </div>
-
-          {/* Sidebar Filters */}
-          <div className="p-2 sm:p-3 border-b bg-white shrink-0 space-y-2 sm:space-y-3">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-4 sm:h-4 text-gray-400" />
-              <Input
-                placeholder="ស្វែងរក..."
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                className="pl-8 sm:pl-10 text-sm sm:text-base h-9 sm:h-10"
+          {/* Sidebar Content - Fully Scrollable */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Sidebar Header - Compact */}
+            <div className="p-1.5 sm:p-2 border-b bg-gradient-to-r from-blue-50 to-teal-50">
+              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+                <h2 className="text-sm sm:text-base font-bold text-gray-900">ជំនួយដែលមាន</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSidebarOpen(false)}
+                  className="h-6 w-6 sm:h-7 sm:w-7 p-0"
+                >
+                  <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </Button>
+              </div>
+              <AISummary 
+                listings={filteredListings} 
+                userLocation={userLocation ? { lat: userLocation[0], lng: userLocation[1] } : null}
+                selectedCity={filters.area || null}
               />
             </div>
 
-            {/* Quick Type Filters */}
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'event'].map((type) => {
+            {/* Sidebar Filters - Minimal and Compact */}
+            <div className="p-1.5 sm:p-2 border-b bg-white space-y-1.5 sm:space-y-2">
+              {/* City Filter - Compact */}
+            {areas.length > 0 && (
+              <div className="bg-gray-50 rounded-lg p-1.5 sm:p-2 border border-gray-200">
+                <select
+                  value={filters.area || 'all'}
+                  onChange={(e) => {
+                    const area = e.target.value === 'all' ? null : e.target.value;
+                    setFilters({...filters, area});
+                  }}
+                  className="w-full text-[10px] sm:text-xs font-medium text-gray-900 bg-white border border-gray-300 rounded-md px-2 py-1 sm:py-1.5 outline-none focus:ring-1 focus:ring-[#105090] focus:border-[#105090]"
+                >
+                  <option value="all">ទាំងអស់</option>
+                  {areas.sort().map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Quick Type Filters - Single Scrollable Line */}
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide flex-nowrap">
+              {['all', 'accommodation', 'fuel_service', 'car_transportation', 'volunteer_request', 'medical_care', 'event', 'site_sponsor', 'school'].map((type) => {
                 const getIcon = () => {
                   switch(type) {
                     case 'all': return Filter;
@@ -742,11 +771,28 @@ export default function Home() {
                     case 'fuel_service': return Fuel;
                     case 'car_transportation': return Car;
                     case 'volunteer_request': return HeartHandshake;
+                    case 'medical_care': return Stethoscope;
                     case 'event': return Clock;
+                    case 'site_sponsor': return MapPin;
+                    case 'school': return School;
                     default: return Filter;
                   }
                 };
                 const Icon = getIcon();
+                const getLabel = () => {
+                  switch(type) {
+                    case 'all': return 'ទាំងអស់';
+                    case 'accommodation': return 'ស្នាក់នៅ';
+                    case 'fuel_service': return 'សាំង';
+                    case 'car_transportation': return 'ដឹកជញ្ជូន';
+                    case 'volunteer_request': return 'ស្ម័គ្រចិត្ត';
+                    case 'medical_care': return 'សុខាភិបាល';
+                    case 'event': return 'ព្រឹត្តិការណ៍';
+                    case 'site_sponsor': return 'ទីតាំងហ្រ្វី';
+                    case 'school': return 'សាលា';
+                    default: return '';
+                  }
+                };
                 const isActive = filters.type === type || (type === 'all' && !filters.type);
                 return (
                   <Button
@@ -755,20 +801,14 @@ export default function Home() {
                     variant={isActive ? 'default' : 'outline'}
                     onClick={() => setFilters({...filters, type: type === 'all' ? null : type})}
                     style={isActive ? { backgroundColor: '#105090' } : {}}
-                    className={`rounded-full text-xs sm:text-sm px-2 sm:px-3 py-1 h-auto transition-all ${
+                    className={`rounded-full p-1.5 sm:p-2 h-8 sm:h-9 w-8 sm:w-9 flex-shrink-0 transition-all flex items-center justify-center ${
                       isActive
                         ? 'text-white hover:opacity-90'
-                        : ''
+                        : 'border-gray-200'
                     }`}
+                    title={getLabel()}
                   >
-                    {type === 'all' ? (
-                      <>
-                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
-                        ទាំងអស់
-                      </>
-                    ) : (
-                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    )}
+                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   </Button>
                 );
               })}
@@ -786,16 +826,16 @@ export default function Home() {
             </Button> */}
           </div>
 
-          {/* Listings */}
-          <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-2 sm:space-y-3 scroll-smooth">
+            {/* Listings - Compact */}
+            <div className="p-1.5 sm:p-2 space-y-1.5 sm:space-y-2 scroll-smooth">
             {isLoading ? (
-              <div className="text-center py-8 sm:py-12">
-                <div className="animate-spin w-6 h-6 sm:w-8 sm:h-8 border-3 sm:border-4 border-teal-500 border-t-transparent rounded-full mx-auto" />
-                <p className="text-gray-500 mt-2 sm:mt-3 text-xs sm:text-sm">កំពុងផ្ទុក...</p>
+              <div className="text-center py-6 sm:py-8">
+                <div className="animate-spin w-5 h-5 sm:w-6 sm:h-6 border-3 border-teal-500 border-t-transparent rounded-full mx-auto" />
+                <p className="text-gray-500 mt-2 text-[10px] sm:text-xs">កំពុងផ្ទុក...</p>
               </div>
             ) : filteredListings.length === 0 ? (
-              <div className="text-center py-8 sm:py-12">
-                <p className="text-gray-500 text-sm sm:text-base">មិនមានជំនួយ</p>
+              <div className="text-center py-6 sm:py-8">
+                <p className="text-gray-500 text-xs sm:text-sm">មិនមានជំនួយ</p>
                 <Button 
                   variant="link" 
                   onClick={() => {
@@ -828,10 +868,11 @@ export default function Home() {
                 </div>
               ))
             )}
+            </div>
           </div>
-
+          
           {/* Sidebar Footer */}
-          <div className="p-2 sm:p-3 border-t bg-gray-50 shrink-0">
+          <div className="p-2 sm:p-3 border-t bg-gray-50">
             <SafetyNotice compact />
           </div>
         </div>

@@ -126,16 +126,16 @@ export default function ListingCard({ listing, onSelect, compact = false }: List
     return (
       <div 
         onClick={() => onSelect?.(listing)}
-        className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white/95 backdrop-blur-sm rounded-2xl border-2 border-gray-200 hover:border-[#105090] hover:shadow-2xl transition-all cursor-pointer active:scale-[0.98]"
+        className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl border border-gray-200 hover:border-[#105090] hover:shadow-lg transition-all cursor-pointer active:scale-[0.98]"
       >
-        <div className={`p-2 sm:p-2.5 rounded-lg flex-shrink-0 ${type.color}`}>
-          <TypeIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+        <div className={`p-1.5 sm:p-2 rounded-md flex-shrink-0 ${type.color}`}>
+          <TypeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm sm:text-base font-bold text-gray-900 truncate">{listing.title}</p>
-          <p className="text-xs sm:text-sm text-gray-600 truncate font-medium">{listing.area}</p>
+          <p className="text-xs sm:text-sm font-bold text-gray-900 truncate leading-tight">{listing.title}</p>
+          <p className="text-[10px] sm:text-xs text-gray-600 truncate font-medium mt-0.5">{listing.area}</p>
         </div>
-        <Badge className={`${status.color} text-xs sm:text-sm font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 flex-shrink-0`}>{status.label}</Badge>
+        <Badge className={`${status.color} text-[9px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 flex-shrink-0`}>{status.label}</Badge>
       </div>
     );
   }
