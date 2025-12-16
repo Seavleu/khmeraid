@@ -26,6 +26,25 @@ const urgencyLevels = [
   { value: 'critical', label: 'ធ្ងន់ធ្ងរ', color: 'bg-red-600' }
 ];
 
+interface HelpSeeker {
+  id: string;
+  name: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+  help_type?: string;
+  urgency?: string;
+  status?: string;
+  notes?: string;
+  last_updated?: string;
+  shared_with_contacts?: string[];
+  share_token?: string;
+  created_at?: string;
+  updated_at?: string;
+  created_date?: string;
+  updated_date?: string;
+}
+
 interface SeekHelpDialogProps {
   open: boolean;
   onClose: () => void;
@@ -35,7 +54,7 @@ interface SeekHelpDialogProps {
 export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelpDialogProps) {
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeRequest, setActiveRequest] = useState<any>(null);
+  const [activeRequest, setActiveRequest] = useState<HelpSeeker | null>(null);
   const [shareLink, setShareLink] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -73,9 +92,9 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
       if (formData.phone) {
         const res = await fetch('/api/help-seekers?status=active');
         if (!res.ok) throw new Error('Failed to fetch help requests');
-        const requests = await res.json();
+        const requests = (await res.json()) as HelpSeeker[];
         // Find request matching the phone number
-        const userRequest = requests.find(r => r.phone === formData.phone);
+        const userRequest = requests.find((r: HelpSeeker) => r.phone === formData.phone);
         if (userRequest) {
           setActiveRequest(userRequest);
           generateShareLink(userRequest.share_token || userRequest.id);
@@ -156,7 +175,7 @@ export default function SeekHelpDialog({ open, onClose, userLocation }: SeekHelp
     }
   };
 
-  const notifyContacts = async (contacts: any[], token: string, request: any) => {
+  const notifyContacts = async (contacts: string[], token: string, request: HelpSeeker) => {
     const shareUrl = `${window.location.origin}?track=${token}`;
     const message = `${request.name} ត្រូវការជំនួយ។ តាមដានទីតាំង: ${shareUrl}`;
 
