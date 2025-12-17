@@ -28,6 +28,21 @@ export default function RootLayout({
           src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js"
           suppressHydrationWarning
         />
+        {/* Google tag (gtag.js) */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-654PWT2SVX"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-654PWT2SVX');
+            `,
+          }}
+        />
       </head>
       <body className={`${notoSansKhmer.className} ${notoSansKhmer.variable}`}>
         <Providers>
