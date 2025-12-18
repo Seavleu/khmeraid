@@ -1,6 +1,6 @@
-# Khmer Aid - Next.js Application
+# jonghelp - Next.js Application
 
-A Next.js application for managing and sharing aid resources in Cambodia, built with Supabase for database operations.
+A Next.js application for managing and sharing aid resources in Cambodia, built with RESTAPIs for database operations.
 
 ## Project Structure
 
@@ -43,11 +43,13 @@ npm install
 
 Create a `.env.local` file in the project root with the following variables:
 
-```env
+```env.local
 # Supabase Configuration (Required)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DIRECT_URL=your_secret_token
+DATABASE_URL=your_secret_token
 
 # Google Maps API (Optional - for map features)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
