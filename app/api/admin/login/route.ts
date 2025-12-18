@@ -7,8 +7,8 @@ import crypto from 'crypto';
 const ADMIN_CREDENTIALS = {
   username: process.env.ADMIN_USERNAME || 'admin',
   // Password hash should be generated using: crypto.createHash('sha256').update('your_password').digest('hex')
-  // Default password is '092862336' (hash: 671ed2d75e8ddc913561013e68a0a78a80603c29f30374573dcf47c28536f996)
-  passwordHash: process.env.ADMIN_PASSWORD_HASH || crypto.createHash('sha256').update(process.env.ADMIN_PASSWORD || '092862336').digest('hex'),
+  // Default password is '0123456789' (hash: 671ed2d75e8ddc913561013e68a0a78a80603c29f30374573dcf47c28536f996)
+  passwordHash: process.env.ADMIN_PASSWORD_HASH || crypto.createHash('sha256').update(process.env.ADMIN_PASSWORD || '0123456789').digest('hex'),
 };
 
 // Secret key for token signing (should be a strong random string in production)
