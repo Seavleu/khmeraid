@@ -64,7 +64,7 @@ ADMIN_TOKEN_SECRET=your_secret_token
 HUGGINGFACE_API_KEY=your_huggingface_key
 ```
 
-See `ENVIRONMENT_VARIABLES.md` for detailed setup instructions.
+See `ENVIRONMENT_VARIABLES.md` for detailed setup instructions, and `SECURITY.md` for how authentication, IP blocking, and production hardening work.
 
 ### 3. Run the Development Server
 
@@ -188,6 +188,7 @@ This project has been migrated from Prisma to Supabase. See `PRISMA_TO_SUPABASE_
 - `ENVIRONMENT_VARIABLES.md` - Environment variables setup guide
 - `PRISMA_TO_SUPABASE_MIGRATION.md` - Migration documentation
 - `entities/` - JSON schema definitions for data models
+-. `SECURITY.md` - Overview of security architecture and hardening checklist
 
 ## Support
 
